@@ -197,45 +197,37 @@ const GeneralJournal = () => {
     setDescriptions(newDescriptions);
   };
 
- // Function to handle changes in the Debit column
-const handleDebitChange = (inputValue, rowIndex) => {
-  // Update the Debit value in the array
-  const newDebits = [...debits];
-  newDebits[rowIndex] = inputValue;
-  
-  // Check if there's a value in the corresponding Credit cell
-  if (credits[rowIndex]) {
+  // Function to handle changes in the Debit column
+  const handleDebitChange = (inputValue, rowIndex) => {
+    // Update the Debit value in the array
+    const newDebits = [...debits];
+    newDebits[rowIndex] = inputValue;
+    setDebits(newDebits);
+
     // Clear the Credit cell visually by setting it to an empty string
     const newCredits = [...credits];
     newCredits[rowIndex] = ''; // Clear the visual representation of the Credit cell
     setCredits(newCredits);
-  }
 
-  setDebits(newDebits);
+    // Set the active cell to 'Debit' to ensure that the Debit cell is visually cleared
+    setActiveCell('Debit');
+  };
 
-  // Set the active cell to 'Debit' to ensure that the Debit cell is visually cleared
-  setActiveCell('Debit');
-};
+  // Function to handle changes in the Credit column
+  const handleCreditChange = (inputValue, rowIndex) => {
+    // Update the Credit value in the array
+    const newCredits = [...credits];
+    newCredits[rowIndex] = inputValue;
+    setCredits(newCredits);
 
-// Function to handle changes in the Credit column
-const handleCreditChange = (inputValue, rowIndex) => {
-  // Update the Credit value in the array
-  const newCredits = [...credits];
-  newCredits[rowIndex] = inputValue;
-  
-  // Check if there's a value in the corresponding Debit cell
-  if (debits[rowIndex]) {
     // Clear the Debit cell visually by setting it to an empty string
     const newDebits = [...debits];
     newDebits[rowIndex] = ''; // Clear the visual representation of the Debit cell
     setDebits(newDebits);
-  }
 
-  setCredits(newCredits);
-
-  // Set the active cell to 'Credit' to ensure that the Credit cell is visually cleared
-  setActiveCell('Credit');
-};
+    // Set the active cell to 'Credit' to ensure that the Credit cell is visually cleared
+    setActiveCell('Credit');
+  };
 
 
     const handlePostEntries = () => {
