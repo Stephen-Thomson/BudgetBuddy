@@ -2,6 +2,7 @@
   "name": "frontend_react",
   "version": "0.1.0",
   "main": "public/main.js",
+  "description": "A finance app",
   "homepage": "./",
   "private": true,
   "dependencies": {
