@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <style>
+    /* Styles for the login page (same as before) */
+    /* ... */
+
+    .message {
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .create-account-button {
+      padding: 10px 20px;
+      border-radius: 5px;
+      background-color: white;
+      color: black;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Message above the textboxes -->
+  <div class="message">Enter Username and Password to Login or Create a New Account</div>
+
+  <!-- Textboxes for entering username and password -->
+  <div class="input-container">
+    <label for="username">Username</label>
+    <input type="text" id="username" />
+  </div>
+  <div class="input-container">
+    <label for="password">Password</label>
+    <input type="password" id="password" />
+  </div>
+
+  <!-- Button for login -->
+  <button class="submit-button" onclick="login()">Login</button>
+
+  <!-- Error message for non-matching passwords -->
+  <div class="error-message" id="error-message"></div>
+
+  <script>
+    // Replace these functions with actual login and createAccount functions from your React components.
+    // We'll integrate the Electron-React communication later.
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      // Replace the following logic with your actual login implementation
+      if (username === 'demo' && password === 'password') {
+        // If login is successful, proceed to the next page
+        alert('Login successful. Proceed to the next page.');
+      } else if (username === 'demo') {
+        // If the username exists but the password is incorrect
+        document.getElementById('error-message').innerText = 'Password does not match.';
+      } else {
+        // If the username doesn't exist, prompt the user to create a new account
+        const createAccount = confirm('Username does not exist. Create a new account?');
+        if (createAccount) {
+          // Handle the creation of a new account here
+          alert('Creating a new account...'); // Replace with actual implementation
+        }
+      }
+    }
+  </script>
+</body>
+</html>
