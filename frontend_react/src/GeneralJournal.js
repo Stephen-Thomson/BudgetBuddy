@@ -20,44 +20,17 @@ import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-date-picker';
 import Apis from './Apis';
 
-const GeneralJournalCell = ({ value, onChange, activeCell, cellType }) => {
-  const [formattedValue, setFormattedValue] = useState(value);
-
-  const handleBlur = () => {
-    // Format the value as a dollar amount and set it to the formattedValue state
-    const numericValue = parseFloat(formattedValue);
-    const newValue = isNaN(numericValue) ? '' : `$${numericValue.toFixed(2)}`;
-    setFormattedValue(newValue);
-
-    // Call the onChange function to update the value in the array
-    onChange(newValue); // Pass the formatted value to update the array
-  };
-
-  const handleChange = (event) => {
-    // Handle changes in the input field, but don't update the state
-    // until blur, so that formatting is applied only after editing
-    setFormattedValue(event.target.value);
-  };
-
-  return (
-    <TextField
-      value={(activeCell === cellType || activeCell === '') ? formattedValue : ''}
-      onChange={handleChange}
-      onBlur={handleBlur}
-    />
-  );
-};
 
 const GeneralJournal = () => {
     const navigate = useNavigate(); // Initialize the navigate function
     const [accountList, setAccountList] = useState([]); // State to hold the list of accounts
     const [rows, setRows] = useState(Array(26).fill(null).map((_, index) => ({ id: index, color: index % 2 === 0 ? '#E1DDE8' : '#C3CBC0' })));
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [accounts, setAccounts] = useState(['']); // Account column
+    const [accounts, setAccounts] = useState([]); // Account column
     const [descriptions, setDescriptions] = useState(['']); // Description column
-    const [debits, setDebits] = useState(['']); // Debit column
-    const [credits, setCredits] = useState(['']); // Credit column
-    const [activeCell, setActiveCell] = useState(''); // Initialize the activeCell state
+    const [debits, setDebits] = useState([]); // Debit column
+    const [credits, setCredits] = useState([]); // Credit column
+    const [activeCell, setActiveCell] = useState(); // Initialize the activeCell state
 
     useEffect(() => {
         // Fetch the list of accounts from the backend using the getAccounts API
@@ -198,37 +171,51 @@ const GeneralJournal = () => {
   };
 
   // Function to handle changes in the Debit column
-  const handleDebitChange = (inputValue, rowIndex) => {
-    // Update the Debit value in the array
-    const newDebits = [...debits];
-    newDebits[rowIndex] = inputValue;
-    setDebits(newDebits);
+const handleDebitChange = (event, rowIndex) => {
+  const { value } = event.target;
+  const newDebit = [...debits]
+  newDebit[rowIndex] = value;
+  setDebits(newDebit)
 
-    // Clear the Credit cell visually by setting it to an empty string
-    const newCredits = [...credits];
-    newCredits[rowIndex] = ''; // Clear the visual representation of the Credit cell
-    setCredits(newCredits);
+  // Clear the credits cell visually by setting it to an empty string
+  const newCredits = [...credits];
+  newCredits[rowIndex] = '';
+  setCredits(newCredits);
+};
 
-    // Set the active cell to 'Debit' to ensure that the Debit cell is visually cleared
-    setActiveCell('Debit');
-  };
+// Function to handle changes in the Debit column
+const handleCreditChange = (event, rowIndex) => {
+  const { value } = event.target;
+  const newCredit = [...credits]
+  newCredit[rowIndex] = value;
+  setCredits(newCredit)
 
-  // Function to handle changes in the Credit column
-  const handleCreditChange = (inputValue, rowIndex) => {
-    // Update the Credit value in the array
-    const newCredits = [...credits];
-    newCredits[rowIndex] = inputValue;
-    setCredits(newCredits);
+  // Clear the credits cell visually by setting it to an empty string
+  const newDebits = [...debits];
+  newDebits[rowIndex] = '';
+  setDebits(newDebits);
+};
 
-    // Clear the Debit cell visually by setting it to an empty string
-    const newDebits = [...debits];
-    newDebits[rowIndex] = ''; // Clear the visual representation of the Debit cell
-    setDebits(newDebits);
 
-    // Set the active cell to 'Credit' to ensure that the Credit cell is visually cleared
-    setActiveCell('Credit');
-  };
+  // Function to handle blur in the Debit column
+const handleDebitBlur = (event, rowIndex) => {
+  const numericValue = parseFloat(event.target.value);
+  const formattedValue = isNaN(numericValue) ? '' : `$${numericValue.toFixed(2)}`;
 
+  const newDebits = [...debits];
+  newDebits[rowIndex] = formattedValue;
+  setDebits(newDebits);
+};
+
+// Function to handle blur in the Credit column
+const handleCreditBlur = (event, rowIndex) => {
+  const numericValue = parseFloat(event.target.value);
+  const formattedValue = isNaN(numericValue) ? '' : `$${numericValue.toFixed(2)}`;
+
+  const newCredits = [...credits];
+  newCredits[rowIndex] = formattedValue;
+  setCredits(newCredits);
+};
 
     const handlePostEntries = () => {
       // This is a placeholder function that currently does nothing.
@@ -373,29 +360,32 @@ const GeneralJournal = () => {
                   </TableCell>
 
                   <TableCell style={{ padding: '16px' }}>
-                    <input
-                      type="text"
-                      value={descriptions[rowIndex] || ''}
-                      onChange={(e) => handleDescriptionChange(e, rowIndex)}
-                      style={{ width: '100%', border: 'none' }} // Optionally, you can adjust the input's width and border styles
-                    />
-                  </TableCell>
-
-                  <TableCell>
-  <GeneralJournalCell
-    value={debits[rowIndex]}
-    onChange={(value) => handleDebitChange(value, rowIndex)}
-    activeCell={activeCell}
-    cellType="Debit"
+  <TextField
+    variant="outlined" // You can adjust the variant based on your design
+    fullWidth // Makes the TextField take up the entire width of the cell
+    value={descriptions[rowIndex] || ''}
+    onChange={(e) => handleDescriptionChange(e, rowIndex)}
+    // You can further customize the TextField with other props as needed
   />
 </TableCell>
 
 <TableCell>
-  <GeneralJournalCell
-    value={credits[rowIndex]}
-    onChange={(value) => handleCreditChange(value, rowIndex)}
-    activeCell={activeCell}
-    cellType="Credit"
+  <TextField
+    variant="outlined"
+    fullWidth
+    value={debits[rowIndex] || ''}
+    onChange={(event) => handleDebitChange(event, rowIndex)}
+    onBlur={(event) => handleDebitBlur(event, rowIndex, 4)}
+  />
+</TableCell>
+
+<TableCell>
+  <TextField
+    variant="outlined"
+    fullWidth
+    value={credits[rowIndex] || ''}
+    onChange={(event) => handleCreditChange(event, rowIndex)}
+    onBlur={(event) => handleCreditBlur(event, rowIndex)}
   />
 </TableCell>
 
