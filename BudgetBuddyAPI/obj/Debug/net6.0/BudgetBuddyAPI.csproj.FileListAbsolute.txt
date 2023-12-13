@@ -101,3 +101,5 @@ C:\Users\shimm\BudgetBuddy\BudgetBuddyAPI\obj\Debug\net6.0\refint\BudgetBuddyAPI
 C:\Users\shimm\BudgetBuddy\BudgetBuddyAPI\obj\Debug\net6.0\BudgetBuddyAPI.pdb
 C:\Users\shimm\BudgetBuddy\BudgetBuddyAPI\obj\Debug\net6.0\BudgetBuddyAPI.genruntimeconfig.cache
 C:\Users\shimm\BudgetBuddy\BudgetBuddyAPI\obj\Debug\net6.0\ref\BudgetBuddyAPI.dll
+C:\Users\shimm\BudgetBuddy\BudgetBuddyAPI\obj\Debug\net6.0\BudgetBuddyAPI.Properties.Resources.resources
+C:\Users\shimm\BudgetBuddy\BudgetBuddyAPI\obj\Debug\net6.0\BudgetBuddyAPI.csproj.GenerateResource.cache

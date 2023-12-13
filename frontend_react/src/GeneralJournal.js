@@ -132,12 +132,22 @@ const GeneralJournal = () => {
     
     {/* Function to handle key press (e.g., "Tab" key) */}
     const handleKeyPress = (event) => {
-      // Check if the "Tab" key was pressed on the last row
-      if (event.key === 'Tab' && event.target.tagName.toLowerCase() === 'td') {
-        // Add more rows when the "Tab" key is pressed
-        addRows();
-      }
-    };
+        // Check if the "Tab" key was pressed on the last row
+  const currentId = event.target.id; // Get the id of the current element
+
+  if (event.key === 'Tab') {
+    // Add more rows when the "Tab" key is pressed
+    if (currentId !== '') {
+      console.log(accounts);
+      console.log(descriptions);
+      console.log(debits);
+      console.log(credits);
+    }
+    if (currentId === `credit-${rows.length - 1}`) {
+      addRows();
+    }
+  }
+};
 
     const handleDateChange = (date) => {
       setSelectedDate(date);
@@ -386,6 +396,7 @@ const handleCreditBlur = (event, rowIndex) => {
     value={credits[rowIndex] || ''}
     onChange={(event) => handleCreditChange(event, rowIndex)}
     onBlur={(event) => handleCreditBlur(event, rowIndex)}
+    inputProps={{ id: `credit-${rowIndex}` }}
   />
 </TableCell>
 
