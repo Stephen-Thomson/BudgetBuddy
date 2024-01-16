@@ -22,8 +22,14 @@ namespace BudgetBuddyAPI
                                   {
                                       policy.WithOrigins("https://api.stephenkthomson.me/",
                                                           "http://api.stephenkthomson.me/")
-                                                            .AllowAnyHeader()
-                                                           .AllowAnyMethod();
+                                                          .SetIsOriginAllowedToAllowWildcardSubdomains()
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+                .SetIsOriginAllowed(origin =>
+                {
+                    return true;
+                });
                                   });
             });
 
