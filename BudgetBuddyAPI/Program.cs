@@ -11,7 +11,20 @@ namespace BudgetBuddyAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            var MyCorsPolicy = "_myCorsPolicy";
+
             builder.Services.AddControllers();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyCorsPolicy,
+                                  policy =>
+                                  {
+                                      policy.WithOrigins("https://api.stephenkthomson.me/",
+                                                          "http://api.stephenkthomson.me/");
+            
+                                  });
+            });
 
             // Configure Swagger for API documentation and testing
             builder.Services.AddSwaggerGen();
@@ -21,6 +34,8 @@ namespace BudgetBuddyAPI
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
+            app.UseCors(MyCorsPolicy);
+            
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
