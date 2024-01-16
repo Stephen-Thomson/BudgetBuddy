@@ -21,7 +21,8 @@ namespace BudgetBuddyAPI
                                   policy =>
                                   {
                                       policy.WithOrigins("https://api.stephenkthomson.me/",
-                                                          "http://api.stephenkthomson.me/")
+                                                          "http://api.stephenkthomson.me/",
+                                                            "localhost")
                                                           .SetIsOriginAllowedToAllowWildcardSubdomains()
                 .AllowAnyHeader()
                 .AllowAnyMethod()
