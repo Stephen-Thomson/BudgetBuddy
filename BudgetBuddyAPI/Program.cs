@@ -18,20 +18,17 @@ namespace BudgetBuddyAPI
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy(name: MyCorsPolicy,
-                                  policy =>
-                                  {
-                                      policy.WithOrigins("https://api.stephenkthomson.me/",
-                                                          "http://api.stephenkthomson.me/",
-                                                            "localhost")
-                                                          .SetIsOriginAllowedToAllowWildcardSubdomains()
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials()
-                .SetIsOriginAllowed(origin =>
+                policy =>
                 {
-                    return true;
+                    policy.AllowAnyOrigin()
+                          .SetIsOriginAllowedToAllowWildcardSubdomains()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .SetIsOriginAllowed(origin =>
+                          {
+                              return true;
+                          });
                 });
-                                  });
             });
 
             // Configure Swagger for API documentation and testing

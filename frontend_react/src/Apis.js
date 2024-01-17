@@ -32,7 +32,7 @@ const Apis = {
     }
   },
 
-  // New API call to get account names
+  // API call to get account names
   getAccounts: async () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/getAccounts`);

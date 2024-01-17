@@ -17,19 +17,24 @@ import {
   MenuItem,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import DatePicker from 'react-date-picker';
+import DatePicker from 'react-datepicker';
 import Apis from './Apis';
+import 'react-datepicker/dist/react-datepicker.css'; // Import the styles for the date picker
 
 
 const GeneralJournal = () => {
     const navigate = useNavigate(); // Initialize the navigate function
     const [accountList, setAccountList] = useState([]); // State to hold the list of accounts
-    const [rows, setRows] = useState(Array(26).fill(null).map((_, index) => ({ id: index, color: index % 2 === 0 ? '#E1DDE8' : '#C3CBC0' })));
+    const [rows, setRows] = useState(Array(10).fill(null).map((_, index) => ({ id: index, color: index % 2 === 0 ? '#E1DDE8' : '#C3CBC0' })));
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [accounts, setAccounts] = useState([]); // Account column
     const [descriptions, setDescriptions] = useState(['']); // Description column
     const [debits, setDebits] = useState([]); // Debit column
     const [credits, setCredits] = useState([]); // Credit column
+    const [debitErrors, setDebitErrors] = useState(Array(10).fill(''));
+    const [creditErrors, setCreditErrors] = useState(Array(10).fill(''));
+    const [validationErrors, setValidationErrors] = useState([]);
+    const [postButtonClicked, setPostButtonClicked] = useState(false);
     const [activeCell, setActiveCell] = useState(); // Initialize the activeCell state
 
     useEffect(() => {
@@ -126,7 +131,7 @@ const GeneralJournal = () => {
      
     {/* Function to add more rows */}
     const addRows = () => {
-      const newRows = Array(26).fill(null).map((_, index) => ({ id: rows.length + index, color: (rows.length + index) % 2 === 0 ? '#E1DDE8' : '#C3CBC0' }));
+      const newRows = Array(10).fill(null).map((_, index) => ({ id: rows.length + index, color: (rows.length + index) % 2 === 0 ? '#E1DDE8' : '#C3CBC0' }));
       setRows([...rows, ...newRows]);
     };
     
@@ -162,6 +167,11 @@ const GeneralJournal = () => {
     setCredits([...credits, null]);
   };
 
+  const isValidInput = (input) => {
+    const isValid = /^[0-9]*\.?[0-9]{0,2}$/.test(input);
+    return isValid ? '' : 'Invalid input. Please enter a valid dollar amount.';
+  };
+  
   // Function to handle selecting an account for the Account column
   const handleAccountSelect = (event, rowIndex) => {
     const selectedAccount = event.target.value;
@@ -183,27 +193,41 @@ const GeneralJournal = () => {
   // Function to handle changes in the Debit column
 const handleDebitChange = (event, rowIndex) => {
   const { value } = event.target;
-  const newDebit = [...debits]
-  newDebit[rowIndex] = value;
-  setDebits(newDebit)
+  const errorMessage = isValidInput(value);
+  
+  const newDebitErrors = [...debitErrors];
+  newDebitErrors[rowIndex] = errorMessage;
+  setDebitErrors(newDebitErrors);
 
-  // Clear the credits cell visually by setting it to an empty string
-  const newCredits = [...credits];
-  newCredits[rowIndex] = '';
-  setCredits(newCredits);
+  if (errorMessage === '') {
+    const newDebit = [...debits];
+    newDebit[rowIndex] = value;
+    setDebits(newDebit);
+
+    const newCredits = [...credits];
+    newCredits[rowIndex] = '';
+    setCredits(newCredits);
+  }
 };
 
 // Function to handle changes in the Debit column
 const handleCreditChange = (event, rowIndex) => {
   const { value } = event.target;
-  const newCredit = [...credits]
-  newCredit[rowIndex] = value;
-  setCredits(newCredit)
+  const errorMessage = isValidInput(value);
 
-  // Clear the credits cell visually by setting it to an empty string
-  const newDebits = [...debits];
-  newDebits[rowIndex] = '';
-  setDebits(newDebits);
+  const newCreditErrors = [...creditErrors];
+  newCreditErrors[rowIndex] = errorMessage;
+  setCreditErrors(newCreditErrors);
+
+  if (errorMessage === '') {
+    const newCredit = [...credits];
+    newCredit[rowIndex] = value;
+    setCredits(newCredit);
+
+    const newDebits = [...debits];
+    newDebits[rowIndex] = '';
+    setDebits(newDebits);
+  }
 };
 
 
@@ -227,10 +251,62 @@ const handleCreditBlur = (event, rowIndex) => {
   setCredits(newCredits);
 };
 
-    const handlePostEntries = () => {
-      // This is a placeholder function that currently does nothing.
-      // You can add your implementation here when you are ready.
-    };
+const validateRows = () => {
+  const errors = [];
+
+  rows.forEach((row, rowIndex) => {
+    const account = accounts[rowIndex];
+    const debit = debits[rowIndex] ? parseFloat((debits[rowIndex] || '').replace('$', '')) : 0;
+    const credit = credits[rowIndex] ? parseFloat((credits[rowIndex] || '').replace('$', '')) : 0;
+
+    // Check if the row has input in at least one column
+    if (account || debit !== 0 || credit !== 0) {
+      // Check individual columns for errors
+      if (!account) {
+        errors.push(`Please select an account for row ${rowIndex + 1}.`);
+      }
+
+      if (debit === 0 && credit === 0) {
+        errors.push(`Please enter a value in either debit or credit for row ${rowIndex + 1}.`);
+      }
+    }
+  });
+
+  const debitTotal = debits.reduce((total, value) => total + (parseFloat((value || '').replace('$', '')) || 0), 0);
+  const creditTotal = credits.reduce((total, value) => total + (parseFloat((value || '').replace('$', '')) || 0), 0);
+
+  if (debitTotal !== creditTotal) {
+    errors.push('Debit and credit totals do not match.');
+  }
+
+  setValidationErrors(errors); // Set errors in state
+  return errors;
+};
+
+
+
+
+const handlePostEntries = () => {
+  // Set postButtonClicked to true
+  setPostButtonClicked(true);
+
+  // Validate the rows and get the errors
+  const errors = validateRows();
+
+  // Set the validation errors in state
+  setValidationErrors(errors);
+
+  // If there are no errors, proceed with posting entries
+  if (errors.length === 0) {
+    // Placeholder for post entries action
+    console.log('Entries are valid. Posting...');
+
+    // TODO: Add your post entries logic here
+
+    // Optional: Clear validation errors after successful submission
+    setValidationErrors([]);
+  }
+};
         
   return (
     <div>
@@ -350,7 +426,16 @@ const handleCreditBlur = (event, rowIndex) => {
                 {/* Date Column */}
                 <TableCell>
                   {rowIndex === 0 ? (
-                    <DatePicker value={selectedDate} onChange={handleDateChange} />
+                    <DatePicker
+                      selected={selectedDate}
+                      onChange={handleDateChange}
+                      dateFormat="M/dd/yyyy"
+                      todayButton="Today"
+                      isClearable
+                      showYearDropdown
+                      scrollableYearDropdown
+                    />
+
                   ) : null}
                 </TableCell>
 
@@ -386,6 +471,8 @@ const handleCreditBlur = (event, rowIndex) => {
     value={debits[rowIndex] || ''}
     onChange={(event) => handleDebitChange(event, rowIndex)}
     onBlur={(event) => handleDebitBlur(event, rowIndex, 4)}
+    error={Boolean(debitErrors[rowIndex])}
+    helperText={debitErrors[rowIndex]}
   />
 </TableCell>
 
@@ -396,6 +483,8 @@ const handleCreditBlur = (event, rowIndex) => {
     value={credits[rowIndex] || ''}
     onChange={(event) => handleCreditChange(event, rowIndex)}
     onBlur={(event) => handleCreditBlur(event, rowIndex)}
+    error={Boolean(creditErrors[rowIndex])}
+    helperText={creditErrors[rowIndex]}
     inputProps={{ id: `credit-${rowIndex}` }}
   />
 </TableCell>
@@ -416,6 +505,15 @@ const handleCreditBlur = (event, rowIndex) => {
           style={{ fontWeight: 'bold', color: 'black', backgroundColor: '#848484' }}>
           Post
         </Button>
+
+        {/* Display validation errors to the user for debit and credit */}
+        {postButtonClicked && validationErrors.length > 0 && (
+          <div style={{ color: 'red', marginTop: '10px' }}>
+            {validationErrors.map((error, index) => (
+              <p key={index}>{error}</p>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
