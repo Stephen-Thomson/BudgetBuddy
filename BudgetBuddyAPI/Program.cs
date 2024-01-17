@@ -20,18 +20,14 @@ namespace BudgetBuddyAPI
                 options.AddPolicy(name: MyCorsPolicy,
                 policy =>
                 {
-                    policy.WithOrigins(
-                        "https://*.stephenkthomson.me",
-                        "http://*.stephenkthomson.me",
-                        "localhost")
-                        .SetIsOriginAllowedToAllowWildcardSubdomains()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials()
-                        .SetIsOriginAllowed(origin =>
-                        {
-                            return true;
-                        });
+                    policy.AllowAnyOrigin()
+                          .SetIsOriginAllowedToAllowWildcardSubdomains()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .SetIsOriginAllowed(origin =>
+                          {
+                              return true;
+                          });
                 });
             });
 
