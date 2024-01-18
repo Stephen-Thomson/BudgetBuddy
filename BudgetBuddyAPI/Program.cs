@@ -15,28 +15,29 @@ namespace BudgetBuddyAPI
 
             builder.Services.AddControllers();
 
-            //builder.Services.AddCors(options =>
-            //{
-            //    options.AddPolicy(name: MyCorsPolicy,
-            //    policy =>
-            //    {
-            //        policy.AllowAnyOrigin()
-            //              .SetIsOriginAllowedToAllowWildcardSubdomains()
-            //              .AllowAnyHeader()
-            //              .AllowAnyMethod()
-            //              .SetIsOriginAllowed(origin =>
-            //              {
-            //                  return true;
-            //              });
-            //    });
-            //});
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyCorsPolicy,
+                policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .SetIsOriginAllowedToAllowWildcardSubdomains()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .SetIsOriginAllowed(origin =>
+                          {
+                              return true;
+                          });
+                });
+            });
 
-            // Configure Swagger for API documentation and testing
-            builder.Services.AddSwaggerGen();
+            //Configure Swagger for API documentation and testing
+
+           builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
-            //app.UseCors(MyCorsPolicy);
+           app.UseCors(MyCorsPolicy);
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
