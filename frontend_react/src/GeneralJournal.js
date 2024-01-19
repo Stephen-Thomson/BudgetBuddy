@@ -205,7 +205,7 @@ const handleDebitChange = (event, rowIndex) => {
     setDebits(newDebit);
 
     const newCredits = [...credits];
-    newCredits[rowIndex] = '';
+    newCredits[rowIndex] = '0.00';
     setCredits(newCredits);
   }
 };
@@ -225,7 +225,7 @@ const handleCreditChange = (event, rowIndex) => {
     setCredits(newCredit);
 
     const newDebits = [...debits];
-    newDebits[rowIndex] = '';
+    newDebits[rowIndex] = '0.00';
     setDebits(newDebits);
   }
 };

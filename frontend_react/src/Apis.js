@@ -44,6 +44,8 @@ const Apis = {
       throw error;
     }
   },
+
+  
 };
 
 export default Apis;
