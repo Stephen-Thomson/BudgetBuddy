@@ -15,6 +15,7 @@ import AdjustableBudget from './AdjustableBudget';
 import ToDo from './ToDo';
 import EditAccount from './EditAccount';
 import GeneralJournalView from './GeneralJournalView';
+import PostSuccess from './PostSuccess';
 
 // Wrapper for the pages to handle routing
 const AppWrapper = () => {
@@ -35,6 +36,7 @@ const AppWrapper = () => {
         <Route path="/toDo" element={<ToDo />} />
         <Route path="/editAccount/:accountName" element={<EditAccount />} />
         <Route path="/generalJournalView" element={<GeneralJournalView />} />
+        <Route path="/postSuccess" element={<PostSuccess />} />
       </Routes>
     </Router>
   );

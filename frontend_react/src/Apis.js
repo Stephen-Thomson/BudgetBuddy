@@ -45,7 +45,28 @@ const Apis = {
     }
   },
 
-  
+  // API call to post GJ to database
+  postGJ: async (date, accounts, descriptions, debits, credits) => {
+    try {
+      console.log('Data before sending:', { date, accounts, descriptions, debits, credits });
+      const response = await axios.post(`${BASE_URL}/api/postGJ`, {
+        date: date.toISOString(), // Convert date to ISO string format
+        accounts,
+        descriptions,
+        debits,
+        credits,
+      });
+
+      return response.data; // Return the data received
+    } catch (error) {
+      // Handle errors
+      console.error('PostGJ error:', error);
+      throw error;
+    }
+  },
+
+
+
 };
 
 export default Apis;

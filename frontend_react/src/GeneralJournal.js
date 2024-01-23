@@ -24,6 +24,7 @@ import 'react-datepicker/dist/react-datepicker.css'; // Import the styles for th
 
 const GeneralJournal = () => {
     const navigate = useNavigate(); // Initialize the navigate function
+    const [defaultValue, setDefaultValue] = useState(''); // State to hold the default value for the drop-down menus
     const [accountList, setAccountList] = useState([]); // State to hold the list of accounts
     const [rows, setRows] = useState(Array(10).fill(null).map((_, index) => ({ id: index, color: index % 2 === 0 ? '#E1DDE8' : '#C3CBC0' })));
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -50,7 +51,9 @@ const GeneralJournal = () => {
         };
       
         fetchAccounts(); // Call the fetchAccounts function to get the accounts
-      }, []);
+
+
+    }, []); // Run this effect only once, when the component mounts
 
     // Function to handle menu item selection for "Navigate"
     const handleNavigate = (event) => {
@@ -286,7 +289,7 @@ const validateRows = () => {
 
 
 
-const handlePostEntries = () => {
+const handlePostEntries = async () => {
   // Set postButtonClicked to true
   setPostButtonClicked(true);
 
@@ -298,15 +301,31 @@ const handlePostEntries = () => {
 
   // If there are no errors, proceed with posting entries
   if (errors.length === 0) {
-    // Placeholder for post entries action
-    console.log('Entries are valid. Posting...');
+    try {
+      // Call the API to post entries
+      const response = await Apis.postGJ(
+        selectedDate,
+        accounts,
+        descriptions,
+        debits,
+        credits
+      );
 
-    // TODO: Add your post entries logic here
+      // Handle the response as needed
+      console.log('PostGJ response:', response);
 
-    // Optional: Clear validation errors after successful submission
-    setValidationErrors([]);
+      // Optional: Clear validation errors after successful submission
+      setValidationErrors([]);
+
+      // Navigate to the GeneralJournal page after successful submission
+      navigate('/postSuccess');
+    } catch (error) {
+      // Handle API call errors
+      console.error('PostGJ API error:', error);
+    }
   }
 };
+
         
   return (
     <div>
@@ -320,7 +339,7 @@ const handlePostEntries = () => {
               <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                 Navigate
               </Typography>
-              <Select label="Navigate" onChange={handleNavigate}>
+              <Select label="Navigate" onChange={handleNavigate} value={defaultValue || 'todo'}>
                 <MenuItem value="todo">To-Do List</MenuItem>
                 <MenuItem value="generalJournal">General Journal</MenuItem>
               </Select>
@@ -332,7 +351,7 @@ const handlePostEntries = () => {
               <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                 View/Edit
               </Typography>
-              <Select label="View/Edit" onChange={handleViewEdit}>
+              <Select label="View/Edit" onChange={handleViewEdit} value={defaultValue || 'generalJournal'}>
                 <MenuItem value="generalJournal">General Journal</MenuItem>
                 {/* Populate the dropdown menu with accounts from state */}
                 {accountList.map((account) => (
@@ -349,7 +368,7 @@ const handlePostEntries = () => {
               <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                 Reports
               </Typography>
-              <Select label="Reports" onChange={handleReports}>
+              <Select label="Reports" onChange={handleReports} value={defaultValue || 'totals'}>
                 <MenuItem value="adjustableBudget">Adjustable Budget</MenuItem>
                 <MenuItem value="currentBudget">Current Budget</MenuItem>
                 <MenuItem value="totals">Totals</MenuItem>
@@ -363,7 +382,7 @@ const handlePostEntries = () => {
               <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                 Create
               </Typography>
-              <Select label="Create" onChange={handleCreate}>
+              <Select label="Create" onChange={handleCreate} value={defaultValue || 'income'}>
                 <MenuItem value="income">Income Account</MenuItem>
                 <MenuItem value="asset">Asset Account</MenuItem>
                 <MenuItem value="expense">Expense Account</MenuItem>
@@ -377,7 +396,7 @@ const handlePostEntries = () => {
               <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                 Help
               </Typography>
-              <Select label="Help" onChange={handleHelp}>
+              <Select label="Help" onChange={handleHelp} value={defaultValue || 'documentation'}>
                 <MenuItem value="documentation">Documentation</MenuItem>
               </Select>
             </div>
@@ -388,7 +407,7 @@ const handlePostEntries = () => {
               <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                 Logout
               </Typography>
-              <Select label="Logout" onChange={handleLogout}>
+              <Select label="Logout" onChange={handleLogout} value={defaultValue || 'logout'}>
                 <MenuItem value="logout">Logout</MenuItem>
               </Select>
             </div>
@@ -442,10 +461,10 @@ const handlePostEntries = () => {
                 {/* Account column (Select menu) */}
                 <TableCell>
                     <Select
-                      value={accounts[rowIndex]}
-                      onChange={(event) => handleAccountSelect(event, rowIndex)}
+                      value={accounts[rowIndex] || 'Select Account'}
+                      onChange={(event) => handleAccountSelect(event, rowIndex) }
                     >
-                      <MenuItem value={null}>Select Account</MenuItem>
+                      <MenuItem value={"Select Account"}>Select Account</MenuItem>
                       {accountList.map((account) => (
                         <MenuItem key={account} value={account}>
                           {account}
