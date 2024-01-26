@@ -7,10 +7,19 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
 import Apis from './Apis';
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper } from '@mui/material';
 
 const GeneralJournalView = () => {
     const navigate = useNavigate(); // Initialize the navigate function
+    const [navigateValue, setNavigateValue] = useState('');
+    const [viewEditValue, setViewEditValue] = useState('');
+    const [reportsValue, setReportsValue] = useState('');
+    const [createValue, setCreateValue] = useState('');
+    const [helpValue, setHelpValue] = useState('');
+    const [logoutValue, setLogoutValue] = useState('');   
     const [accountList, setAccountList] = useState([]); // State to hold the list of accounts
+    const [journalEntries, setJournalEntries] = useState([]); // State to hold General Journal entries
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         // Fetch the list of accounts from the backend using the getAccounts API
@@ -25,6 +34,22 @@ const GeneralJournalView = () => {
         };
       
         fetchAccounts(); // Call the fetchAccounts function to get the accounts
+
+        // Fetch General Journal entries when the component mounts
+        const fetchJournalEntries = async () => {
+          try {
+            const entries = await Apis.getGJ();
+            setJournalEntries(entries.value.rows);
+          } catch (error) {
+            console.error('Fetch journal entries error:', error);
+          } finally {
+            setLoading(false);
+          }
+        };
+      
+
+        fetchJournalEntries(); // Call the fetchJournalEntries function to get General Journal entries
+
       }, []);
 
     // Function to handle menu item selection for "Navigate"
@@ -104,6 +129,17 @@ const GeneralJournalView = () => {
         navigate('/'); // Navigate to LoginPage.js
     };
   
+    // Render the Debit and Credit columns with currency formatting
+    const renderCurrency = (value) => {
+      // Check if the value is greater than 0
+      if (value > 0) {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+      } else {
+        // If the value is 0, display '0.00'
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(0);
+      }
+    };
+
     return (
       <div>
         {/* Top App Bar */}
@@ -116,7 +152,8 @@ const GeneralJournalView = () => {
                 <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                   Navigate
                 </Typography>
-                <Select label="Navigate" onChange={handleNavigate}>
+                <Select label="Navigate" onChange={handleNavigate} value={navigateValue}>
+                  <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
                   <MenuItem value="todo">To-Do List</MenuItem>
                   <MenuItem value="generalJournal">General Journal</MenuItem>
                 </Select>
@@ -128,7 +165,8 @@ const GeneralJournalView = () => {
                 <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                   View/Edit
                 </Typography>
-                <Select label="View/Edit" onChange={handleViewEdit}>
+                <Select label="View/Edit" onChange={handleViewEdit} value={viewEditValue}>
+                  <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
                   <MenuItem value="generalJournal">General Journal</MenuItem>
                   {/* Populate the dropdown menu with accounts from state */}
                   {accountList.map((account) => (
@@ -145,7 +183,8 @@ const GeneralJournalView = () => {
                 <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                   Reports
                 </Typography>
-                <Select label="Reports" onChange={handleReports}>
+                <Select label="Reports" onChange={handleReports} value={reportsValue}>
+                  <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
                   <MenuItem value="adjustableBudget">Adjustable Budget</MenuItem>
                   <MenuItem value="currentBudget">Current Budget</MenuItem>
                   <MenuItem value="totals">Totals</MenuItem>
@@ -159,7 +198,8 @@ const GeneralJournalView = () => {
                 <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                   Create
                 </Typography>
-                <Select label="Create" onChange={handleCreate}>
+                <Select label="Create" onChange={handleCreate} value={createValue}>
+                  <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
                   <MenuItem value="income">Income Account</MenuItem>
                   <MenuItem value="asset">Asset Account</MenuItem>
                   <MenuItem value="expense">Expense Account</MenuItem>
@@ -173,7 +213,8 @@ const GeneralJournalView = () => {
                 <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                   Help
                 </Typography>
-                <Select label="Help" onChange={handleHelp}>
+                <Select label="Help" onChange={handleHelp} value={helpValue}>
+                  <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
                   <MenuItem value="documentation">Documentation</MenuItem>
                 </Select>
               </div>
@@ -184,7 +225,8 @@ const GeneralJournalView = () => {
                 <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                   Logout
                 </Typography>
-                <Select label="Logout" onChange={handleLogout}>
+                <Select label="Logout" onChange={handleLogout} value={logoutValue}>
+                  <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
                   <MenuItem value="logout">Logout</MenuItem>
                 </Select>
               </div>
@@ -192,16 +234,46 @@ const GeneralJournalView = () => {
           </Toolbar>
         </AppBar>
   
-      {/* Page Content */}
-      <Container maxWidth="md" style={{ marginTop: '20px' }}>
-        {/* Centered Text */}
-        <Typography variant="h2" align="center" style={{ color: 'purple', fontWeight: 'bold' }}>
-            General Journal View<br />
-            Under<br />
-            Construction
-        </Typography>
-      </Container>
-    </div>
+      {/* Page Header */}
+      <div className="page-header" style={{ backgroundColor: '#E1DDE8', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'black' }}>General Journal</h1>
+      </div>
+
+      {/* Journal Entries Table */}
+      <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+        <Table className="journal-table">
+          <TableHead>
+            <TableRow style={{ backgroundColor: '#C3CBC0' }}>
+              <TableCell style={{ width: '20%' }}>Date</TableCell>
+              <TableCell style={{ width: '20%' }}>Account</TableCell>
+              <TableCell style={{ width: '25%' }}>Description</TableCell>
+              <TableCell style={{ width: '17%' }}>Debit</TableCell>
+              <TableCell style={{ width: '18%' }}>Credit</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+  {loading ? (
+    <TableRow>
+      <TableCell colSpan={5}>Loading...</TableCell>
+    </TableRow>
+  ) : (
+    journalEntries && journalEntries.map((entry, index) => (
+      <TableRow
+        key={index}
+        style={{ backgroundColor: index % 2 === 0 ? '#E1DDE8' : '#C3CBC0' }}
+      >
+        <TableCell>{new Date(entry.date).toLocaleDateString()}</TableCell>
+        <TableCell>{entry.account}</TableCell>
+        <TableCell>{entry.description}</TableCell>
+        <TableCell>{entry.debit > 0 ? renderCurrency(entry.debit) : renderCurrency(0)}</TableCell>
+        <TableCell>{entry.credit > 0 ? renderCurrency(entry.credit) : renderCurrency(0)}</TableCell>
+      </TableRow>
+      ))
+  )}
+</TableBody>
+          </Table>
+        </TableContainer>
+      </div>
   );
 };
 

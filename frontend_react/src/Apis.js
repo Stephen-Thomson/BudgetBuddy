@@ -65,6 +65,18 @@ const Apis = {
     }
   },
 
+  // API call to get General Journal entries
+  getGJ: async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/getGJ`);
+
+      return response.data; // Return the data received from the backend
+    } catch (error) {
+      // Handle errors
+      console.error('GetGJ error:', error);
+      throw error;
+    }
+  },
 
 
 };

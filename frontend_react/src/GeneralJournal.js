@@ -24,7 +24,12 @@ import 'react-datepicker/dist/react-datepicker.css'; // Import the styles for th
 
 const GeneralJournal = () => {
     const navigate = useNavigate(); // Initialize the navigate function
-    const [defaultValue, setDefaultValue] = useState(''); // State to hold the default value for the drop-down menus
+    const [navigateValue, setNavigateValue] = useState('');
+    const [viewEditValue, setViewEditValue] = useState('');
+    const [reportsValue, setReportsValue] = useState('');
+    const [createValue, setCreateValue] = useState('');
+    const [helpValue, setHelpValue] = useState('');
+    const [logoutValue, setLogoutValue] = useState('');    
     const [accountList, setAccountList] = useState([]); // State to hold the list of accounts
     const [rows, setRows] = useState(Array(10).fill(null).map((_, index) => ({ id: index, color: index % 2 === 0 ? '#E1DDE8' : '#C3CBC0' })));
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -339,7 +344,8 @@ const handlePostEntries = async () => {
               <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                 Navigate
               </Typography>
-              <Select label="Navigate" onChange={handleNavigate} value={defaultValue || 'todo'}>
+              <Select label="Navigate" onChange={handleNavigate} value={navigateValue}>
+                <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
                 <MenuItem value="todo">To-Do List</MenuItem>
                 <MenuItem value="generalJournal">General Journal</MenuItem>
               </Select>
@@ -351,7 +357,8 @@ const handlePostEntries = async () => {
               <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                 View/Edit
               </Typography>
-              <Select label="View/Edit" onChange={handleViewEdit} value={defaultValue || 'generalJournal'}>
+              <Select label="View/Edit" onChange={handleViewEdit} value={viewEditValue}>
+                <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
                 <MenuItem value="generalJournal">General Journal</MenuItem>
                 {/* Populate the dropdown menu with accounts from state */}
                 {accountList.map((account) => (
@@ -368,7 +375,8 @@ const handlePostEntries = async () => {
               <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                 Reports
               </Typography>
-              <Select label="Reports" onChange={handleReports} value={defaultValue || 'totals'}>
+              <Select label="Reports" onChange={handleReports} value={reportsValue}>
+                <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
                 <MenuItem value="adjustableBudget">Adjustable Budget</MenuItem>
                 <MenuItem value="currentBudget">Current Budget</MenuItem>
                 <MenuItem value="totals">Totals</MenuItem>
@@ -382,7 +390,8 @@ const handlePostEntries = async () => {
               <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                 Create
               </Typography>
-              <Select label="Create" onChange={handleCreate} value={defaultValue || 'income'}>
+              <Select label="Create" onChange={handleCreate} value={createValue}>
+                <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
                 <MenuItem value="income">Income Account</MenuItem>
                 <MenuItem value="asset">Asset Account</MenuItem>
                 <MenuItem value="expense">Expense Account</MenuItem>
@@ -396,7 +405,8 @@ const handlePostEntries = async () => {
               <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                 Help
               </Typography>
-              <Select label="Help" onChange={handleHelp} value={defaultValue || 'documentation'}>
+              <Select label="Help" onChange={handleHelp} value={helpValue}>
+                <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
                 <MenuItem value="documentation">Documentation</MenuItem>
               </Select>
             </div>
@@ -407,7 +417,8 @@ const handlePostEntries = async () => {
               <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                 Logout
               </Typography>
-              <Select label="Logout" onChange={handleLogout} value={defaultValue || 'logout'}>
+              <Select label="Logout" onChange={handleLogout} value={logoutValue}>
+                <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
                 <MenuItem value="logout">Logout</MenuItem>
               </Select>
             </div>
