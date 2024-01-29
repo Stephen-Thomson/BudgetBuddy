@@ -78,7 +78,26 @@ const Apis = {
     }
   },
 
+  // API call to create table in the backend
+  createAccountTable: async (type, category, accountName, description, dvalue, cvalue) => {
+    try {
+      console.log('Data before sending:', { type, category, accountName, description, dvalue, cvalue });
+      const response = await axios.post(`${BASE_URL}/api/createTable`, {
+        type,
+        category,
+        accountName,
+        description,
+        dvalue,
+        cvalue
+      });
 
+      return response.data; // Return the data received
+    } catch (error) {
+      // Handle errors
+      console.error('CreateTable error:', error);
+      throw error;
+    }
+  },
 };
 
 export default Apis;

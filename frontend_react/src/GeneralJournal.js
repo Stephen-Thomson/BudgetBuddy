@@ -218,7 +218,7 @@ const handleDebitChange = (event, rowIndex) => {
   }
 };
 
-// Function to handle changes in the Debit column
+// Function to handle changes in the Credit column
 const handleCreditChange = (event, rowIndex) => {
   const { value } = event.target;
   const errorMessage = isValidInput(value);
