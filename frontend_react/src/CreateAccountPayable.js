@@ -307,7 +307,7 @@ const CreateAccountPayable = () => {
   
       {/* Page Header */}
       <div className="page-header" style={{ backgroundColor: '#E1DDE8', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'black' }}>General Journal</h1>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'black' }}>Create Account Payable 'Credit'</h1>
       </div>
 
       {/* Displayed Rows Table */}

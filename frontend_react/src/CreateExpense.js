@@ -7,16 +7,47 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
 import Apis from './Apis';
+import {
+  Tab,
+  TextField,
+  TableContainer,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Button,
+  Paper,
+  FormControl,
+  FormLabel,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+} from '@mui/material';
 
 const CreateExpense = () => {
-    const navigate = useNavigate(); // Initialize the navigate function
-    const [navigateValue, setNavigateValue] = useState('');
-    const [viewEditValue, setViewEditValue] = useState('');
-    const [reportsValue, setReportsValue] = useState('');
-    const [createValue, setCreateValue] = useState('');
-    const [helpValue, setHelpValue] = useState('');
-    const [logoutValue, setLogoutValue] = useState('');   
-    const [accountList, setAccountList] = useState([]); // State to hold the list of accounts
+  const navigate = useNavigate(); // Initialize the navigate function
+  const [navigateValue, setNavigateValue] = useState('');
+  const [viewEditValue, setViewEditValue] = useState('');
+  const [reportsValue, setReportsValue] = useState('');
+  const [createValue, setCreateValue] = useState('');
+  const [helpValue, setHelpValue] = useState('');
+  const [logoutValue, setLogoutValue] = useState('');   
+  const [accountList, setAccountList] = useState([]); // State to hold the list of accounts
+  const [type, setType] = useState(3); // Replace 0 with your initial value
+  const [category, setCategory] = useState(0); // Replace 0 with your initial value
+  const [accountName, setAccountName] = useState('');
+  const [dvalue, setDvalue] = useState('0.00'); // This will hold the value
+  const [cvalue, setCvalue] = useState('0.00'); // This will hold the value
+  const [description, setDescription] = useState('Created');
+  const [debitError, setDebitError] = useState('');
+  const [creditError, setCreditError] = useState('');
+  const [rows, setRows] = useState(Array(10).fill(null).map((_, index) => ({ id: index, color: index % 2 === 0 ? '#E1DDE8' : '#C3CBC0' })));
+  const [accountNameError, setAccountNameError] = useState('');
+  const [categoryError, setCategoryError] = useState('');
+  const [fixedMonthlyChecked, setFixedMonthlyChecked] = useState(false);
+  const [variableChecked, setVariableChecked] = useState(false);
+  const [temporaryChecked, setTemporaryChecked] = useState(false);
 
     useEffect(() => {
         // Fetch the list of accounts from the backend using the getAccounts API
@@ -110,6 +141,128 @@ const CreateExpense = () => {
         navigate('/'); // Navigate to LoginPage.js
     };
   
+    const isValidInput = (input) => {
+      const isValid = /^[0-9]*\.?[0-9]{0,2}$/.test(input);
+      return isValid ? '' : 'Invalid input. Please enter a valid dollar amount.';
+    };
+  
+    const validateAccountName = () => {
+      // Trim accountName to remove leading and trailing whitespaces
+      const trimmedAccountName = accountName.trim();
+  
+      // Check if the trimmed accountName is empty
+      if (trimmedAccountName === '') {
+        setAccountNameError('Please enter a name for the account');
+        return false;
+      }
+  
+      // Check if the accountName already exists in the accountList
+      if (accountList.includes(trimmedAccountName)) {
+        setAccountNameError('Account Name already exists');
+        return false;
+      }
+  
+      // If all checks pass, clear any previous errors
+      setAccountNameError('');
+      return true;
+    };
+    
+    const handleDebitChange = (event) => {
+      const { value } = event.target;
+      const errorMessage = isValidInput(value);
+    
+      setDebitError(errorMessage);
+    
+      if (errorMessage === '') {
+        setDvalue(value);
+        setCvalue('0.00');
+      }
+    };
+  
+    const handleCreditChange = (event) => {
+      const { value } = event.target;
+      const errorMessage = isValidInput(value);
+    
+      setCreditError(errorMessage);
+    
+      if (errorMessage === '') {
+        setCvalue(value);
+        setDvalue('0.00');
+      }
+    };
+  
+    const handleDebitBlur = () => {
+      const numericValue = parseFloat(dvalue);
+      const formattedValue = isNaN(numericValue) ? '' : `$${numericValue.toFixed(2)}`;
+      setDvalue(formattedValue);
+    };
+  
+    const handleCreditBlur = () => {
+      const numericValue = parseFloat(cvalue);
+      const formattedValue = isNaN(numericValue) ? '' : `$${numericValue.toFixed(2)}`;
+      setCvalue(formattedValue);
+    };
+  
+    const handleFixedMonthlyChange = () => {
+      setFixedMonthlyChecked(true);
+      setVariableChecked(false);
+      setTemporaryChecked(false);
+      setCategory(2);
+    };
+  
+    const handleVariableChange = () => {
+      setFixedMonthlyChecked(false);
+      setVariableChecked(true);
+      setTemporaryChecked(false);
+      setCategory(3);
+    };
+  
+    const handleTemporaryChange = () => {
+      setFixedMonthlyChecked(false);
+      setVariableChecked(false);
+      setTemporaryChecked(true);
+      setCategory(4);
+    };
+  
+    const handleCreateAccountClick = async () => {
+      // Validate the account name
+      const isAccountNameValid = validateAccountName();
+    
+      // Validate the expense category
+      let categoryError = '';
+      if (![2, 3, 4].includes(category)) {
+        categoryError = 'Select a Type of Expense';
+      }
+    
+      // If the account name is valid and the category is selected, proceed with API call
+      if (isAccountNameValid && !categoryError) {
+        try {
+          // Call the API to create the account table
+          const response = await Apis.createAccountTable(type, category, accountName, description, dvalue, cvalue);
+    
+          // Handle the response as needed
+          console.log('Create Account response:', response);
+    
+          // Reset form fields after successful submission
+          setAccountName('');
+          setDvalue('0.00');
+          setCvalue('0.00');
+          setAccountNameError('');
+          setFixedMonthlyChecked(false);
+          setVariableChecked(false);
+          setTemporaryChecked(false);
+          setCategoryError('');
+        } catch (error) {
+          // Handle API call errors
+          console.error('Create Account API error:', error);
+        }
+      } else {
+        // Set category error in state
+        setCategoryError(categoryError);
+      }
+    };
+    
+
     return (
       <div>
         {/* Top App Bar */}
@@ -203,16 +356,122 @@ const CreateExpense = () => {
             </div>
           </Toolbar>
         </AppBar>
-  
-      {/* Page Content */}
-      <Container maxWidth="md" style={{ marginTop: '20px' }}>
-        {/* Centered Text */}
-        <Typography variant="h2" align="center" style={{ color: 'purple', fontWeight: 'bold' }}>
-            Create Expense<br />
-            Under<br />
-            Construction
-        </Typography>
-      </Container>
+
+      {/* Page Header */}
+      <div className="page-header" style={{ backgroundColor: '#E1DDE8', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'black' }}>Create Expense Account</h1>
+      </div>
+
+      {/* Displayed Rows Table */}
+      <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+        <Table className="journal-table">
+          <TableHead>
+            {/* Additional row for expense type selection */}
+            <TableRow style={{ backgroundColor: '#C3CBC0' }}>
+              <TableCell colSpan={5}>
+                <FormControl component="fieldset">
+                  <FormLabel component="legend">Select Type of Expense</FormLabel>
+                  <FormGroup row>
+                    <FormControlLabel
+                      control={<Checkbox checked={fixedMonthlyChecked} onChange={handleFixedMonthlyChange} />}
+                      label="Fixed Monthly"
+                    />
+                    <FormControlLabel
+                      control={<Checkbox checked={variableChecked} onChange={handleVariableChange} />}
+                      label="Variable"
+                    />
+                    <FormControlLabel
+                      control={<Checkbox checked={temporaryChecked} onChange={handleTemporaryChange} />}
+                      label="Temporary"
+                    />
+                  </FormGroup>
+                  {/* Display the category error, if any */}
+                  {Boolean(categoryError) && (
+                    <div style={{ color: 'red', marginTop: '10px' }}>
+                      {categoryError}
+                    </div>
+                  )}
+                </FormControl>
+              </TableCell>
+            </TableRow>
+
+            <TableRow style={{ backgroundColor: '#C3CBC0' }}>
+              <TableCell style={{ width: '20%' }}>Date</TableCell>
+              <TableCell style={{ width: '20%' }}>Account Name</TableCell>
+              <TableCell style={{ width: '25%' }}>Description</TableCell>
+              <TableCell style={{ width: '17%' }}>Debit +</TableCell>
+              <TableCell style={{ width: '18%' }}>Credit -</TableCell>
+            </TableRow>
+          </TableHead>
+
+          {/* Rest of the table */}
+          <TableBody>
+            {rows.map((row, rowIndex) => (
+              <TableRow key={row.id} style={{ backgroundColor: row.color }}>
+                {rowIndex === 0 ? (
+                  // Render content for the first row with information and input
+                  <React.Fragment>
+                    <TableCell>
+                      {/* Date column with current date MM/DD/YYYY */}
+                      {new Date().toLocaleDateString('en-US')}
+                    </TableCell>
+
+                    <TableCell>
+                      {/* Textfield for Account Name with error display */}
+                      <TextField
+                        variant="outlined"
+                        fullWidth
+                        value={accountName}
+                        onChange={(event) => setAccountName(event.target.value)}
+                        error={Boolean(accountNameError)}
+                        helperText={accountNameError}
+                      />
+                    </TableCell>
+
+                    <TableCell>
+                      {/* Description column with "Beginning Balance" */}
+                      Created
+                    </TableCell>
+
+                    <TableCell>
+                      {/* Debit Column" */}
+                      $0.00
+                    </TableCell>
+
+
+                    <TableCell>
+                      {/* Credit Column" */}
+                      $0.00
+                    </TableCell>
+
+                  </React.Fragment>
+                  ) : (
+                  // Render content for other rows (blank)
+                  <React.Fragment>
+                    {/* ... other cells */}
+                    <TableCell></TableCell>
+                    <TableCell></TableCell>
+                    <TableCell></TableCell>
+                    <TableCell></TableCell>
+                    <TableCell></TableCell>
+                  </React.Fragment>
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {/* Footer */}
+      <div className="page-footer" style={{ backgroundColor: '#E1DDE8', textAlign: 'center' }}>
+        <Button
+          onClick={handleCreateAccountClick}
+          variant="contained"
+          style={{ fontWeight: 'bold', color: 'black', backgroundColor: '#848484' }}
+        >
+          Create
+        </Button>
+      </div>
     </div>
   );
 };
