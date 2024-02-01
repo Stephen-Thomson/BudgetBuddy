@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -7,6 +7,24 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate, useParams } from 'react-router-dom';
 import Apis from './Apis';
+import {
+  Tab,
+  TextField,
+  TableContainer,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Button,
+  Paper,
+  FormControl,
+  FormLabel,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+  CircularProgress,
+} from '@mui/material';
 
 const EditAccount = () => {
     const navigate = useNavigate(); // Initialize the navigate function
@@ -20,27 +38,81 @@ const EditAccount = () => {
     // Retrieve the account name from the URL
     const { accountName } = useParams();
     const [selectedAccountName, setSelectedAccountName] = useState('');
+    const [accountEntries, setAccountEntries] = useState([]); // State to hold General Journal entries
+    const [loading, setLoading] = useState(true); // State to indicate if the page is loading
+    const [category, setCategory] = useState(0); // Default to 0 initially
+    const [nonExpenseChecked, setNonExpenseChecked] = useState(false);
+    const [fixedMonthlyChecked, setFixedMonthlyChecked] = useState(false);
+    const [variableChecked, setVariableChecked] = useState(false);
+    const [temporaryChecked, setTemporaryChecked] = useState(false);
+    const [editedAccountName, setEditedAccountName] = useState('');
+    const [accountNameError, setAccountNameError] = useState('');
+    const [categoryError, setCategoryError] = useState('');
+    const isMounted = useRef(true); // Use a ref to check if the component is mounted
+    const [headerName, setHeaderName] = useState(''); // State to hold the header name
+
+
 
     useEffect(() => {
-        // Update the selected account name when the component mounts
-        setSelectedAccountName(accountName);
-    }, [accountName]);
-
-    useEffect(() => {
-        // Fetch the list of accounts from the backend using the getAccounts API
-        const fetchAccounts = async () => {
-          try {
-            const accounts = await Apis.getAccounts();
-            setAccountList(accounts);
-          } catch (error) {
-            // Handle errors
-            console.error('Fetch accounts error:', error);
+      // Fetch the list of accounts from the backend using the getAccounts API
+      const fetchAccounts = async () => {
+        try {
+          const accounts = await Apis.getAccounts();
+          setAccountList(accounts);
+    
+          // Update the selected account name and fetch account entries
+          setSelectedAccountName(accountName);
+    
+          // Fetch account entries only if the component is mounted
+          if (isMounted.current) {
+            fetchAccountEntries(accountName); // Pass accountName to fetchAccountEntries
+            // Set isMounted to false after the first render
+            isMounted.current = false;
           }
-        };
+        } catch (error) {
+          // Handle errors
+          console.error('Fetch accounts error:', error);
+        }
+      };
+    
+      // Fetch Account entries when the component mounts
+      const fetchAccountEntries = async (accountName) => { // Accept accountName as a parameter
+        try {
+          const entries = await Apis.getAccountEntries(accountName); // Use accountName here
+          setAccountEntries(entries.value.rows);
+    
+          // Set category based on the first entry's category value
+          if (entries.value.rows.length > 0) {
+            const initialCategory = entries.value.rows[0].category;
+            setCategory(initialCategory);
       
-        fetchAccounts(); // Call the fetchAccounts function to get the accounts
-      }, []);
+            // Enable checkboxes based on the initial category
+            setNonExpenseChecked(initialCategory === 1);
+            setFixedMonthlyChecked(initialCategory === 2);
+            setVariableChecked(initialCategory === 3);
+            setTemporaryChecked(initialCategory === 4);
+          }
+      
+        } catch (error) {
+          console.error('Fetch account entries error:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+    
+      // Fetch accounts and account entries when the component mounts
+      fetchAccounts();
 
+      setEditedAccountName(accountName); // Set editedAccountName to the selected account name
+    
+    }, [accountName, selectedAccountName]);
+    
+    useEffect(() => {
+      setHeaderName(editedAccountName);
+    }, [editedAccountName]);
+  
+    
+  
     // Function to handle menu item selection for "Navigate"
     const handleNavigate = (event) => {
         const value = event.target.value; // Get the selected value
@@ -118,6 +190,116 @@ const EditAccount = () => {
         navigate('/'); // Navigate to LoginPage.js
     };
   
+    // Render the Debit and Credit columns with currency formatting
+    const renderCurrency = (value) => {
+      // Check if the value is greater than 0
+      if (value > 0) {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+      } else {
+        // If the value is 0, display '0.00'
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(0);
+      }
+    };
+
+    const handleNonExpenseChange = () => {
+      setNonExpenseChecked(true);
+      setFixedMonthlyChecked(false);
+      setVariableChecked(false);
+      setTemporaryChecked(false);
+      setCategory(1);
+      setCategoryError(''); // Reset category error
+    };
+    
+    const handleFixedMonthlyChange = () => {
+      setNonExpenseChecked(false);
+      setFixedMonthlyChecked(true);
+      setVariableChecked(false);
+      setTemporaryChecked(false);
+      setCategory(2);
+      setCategoryError(''); // Reset category error
+    };
+    
+    const handleVariableChange = () => {
+      setNonExpenseChecked(false);
+      setFixedMonthlyChecked(false);
+      setVariableChecked(true);
+      setTemporaryChecked(false);
+      setCategory(3);
+      setCategoryError(''); // Reset category error
+    };
+    
+    const handleTemporaryChange = () => {
+      setNonExpenseChecked(false);
+      setFixedMonthlyChecked(false);
+      setVariableChecked(false);
+      setTemporaryChecked(true);
+      setCategory(4);
+      setCategoryError(''); // Reset category error 
+    };
+
+    const validateAccountName = () => {
+      // Trim editedAccountName to remove leading and trailing whitespaces
+      const trimmedEditedAccountName = editedAccountName.trim();
+    
+      // Check if the trimmed editedAccountName is empty
+      if (trimmedEditedAccountName === '') {
+        setAccountNameError('Please enter a name for the account');
+        return false;
+      }
+    
+      // Check if the editedAccountName is the same as the original selectedAccountName
+      if (trimmedEditedAccountName === selectedAccountName) {
+        // No need to check further if it's the same as the original name
+        setAccountNameError('');
+        return true;
+      }
+    
+      // Check if the editedAccountName already exists in the accountList
+      if (accountList.includes(trimmedEditedAccountName)) {
+        setAccountNameError('Account Name already exists');
+        return false;
+      }
+    
+      // If all checks pass, clear any previous errors
+      setAccountNameError('');
+      return true;
+    };
+
+    const handleSaveChanges = async () => {
+      // Validate account name
+      const isAccountNameValid = validateAccountName();
+    
+      // Check if at least one checkbox is checked
+      const isCategorySelected = fixedMonthlyChecked || variableChecked || temporaryChecked || nonExpenseChecked;
+    
+      if (!isCategorySelected) {
+        // Display error for no category selected
+        setCategoryError('Please select a category for this account');
+        return;
+      } else {
+        // Clear category error if category is selected
+        setCategoryError('');
+      }
+    
+      // If the account name is valid and at least one checkbox is checked, proceed with save changes logic
+      if (isAccountNameValid) {
+        try {
+          const response = await Apis.saveAccountChanges(selectedAccountName, editedAccountName, category);
+
+          // If the API call is successful, update selectedAccountName
+      if (response.success) {
+        setSelectedAccountName(editedAccountName);
+      }
+
+        } catch (error) {
+          // Handle errors if any
+          console.error('Save changes error:', error);
+        }
+      }
+    };
+    
+    
+
     return (
       <div>
         {/* Top App Bar */}
@@ -212,15 +394,101 @@ const EditAccount = () => {
           </Toolbar>
         </AppBar>
   
-      {/* Page Content */}
-      <Container maxWidth="md" style={{ marginTop: '20px' }}>
-        {/* Centered Text */}
-        <Typography variant="h2" align="center" style={{ color: 'purple', fontWeight: 'bold' }}>
-            {selectedAccountName}<br />
-            Under<br />
-            Construction
-        </Typography>
-      </Container>
+        {/* Loading Indicator */}
+        {loading && (
+              <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                <CircularProgress />
+                <p>Loading...</p>
+              </div>
+        )}
+      {/* Page Header */}
+      <div className="page-header" style={{ backgroundColor: '#E1DDE8', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'black' }}>
+          {`Edit/View Account: ${headerName}`}
+        </h1>
+      </div>
+
+      {/* Account Entries Table */}
+      <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+        <Table className="journal-table">
+          <TableHead>
+            {/* Additional row for expense type selection */}
+            <TableRow style={{ backgroundColor: '#C3CBC0' }}>
+              <TableCell colSpan={5}>
+                <FormControl component="fieldset">
+                  <FormLabel component="legend">Select Type of Expense</FormLabel>
+                  <FormGroup row>
+                    <FormControlLabel
+                      control={<Checkbox checked={nonExpenseChecked} onChange={handleNonExpenseChange} />}
+                      label="Non-Expense"
+                    />
+                    <FormControlLabel
+                      control={<Checkbox checked={fixedMonthlyChecked} onChange={handleFixedMonthlyChange} />}
+                      label="Fixed Monthly"
+                    />
+                    <FormControlLabel
+                      control={<Checkbox checked={variableChecked} onChange={handleVariableChange} />}
+                      label="Variable"
+                    />
+                    <FormControlLabel
+                      control={<Checkbox checked={temporaryChecked} onChange={handleTemporaryChange} />}
+                      label="Temporary"
+                    />
+                  </FormGroup>
+                  {/* Display the category error, if any */}
+                  {Boolean(categoryError) && (
+                    <div style={{ color: 'red', marginTop: '10px' }}>
+                      {categoryError}
+                    </div>
+                  )}
+                </FormControl>
+              </TableCell>
+            </TableRow>
+
+            {/* Additional row for editing Account Name */}
+            <TableRow style={{ backgroundColor: '#C3CBC0' }}>
+              <TableCell colSpan={5}>
+                <TextField
+                  fullWidth
+                  label="Account Name"
+                  value={editedAccountName}
+                  onChange={(e) => setEditedAccountName(e.target.value)}
+                  error={Boolean(accountNameError)}
+                  helperText={accountNameError}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSaveChanges}
+                  style={{ marginLeft: '10px' }}
+                >
+                  Save Changes
+                </Button>
+              </TableCell>
+            </TableRow>
+
+            <TableRow style={{ backgroundColor: '#C3CBC0' }}>
+              <TableCell style={{ width: '20%' }}>Date</TableCell>
+              <TableCell style={{ width: '25%' }}>Description</TableCell>
+              <TableCell style={{ width: '17%' }}>Debit +</TableCell>
+              <TableCell style={{ width: '18%' }}>Credit -</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {accountEntries.map((entry, index) => (
+              <TableRow
+                key={index}
+                style={{ backgroundColor: index % 2 === 0 ? '#E1DDE8' : '#C3CBC0' }}
+                >
+                <TableCell>{new Date(entry.date).toLocaleDateString()}</TableCell>
+                <TableCell>{entry.description}</TableCell>
+                <TableCell>{entry.debit > 0 ? renderCurrency(entry.debit) : renderCurrency(0)}</TableCell>
+                <TableCell>{entry.credit > 0 ? renderCurrency(entry.credit) : renderCurrency(0)}</TableCell>
+              </TableRow>
+              ))}
+            </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 };

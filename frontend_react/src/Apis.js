@@ -98,6 +98,40 @@ const Apis = {
       throw error;
     }
   },
+
+  // API call to get Account Entries
+  getAccountEntries: async (accountName) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/getAccountEntries`, {
+        params: { accountName } // Include accountName as a query parameter
+      });
+
+      return response.data; // Return the data received from the backend
+    } catch (error) {
+      // Handle errors
+      console.error('Get Account Entries error:', error);
+      throw error;
+    }
+  },
+
+  // API call to save account changes
+  saveAccountChanges: async (selectedAccountName, editedAccountName, category) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/api/editAccount`, {
+        selectedAccountName,
+        editedAccountName,
+        category
+      });
+
+      return response.data; // Return the data received from the backend if needed
+    } catch (error) {
+      // Handle errors
+      console.error('Save Account Changes error:', error);
+      throw error;
+    }
+  },
+
+
 };
 
 export default Apis;
