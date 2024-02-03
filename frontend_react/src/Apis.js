@@ -131,6 +131,22 @@ const Apis = {
     }
   },
 
+  // API call to get totals
+  getTotals: async (month, year) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/getTotals?month=${month}&year=${year}`);
+
+      return response.data; // Return the data received from the backend
+    } catch (error) {
+      // Handle errors
+      console.error('Get Totals error:', error);
+      throw error;
+    }
+  },
+
+
+
+
 
 };
 
