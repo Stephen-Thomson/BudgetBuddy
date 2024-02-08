@@ -261,23 +261,6 @@ const Totals = () => {
       }
     };
 
-    // Helper function to get total for a specific account
-    const getAccountTotal = (accountName) => {
-      const account = totals.find((entry) => entry.accountName === accountName);
-      return account ? account.total : 0;
-    };
-
-    // Helper function to get total for a specific category
-    const getCategoryTotal = (category) => {
-      return totals.reduce((acc, entry) => {
-        if (entry.category === category) {
-          return acc + entry.total;
-        }
-        return acc;
-      }, 0);
-    };
-
-
     return (
       <div>
         {/* Top App Bar */}
@@ -408,40 +391,40 @@ const Totals = () => {
         </tbody>
       </table>
 
-{/* Totals Table */}
-{!loading && (
-  <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px', backgroundColor: 'white' }}>
-    <thead>
-      <tr>
-        <th style={{ textAlign: 'left' }}>Expenses</th>
-        <th style={{ textAlign: 'left' }}>Expense Totals</th>
-        <th style={{ textAlign: 'left' }}>Income/Debt</th>
-        <th style={{ textAlign: 'left' }}>Income/Debt Totals</th>
-        <th style={{ textAlign: 'left' }}>Assets</th>
-        <th style={{ textAlign: 'left' }}>Asset Totals</th>
-      </tr>
-    </thead>
-    <tbody>
-      {/* Render rows based on the totals */}
-      {accountList.map((account, index) => (
-        <tr key={index}>
-          {/* Expense Column */}
-          <td style={{ backgroundColor: getExpenseColor(expenseColor[index]) }}>{expenseColumn[index]}</td>
-          <td>{expenseTotalColumn[index]}</td>
-          <td>{incomeDebtColumn[index]}</td>
-          <td>{incomeDebtTotalColumn[index]}</td>
-          <td>{assetColumn[index]}</td>
-          <td>{assetTotalColumn[index]}</td>
-        </tr>
-      ))}
+      {/* Totals Table */}
+      {!loading && (
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px', backgroundColor: 'white' }}>
+          <thead>
+            <tr>
+              <th style={{ textAlign: 'left' }}>Expenses</th>
+              <th style={{ textAlign: 'left' }}>Expense Totals</th>
+              <th style={{ textAlign: 'left' }}>Income/Debt</th>
+              <th style={{ textAlign: 'left' }}>Income/Debt Totals</th>
+              <th style={{ textAlign: 'left' }}>Assets</th>
+              <th style={{ textAlign: 'left' }}>Asset Totals</th>
+            </tr>
+          </thead>
+          <tbody>
+            {/* Render rows based on the totals */}
+            {accountList.map((account, index) => (
+              <tr key={index}>
+                {/* Expense Column */}
+                <td style={{ backgroundColor: getExpenseColor(expenseColor[index]) }}>{expenseColumn[index]}</td>
+                <td>{expenseTotalColumn[index]}</td>
+                <td>{incomeDebtColumn[index]}</td>
+                <td>{incomeDebtTotalColumn[index]}</td>
+                <td>{assetColumn[index]}</td>
+                <td>{assetTotalColumn[index]}</td>
+              </tr>
+            ))}
 
-    </tbody>
-  </table>
-)}
+          </tbody>
+        </table>
+      )}
 
-{!loading && (expenseColumn.length === 0 && incomeDebtColumn.length === 0 && assetColumn.length === 0) && (
-  <p>No data available.</p>
-)}
+      {!loading && (expenseColumn.length === 0 && incomeDebtColumn.length === 0 && assetColumn.length === 0) && (
+        <p>No data available.</p>
+      )}
 
     </div>
     </div>

@@ -144,6 +144,15 @@ const Apis = {
     }
   },
 
+  getAverages: async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}/api/getAverages`);
+        return response.data;
+    } catch (error) {
+        console.error('Get Averages error: ', error);
+        throw error;
+    }
+},
 
 
 

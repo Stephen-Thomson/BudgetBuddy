@@ -280,9 +280,11 @@ const validateRows = () => {
     }
   });
 
-  const debitTotal = debits.reduce((total, value) => total + (parseFloat((value || '').replace('$', '')) || 0), 0);
-  const creditTotal = credits.reduce((total, value) => total + (parseFloat((value || '').replace('$', '')) || 0), 0);
+  const debitTotal = debits.reduce((total, value) => total + (parseFloat((value || '').replace('$', '')) || 0), 0).toFixed(2);
+  const creditTotal = credits.reduce((total, value) => total + (parseFloat((value || '').replace('$', '')) || 0), 0).toFixed(2);
 
+  console.log('Debit total:', debitTotal);
+  console.log('Credit total:', creditTotal);
   if (debitTotal !== creditTotal) {
     errors.push('Debit and credit totals do not match.');
   }
