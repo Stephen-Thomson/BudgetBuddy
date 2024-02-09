@@ -163,10 +163,6 @@ const CurrentBudget = () => {
 
             setLoading(false); // Set loading to false once data is fetched
             
-            // if (expenseTotal > 0 && assetTotal > 0 && incomeTotal > 0) {
-            //   // Set budgetTrigger to true
-            //   setBudgetTrigger(true);
-            // }
           }
           catch (error)
           {
@@ -177,9 +173,6 @@ const CurrentBudget = () => {
 
         
         fetchAverages(); // Call the fetchTotals function to get the totals
-
-        
-        
 
       }, []);
 
@@ -295,20 +288,7 @@ const CurrentBudget = () => {
         "July", "August", "September", "October", "November", "December"
       ];
       return months[monthIndex % 12];
-    };
-
-    const calculateFirstColumn = () => {
-      setStartingTotal(assetTotal + incomeTotal);
-  };
-  
-  const calculateStartingTotal = () => {
-      setStartingTotal(remainingTotal + incomeTotal);
-  };
-  
-  const calculateRemainingTotal = () => {
-      setRemainingTotal(startingTotal - expenseTotal);
-  };
-  
+    };  
 
     const startBudget = () => {
       // Array to hold calculated values
