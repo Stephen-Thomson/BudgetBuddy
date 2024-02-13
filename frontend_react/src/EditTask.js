@@ -29,25 +29,40 @@ import {
 const ToDo = () => {
     const navigate = useNavigate(); // Initialize the navigate function
     const [navigateValue, setNavigateValue] = useState('');
-    const [taskList, setTaskList] = useState(['No Tasks']); // State to hold the list of tasks
+
+    const defaultTask = {
+      id: 1,
+      titleDescription: 'Please Create Tasks',
+      date: '2024-02-12T23:57:46',
+      time: '15:57:46',
+      repeat: 0,
+      notification: false
+    };
+
+    const [taskList, setTaskList] = useState([defaultTask]); // State to hold the list of tasks
     const [editTaskValue, setEditTaskValue] = useState(''); // State to hold the value of the "Edit Task" dropdown menu
     const [createDeleteValue, setCreateDeleteValue] = useState(''); // State to hold the value of the "Create/Delete" dropdown menu
     const [helpValue, setHelpValue] = useState('');
     const [logoutValue, setLogoutValue] = useState('');   
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
       const fetchTasks = async () => {
           try {
-              const tasks = await Apis.getTasks();
-              setTaskList(tasks.length > 0 ? tasks : ['No Tasks']); // Set taskList to 'No Tasks' if the response is empty
+              const rtasks = await Apis.getTasks();
+              setTaskList(rtasks.value.tasks);
           } catch (error) {
               console.error('Fetch tasks error:', error);
-              setTaskList(['No Tasks']); // Set taskList to 'No Tasks' in case of error
+          } finally {
+              setLoading(false);
           }
       };
     
       fetchTasks();
     }, []);
+
+    // Add a console.log statement to print the value of taskList
+    console.log('Task List:', taskList);
 
     // Function to handle menu item selection for "Navigate"
     const handleNavigate = (event) => {
@@ -136,9 +151,9 @@ const ToDo = () => {
                 <Select label="Create/Delete" onChange={handleEditTask} value={editTaskValue}>
                   <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
                   {/* Populate the dropdown menu with tasks from state */}
-                  {taskList.map((task) => (
-                    <MenuItem key={task.ID} value={task.ID}>
-                      {task.TitleDescription}
+                  {taskList.map((task, index) => (
+                    <MenuItem key={index} value={task.ID}>
+                      {task.titleDescription}
                     </MenuItem>
                     ))}
                 </Select>
@@ -170,6 +185,11 @@ const ToDo = () => {
             </div>
           </Toolbar>
         </AppBar>
+  
+        {/* Page Header */}
+        <div className="page-header" style={{ backgroundColor: '#E1DDE8', textAlign: 'center' }}>
+              <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'black' }}>To Do List</h1>
+        </div>
   
  {/* Page Content */}
  <Container maxWidth="md" style={{ marginTop: '20px' }}>

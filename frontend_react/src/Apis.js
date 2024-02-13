@@ -165,6 +165,16 @@ const Apis = {
     }
   },
 
+  // API call to create a task
+  createTask: async (newTaskData) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/api/createTask`, newTaskData);
+      return response.data; // Return the data received from the backend
+    } catch (error) {
+      console.error('CreateTask error:', error);
+      throw error; // Throw the error to be handled by the caller
+    }
+  },
 
 
 
