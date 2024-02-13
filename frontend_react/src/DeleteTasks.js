@@ -29,40 +29,25 @@ import {
 const ToDo = () => {
     const navigate = useNavigate(); // Initialize the navigate function
     const [navigateValue, setNavigateValue] = useState('');
-
-    const defaultTask = {
-      id: 1,
-      titleDescription: 'Please Create Tasks',
-      date: '2024-02-12T23:57:46',
-      time: '15:57:46',
-      repeat: 0,
-      notification: false
-    };
-
-    const [taskList, setTaskList] = useState([defaultTask]); // State to hold the list of tasks
+    const [taskList, setTaskList] = useState(['No Tasks']); // State to hold the list of tasks
     const [editTaskValue, setEditTaskValue] = useState(''); // State to hold the value of the "Edit Task" dropdown menu
     const [createDeleteValue, setCreateDeleteValue] = useState(''); // State to hold the value of the "Create/Delete" dropdown menu
     const [helpValue, setHelpValue] = useState('');
     const [logoutValue, setLogoutValue] = useState('');   
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
       const fetchTasks = async () => {
           try {
-              const rtasks = await Apis.getTasks();
-              setTaskList(rtasks.value.tasks);
+              const tasks = await Apis.getTasks();
+              setTaskList(tasks.length > 0 ? tasks : ['No Tasks']); // Set taskList to 'No Tasks' if the response is empty
           } catch (error) {
               console.error('Fetch tasks error:', error);
-          } finally {
-              setLoading(false);
+              setTaskList(['No Tasks']); // Set taskList to 'No Tasks' in case of error
           }
       };
     
       fetchTasks();
     }, []);
-
-    // Add a console.log statement to print the value of taskList
-    console.log('Task List:', taskList);
 
     // Function to handle menu item selection for "Navigate"
     const handleNavigate = (event) => {
@@ -151,9 +136,9 @@ const ToDo = () => {
                 <Select label="Create/Delete" onChange={handleEditTask} value={editTaskValue}>
                   <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
                   {/* Populate the dropdown menu with tasks from state */}
-                  {taskList.map((task, index) => (
-                    <MenuItem key={index} value={task.ID}>
-                      {task.titleDescription}
+                  {taskList.map((task) => (
+                    <MenuItem key={task.ID} value={task.ID}>
+                      {task.TitleDescription}
                     </MenuItem>
                     ))}
                 </Select>
@@ -186,48 +171,16 @@ const ToDo = () => {
           </Toolbar>
         </AppBar>
   
-        {/* Page Header */}
-        <div className="page-header" style={{ backgroundColor: '#E1DDE8', textAlign: 'center' }}>
-              <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'black' }}>To Do List</h1>
-        </div>
-
-      {/* Page Content */}
-      <TableContainer component={Paper} style={{ marginTop: '20px' }}>
-            <Table className='task-list'>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Title/Description</TableCell>
-                  <TableCell>Date</TableCell>
-                  <TableCell>Time</TableCell>
-                  <TableCell>Repeat</TableCell>
-                  <TableCell>Notification</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {loading ? (
-                <TableRow>
-                  <TableCell colSpan={5}>Loading...</TableCell>
-                </TableRow>
-                ) : (
-                  taskList && taskList.map((ttask, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{ttask.titleDescription}</TableCell>
-                      <TableCell>{new Date(ttask.date).toLocaleDateString()}</TableCell>
-                      <TableCell>{ttask.time}</TableCell>
-                      <TableCell>{ttask.repeat === 0 ? "No Repeat" :
-                        ttask.repeat === 1 ? "Daily" :
-                        ttask.repeat === 2 ? "Weekly" :
-                        ttask.repeat === 3 ? "Monthly" :
-                        "Unknown"
-                      }</TableCell>
-                      <TableCell>{ttask.notification ? 'Yes' : 'No'}</TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-      </div>
+       {/* Page Content */}
+       <Container maxWidth="md" style={{ marginTop: '20px' }}>
+        {/* Centered Text */}
+        <Typography variant="h2" align="center" style={{ color: 'purple', fontWeight: 'bold' }}>
+            To-Do<br />
+            Under<br />
+            Construction
+        </Typography>
+      </Container>
+    </div>
     );
 };
 

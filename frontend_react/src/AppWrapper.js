@@ -16,6 +16,9 @@ import ToDo from './ToDo';
 import EditAccount from './EditAccount';
 import GeneralJournalView from './GeneralJournalView';
 import PostSuccess from './PostSuccess';
+import CreateTask from './CreateTask';
+import DeleteTasks from './DeleteTasks';
+import EditTask from './EditTask';
 
 // Wrapper for the pages to handle routing
 const AppWrapper = () => {
@@ -37,6 +40,9 @@ const AppWrapper = () => {
         <Route path="/editAccount/:accountName" element={<EditAccount />} />
         <Route path="/generalJournalView" element={<GeneralJournalView />} />
         <Route path="/postSuccess" element={<PostSuccess />} />
+        <Route path="/createTask" element={<CreateTask />} />
+        <Route path="/deleteTasks" element={<DeleteTasks />} />
+        <Route path="/editTask/:taskID" element={<EditTask />} />
       </Routes>
     </Router>
   );

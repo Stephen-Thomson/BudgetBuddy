@@ -152,7 +152,19 @@ const Apis = {
         console.error('Get Averages error: ', error);
         throw error;
     }
-},
+  },
+
+  // API call to get Tasks
+  getTasks: async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/getTasks`);
+      return response.data;
+    } catch (error) {
+      console.error('Get Tasks error: ', error);
+      throw error;
+    }
+  },
+
 
 
 

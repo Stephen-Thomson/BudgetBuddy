@@ -252,25 +252,25 @@ const GeneralJournalView = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-  {loading ? (
-    <TableRow>
-      <TableCell colSpan={5}>Loading...</TableCell>
-    </TableRow>
-  ) : (
-    journalEntries && journalEntries.map((entry, index) => (
-      <TableRow
-        key={index}
-        style={{ backgroundColor: index % 2 === 0 ? '#E1DDE8' : '#C3CBC0' }}
-      >
-        <TableCell>{new Date(entry.date).toLocaleDateString()}</TableCell>
-        <TableCell>{entry.account}</TableCell>
-        <TableCell>{entry.description}</TableCell>
-        <TableCell>{entry.debit > 0 ? renderCurrency(entry.debit) : renderCurrency(0)}</TableCell>
-        <TableCell>{entry.credit > 0 ? renderCurrency(entry.credit) : renderCurrency(0)}</TableCell>
-      </TableRow>
-      ))
-  )}
-</TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={5}>Loading...</TableCell>
+              </TableRow>
+            ) : (
+              journalEntries && journalEntries.map((entry, index) => (
+                <TableRow
+                  key={index}
+                  style={{ backgroundColor: index % 2 === 0 ? '#E1DDE8' : '#C3CBC0' }}
+                >
+                  <TableCell>{new Date(entry.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{entry.account}</TableCell>
+                  <TableCell>{entry.description}</TableCell>
+                  <TableCell>{entry.debit > 0 ? renderCurrency(entry.debit) : renderCurrency(0)}</TableCell>
+                  <TableCell>{entry.credit > 0 ? renderCurrency(entry.credit) : renderCurrency(0)}</TableCell>
+                </TableRow>
+                ))
+            )}
+          </TableBody>
           </Table>
         </TableContainer>
       </div>
