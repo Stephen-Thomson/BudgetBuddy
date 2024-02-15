@@ -96,6 +96,7 @@ const ToDo = () => {
 
     const handleEditTask = (event) => {
         const taskId = event.target.value;
+        console.log('Edit Task:', taskId);
         navigate(`/editTask/${taskId}`);
     };
 
@@ -152,7 +153,7 @@ const ToDo = () => {
                   <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
                   {/* Populate the dropdown menu with tasks from state */}
                   {taskList.map((task, index) => (
-                    <MenuItem key={index} value={task.ID}>
+                    <MenuItem key={index} value={task.id}>
                       {task.titleDescription}
                     </MenuItem>
                     ))}

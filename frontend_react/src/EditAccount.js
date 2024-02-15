@@ -99,7 +99,8 @@ const EditAccount = () => {
           setLoading(false);
         }
       };
-    
+      console.log('URL with account:', window.location.href);
+      console.log('Account Name:', accountName);
       // Fetch accounts and account entries when the component mounts
       fetchAccounts();
 

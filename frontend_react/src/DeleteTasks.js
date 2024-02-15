@@ -26,7 +26,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 
-const ToDo = () => {
+const DeleteTasks = () => {
     const navigate = useNavigate(); // Initialize the navigate function
     const [navigateValue, setNavigateValue] = useState('');
 
@@ -190,19 +190,46 @@ const ToDo = () => {
         <div className="page-header" style={{ backgroundColor: '#E1DDE8', textAlign: 'center' }}>
               <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'black' }}>To Do List</h1>
         </div>
-  
-       {/* Page Content */}
-       <Container maxWidth="md" style={{ marginTop: '20px' }}>
-        {/* Centered Text */}
-        <Typography variant="h2" align="center" style={{ color: 'purple', fontWeight: 'bold' }}>
-            To-Do<br />
-            Under<br />
-            Construction
-        </Typography>
-      </Container>
-    </div>
+
+      {/* Page Content */}
+      <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+            <Table className='task-list'>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Title/Description</TableCell>
+                  <TableCell>Date</TableCell>
+                  <TableCell>Time</TableCell>
+                  <TableCell>Repeat</TableCell>
+                  <TableCell>Notification</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {loading ? (
+                <TableRow>
+                  <TableCell colSpan={5}>Loading...</TableCell>
+                </TableRow>
+                ) : (
+                  taskList && taskList.map((ttask, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{ttask.titleDescription}</TableCell>
+                      <TableCell>{new Date(ttask.date).toLocaleDateString()}</TableCell>
+                      <TableCell>{ttask.time}</TableCell>
+                      <TableCell>{ttask.repeat === 0 ? "No Repeat" :
+                        ttask.repeat === 1 ? "Daily" :
+                        ttask.repeat === 2 ? "Weekly" :
+                        ttask.repeat === 3 ? "Monthly" :
+                        "Unknown"
+                      }</TableCell>
+                      <TableCell>{ttask.notification ? 'Yes' : 'No'}</TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+      </div>
     );
 };
 
 
-export default ToDo;
+export default DeleteTasks;

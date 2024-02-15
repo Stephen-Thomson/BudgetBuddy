@@ -42,7 +42,7 @@ const AppWrapper = () => {
         <Route path="/postSuccess" element={<PostSuccess />} />
         <Route path="/createTask" element={<CreateTask />} />
         <Route path="/deleteTasks" element={<DeleteTasks />} />
-        <Route path="/editTask/:taskID" element={<EditTask />} />
+        <Route path="/editTask/:taskId" element={<EditTask />} />
       </Routes>
     </Router>
   );

@@ -176,6 +176,32 @@ const Apis = {
     }
   },
 
+// API call to create a task
+updateTask: async (newTaskData) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/api/updateTask`, newTaskData);
+    return response.data; // Return the data received from the backend
+  } catch (error) {
+    console.error('UpdateTask error:', error);
+    throw error; // Throw the error to be handled by the caller
+  }
+},
+
+// API call to get task
+getTask: async (taskId) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/api/getTask`, {
+      params: { taskId },
+    });
+
+    return response.data; // Return the data received from the backend
+  } catch (error) {
+    // Handle errors
+    console.error('Get task error:', error);
+    throw error;
+  }
+},
+
 
 
 
