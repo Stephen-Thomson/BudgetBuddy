@@ -45,6 +45,7 @@ const DeleteTasks = () => {
     const [helpValue, setHelpValue] = useState('');
     const [logoutValue, setLogoutValue] = useState('');   
     const [loading, setLoading] = useState(true);
+    const [selectedTasks, setSelectedTasks] = useState([]);
 
     useEffect(() => {
       const fetchTasks = async () => {
@@ -108,6 +109,37 @@ const DeleteTasks = () => {
     // Function to handle menu item selection for "Logout"
     const handleLogout = () => {
         navigate('/'); // Navigate to LoginPage.js
+    };
+
+     // Function to handle checkbox change
+     const handleCheckboxChange = (taskId) => {
+      // Check if the task ID is already selected
+      if (selectedTasks.includes(taskId)) {
+        // If selected, remove it from the selectedTasks array
+        setSelectedTasks(selectedTasks.filter(id => id !== taskId));
+      } else {
+        // If not selected, add it to the selectedTasks array
+        setSelectedTasks([...selectedTasks, taskId]);
+      }
+    };
+
+    // Function to handle delete button click
+    const handleDelete = async () => {
+      try {
+
+        console.log('Selected tasks:', selectedTasks);
+        // Call the deleteTasks API with the selected task IDs
+        const response = await Apis.deleteTasks(selectedTasks);
+
+        console.log('Delete tasks response:', response);
+
+        // Clear the selected tasks array
+        setSelectedTasks([]);
+
+        navigate('/toDo');
+      } catch (error) {
+        console.error('Delete tasks error:', error);
+      }
     };
   
     return (
@@ -188,7 +220,7 @@ const DeleteTasks = () => {
   
         {/* Page Header */}
         <div className="page-header" style={{ backgroundColor: '#E1DDE8', textAlign: 'center' }}>
-              <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'black' }}>To Do List</h1>
+              <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'black' }}>Delete Tasks</h1>
         </div>
 
       {/* Page Content */}
@@ -205,28 +237,42 @@ const DeleteTasks = () => {
               </TableHead>
               <TableBody>
                 {loading ? (
-                <TableRow>
-                  <TableCell colSpan={5}>Loading...</TableCell>
-                </TableRow>
-                ) : (
-                  taskList && taskList.map((ttask, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{ttask.titleDescription}</TableCell>
-                      <TableCell>{new Date(ttask.date).toLocaleDateString()}</TableCell>
-                      <TableCell>{ttask.time}</TableCell>
-                      <TableCell>{ttask.repeat === 0 ? "No Repeat" :
-                        ttask.repeat === 1 ? "Daily" :
-                        ttask.repeat === 2 ? "Weekly" :
-                        ttask.repeat === 3 ? "Monthly" :
-                        "Unknown"
-                      }</TableCell>
-                      <TableCell>{ttask.notification ? 'Yes' : 'No'}</TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
+                  <TableRow>
+                <TableCell colSpan={6}>Loading...</TableCell>
+              </TableRow>
+              ) : (
+                taskList && taskList.map((ttask, index) => (
+                  <TableRow key={index}>
+                    {/* Add a checkbox for each row */}
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedTasks.includes(ttask.id)}
+                        onChange={() => handleCheckboxChange(ttask.id)}
+                      />
+                    </TableCell>
+                    {/* Render other task information */}
+                    <TableCell>{ttask.titleDescription}</TableCell>
+                    <TableCell>{new Date(ttask.date).toLocaleDateString()}</TableCell>
+                    <TableCell>{ttask.time}</TableCell>
+                    <TableCell>{ttask.repeat === 0 ? "No Repeat" :
+                      ttask.repeat === 1 ? "Daily" :
+                      ttask.repeat === 2 ? "Weekly" :
+                      ttask.repeat === 3 ? "Monthly" :
+                      "Unknown"
+                    }</TableCell>
+                    <TableCell>{ttask.notification ? 'Yes' : 'No'}</TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
             </Table>
           </TableContainer>
+                  {/* Delete Button */}
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <Button variant="contained" color="secondary" onClick={handleDelete} disabled={selectedTasks.length === 0}>
+            Delete
+          </Button>
+        </div>
       </div>
     );
 };

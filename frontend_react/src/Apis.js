@@ -202,6 +202,16 @@ getTask: async (taskId) => {
   }
 },
 
+// API call to delete tasks
+deleteTasks: async (selectedTasks) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/api/deleteTasks`, selectedTasks);
+    return response.data; // Return the data received from the backend
+  } catch (error) {
+    console.error('DeleteTasks error:', error);
+    throw error; // Throw the error to be handled by the caller
+  }
+},
 
 
 
