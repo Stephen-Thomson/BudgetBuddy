@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:5044'; // Backend URL
+const BASE_URL = 'http://API.stephenkthomson.me';
 
 const Apis = {
   // Login api call
