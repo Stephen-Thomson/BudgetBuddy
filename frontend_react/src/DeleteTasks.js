@@ -184,7 +184,7 @@ const DeleteTasks = () => {
                   <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
                   {/* Populate the dropdown menu with tasks from state */}
                   {taskList.map((task, index) => (
-                    <MenuItem key={index} value={task.ID}>
+                    <MenuItem key={index} value={task.id}>
                       {task.titleDescription}
                     </MenuItem>
                     ))}

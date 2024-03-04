@@ -143,7 +143,7 @@ const Help = () => {
               </div>
             </div>
   
-            <div style={{ marginRight: '16px', marginLeft: '8px' }}>
+            {/* <div style={{ marginRight: '16px', marginLeft: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
                   View/Edit
@@ -152,7 +152,7 @@ const Help = () => {
                   <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
                   <MenuItem value="generalJournal">General Journal</MenuItem>
                   {/* Populate the dropdown menu with accounts from state */}
-                  {accountList.map((account) => (
+                  {/*{accountList.map((account) => (
                     <MenuItem key={account} value={account}>
                       {account}
                     </MenuItem>
@@ -172,7 +172,7 @@ const Help = () => {
                   <MenuItem value="currentBudget">Current Budget</MenuItem>
                   <MenuItem value="totals">Totals</MenuItem>
                   {/* Add more report options */}
-                </Select>
+                {/*</Select>
               </div>
             </div>
   
@@ -201,7 +201,7 @@ const Help = () => {
                   <MenuItem value="documentation">Documentation</MenuItem>
                 </Select>
               </div>
-            </div>
+            </div> */}
   
             <div style={{ marginRight: '16px', marginLeft: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
