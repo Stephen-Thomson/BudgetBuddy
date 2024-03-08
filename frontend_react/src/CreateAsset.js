@@ -18,8 +18,8 @@ const CreateAsset = () => {
   const [helpValue, setHelpValue] = useState('');
   const [logoutValue, setLogoutValue] = useState('');   
   const [accountList, setAccountList] = useState([]); // State to hold the list of accounts
-  const [type, setType] = useState(2); // Replace 0 with your initial value
-  const [category, setCategory] = useState(1); // Replace 0 with your initial value
+  const [type, setType] = useState(2);
+  const [category, setCategory] = useState(1);
   const [accountName, setAccountName] = useState('');
   const [dvalue, setDvalue] = useState('0.00'); // This will hold the value
   const [cvalue, setCvalue] = useState('0.00'); // This will hold the value
