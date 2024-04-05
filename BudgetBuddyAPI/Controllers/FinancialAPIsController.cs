@@ -52,6 +52,7 @@ namespace BudgetBuddyAPI.Controllers
             public string Description { get; set; }
             public decimal Debit { get; set; }
             public decimal Credit { get; set; }
+            public decimal Total { get; set; }
         }
 
         public class EditAccountModel
@@ -98,9 +99,13 @@ namespace BudgetBuddyAPI.Controllers
                                 Console.WriteLine($"Date: {postData.Date}");
                                 Console.WriteLine($"Description: {postData.Descriptions[i]}");
 
-                                // Convert string representations to decimal
-                                decimal? debit = ConvertToDecimal(postData.Debits[i]);
-                                decimal? credit = ConvertToDecimal(postData.Credits[i]);
+                                // Convert string representations to nullable decimal
+                                decimal? debitNullable = ConvertToDecimal(postData.Debits[i]);
+                                decimal? creditNullable = ConvertToDecimal(postData.Credits[i]);
+
+                                // Convert nullable decimals to non-nullable decimals
+                                decimal debit = debitNullable ?? 0; // If debitNullable is null, default to 0
+                                decimal credit = creditNullable ?? 0; // If creditNullable is null, default to 0
 
                                 Console.WriteLine($"Debit: {debit}");
                                 Console.WriteLine($"Credit: {credit}");
@@ -117,13 +122,50 @@ namespace BudgetBuddyAPI.Controllers
                                     command.ExecuteNonQuery();
                                 }
 
+                                int accountType;
+                                decimal total = 0;
+
+                                // Retrieve Account type to determine which total calculation to call
+                                using (var command = new SQLiteCommand($"SELECT Type FROM {accountTableName} WHERE Entry = 1;", connection, transaction))
+                                {
+                                    // Execute the command and retrieve the "Type" value
+                                    object result = command.ExecuteScalar();
+
+                                    // Check if the result is not null and convert it to an integer
+                                    if (result != null && int.TryParse(result.ToString(), out accountType))
+                                    {
+                                        // Call the appropriate total calculation function based on the account type
+                                        if (accountType == 1 || accountType == 3)
+                                        {
+                                            // Call monthly total calculation function and store the result in 'total'
+                                            total = CalculateMonthlyTotal(accountTableName, postData.Date, accountType, debit, credit);
+                                        }
+                                        else if (accountType == 2 || accountType == 4)
+                                        {
+                                            // Call running total calculation function and store the result in 'total'
+                                            total = CalculateRunningTotal(accountTableName, accountType, debit, credit);
+                                        }
+                                        else
+                                        {
+                                            // Handle unsupported account types or other scenarios
+                                            Console.WriteLine("Unsupported account type or unexpected value for Type.");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // Handle null result or conversion failure
+                                        Console.WriteLine("Failed to retrieve account type or unexpected value for Type.");
+                                    }
+                                }
+
                                 // Insert data into the specific account table
-                                using (var command = new SQLiteCommand($"INSERT INTO {accountTableName} (Date, Description, Debit, Credit) VALUES (@Date, @Description, @Debit, @Credit);", connection, transaction))
+                                using (var command = new SQLiteCommand($"INSERT INTO {accountTableName} (Date, Description, Debit, Credit, Total) VALUES (@Date, @Description, @Debit, @Credit, @Total);", connection, transaction))
                                 {
                                     command.Parameters.AddWithValue("@Date", postData.Date);
                                     command.Parameters.AddWithValue("@Description", postData.Descriptions[i]);
                                     command.Parameters.AddWithValue("@Debit", debit);
                                     command.Parameters.AddWithValue("@Credit", credit);
+                                    command.Parameters.AddWithValue("@Total", total);
 
                                     command.ExecuteNonQuery();
                                 }
@@ -256,7 +298,8 @@ namespace BudgetBuddyAPI.Controllers
                                               "Date DATE," +
                                               "Description TEXT," +
                                               "Debit REAL," +
-                                              "Credit REAL)";
+                                              "Credit REAL," +
+                                              "Total REAL)";
 
                     using (var command = new SQLiteCommand(createTableQuery, connection))
                     {
@@ -267,8 +310,24 @@ namespace BudgetBuddyAPI.Controllers
                     decimal? debit = ConvertToDecimal(model.Dvalue);
                     decimal? credit = ConvertToDecimal(model.Cvalue);
 
+                    // Determine the initial total based on the Type
+                    decimal? initialTotal = null;
+                    if (model.Type == 1 || model.Type == 4)
+                    {
+                        initialTotal = credit;
+                    }
+                    else if (model.Type == 2 || model.Type == 3)
+                    {
+                        initialTotal = debit;
+                    }
+                    else
+                    {
+                        // Handle unsupported types
+                        Console.WriteLine("Unsupported account type.");
+                    }
+
                     // Insert the first entry into the table
-                    string firstEntry = $"INSERT INTO {tableName} (Type, Category, Date, Description, Debit, Credit) VALUES (@Type, @Category, @Date, @Description, @Debit, @Credit)";
+                    string firstEntry = $"INSERT INTO {tableName} (Type, Category, Date, Description, Debit, Credit, Total) VALUES (@Type, @Category, @Date, @Description, @Debit, @Credit, @Total)";
                     using (var command = new SQLiteCommand(firstEntry, connection))
                     {
                         command.Parameters.AddWithValue("@Type", model.Type);
@@ -277,6 +336,7 @@ namespace BudgetBuddyAPI.Controllers
                         command.Parameters.AddWithValue("@Description", model.Description);
                         command.Parameters.AddWithValue("@Debit", debit);
                         command.Parameters.AddWithValue("@Credit", credit);
+                        command.Parameters.AddWithValue("@Total", initialTotal);
 
                         command.ExecuteNonQuery();
                     }
@@ -315,8 +375,8 @@ namespace BudgetBuddyAPI.Controllers
                     string accountTableName = $"Account_{accountName.Replace(" ", "_")}";
                     Console.WriteLine($"Account Table Name: {accountTableName}");
 
-                    // Fetch data from the General_Journal table
-                    var query = $"SELECT Category, Date, Description, Debit, Credit FROM {accountTableName}";
+                    // Fetch data from the specified account table, including the Total column
+                    var query = $"SELECT Category, Date, Description, Debit, Credit, Total FROM {accountTableName}";
                     using (var command = new SQLiteCommand(query, connection))
                     {
                         using (var reader = command.ExecuteReader())
@@ -326,18 +386,15 @@ namespace BudgetBuddyAPI.Controllers
 
                             while (reader.Read())
                             {
-                                for (int i = 0; i < reader.FieldCount; i++)
-                                {
-                                    Console.WriteLine($"Column {i}: {reader.GetName(i)}, Type: {reader.GetFieldType(i)}, Value: {reader.GetValue(i)}");
-                                }
-                                // Read data from the reader and create a GeneralJournalEntry object
+                                // Read data from the reader and create an AccountEntry object
                                 var entry = new AccountEntry
                                 {
                                     Category = reader.IsDBNull(0) ? 0 : reader.GetInt32(0),
                                     Date = reader.GetDateTime(1),
                                     Description = reader.GetString(2),
                                     Debit = reader.GetDecimal(3),
-                                    Credit = reader.GetDecimal(4)
+                                    Credit = reader.GetDecimal(4),
+                                    Total = reader.GetDecimal(5) // Set the Total property
                                 };
 
                                 // Add the entry to the list
@@ -389,10 +446,11 @@ namespace BudgetBuddyAPI.Controllers
 
                     if (model.SelectedAccountName == model.EditedAccountName || string.IsNullOrEmpty(model.EditedAccountName))
                     {
-                        var updateQuery = $"UPDATE {accountTableName} SET Category = {model.Category} WHERE Entry = 1";
+                        string updateQuery = $"UPDATE {accountTableName} SET Category = @Category WHERE Entry = 1";
 
                         using (var command = new SQLiteCommand(updateQuery, connection))
                         {
+                            command.Parameters.AddWithValue("@Category", model.Category);
                             // Execute the update query
                             command.ExecuteNonQuery();
                         }
@@ -432,17 +490,19 @@ namespace BudgetBuddyAPI.Controllers
                             string editedTableName = $"Account_{model.EditedAccountName.Replace(" ", "_")}";
 
                             // Create the new table in the database
-                            string createTableQuery = $"CREATE TABLE IF NOT EXISTS {editedTableName} (" +
+                            string createTableQuery = $"CREATE TABLE IF NOT EXISTS @EditedTableName (" +
                                                       "Entry INTEGER PRIMARY KEY AUTOINCREMENT," +
                                                       "Type INT," +
                                                       "Category INT," +
                                                       "Date DATE," +
                                                       "Description TEXT," +
                                                       "Debit REAL," +
-                                                      "Credit REAL)";
+                                                      "Credit REAL," +
+                                                      "Total REAL)";
 
                             using (var createTableCommand = new SQLiteCommand(createTableQuery, connection))
                             {
+                                createTableCommand.Parameters.AddWithValue("@EditedTableName", editedTableName);
                                 createTableCommand.ExecuteNonQuery();
                             }
 
@@ -535,22 +595,14 @@ namespace BudgetBuddyAPI.Controllers
                     // Fetch data based on account type
                     if (type == 2 || type == 4) // Asset or Accounts Payable account
                     {
-                        var assetOrPayableQuery = $"SELECT Debit, Credit FROM {accountTableName}";
+                        var totalQuery = $"SELECT Total FROM {accountTableName} ORDER BY Entry DESC LIMIT 1";
 
-                        using (var assetOrPayableCommand = new SQLiteCommand(assetOrPayableQuery, connection))
+                        using (var totalCommand = new SQLiteCommand(totalQuery, connection))
                         {
-                            using (var assetOrPayableReader = assetOrPayableCommand.ExecuteReader())
+                            var result = totalCommand.ExecuteScalar();
+                            if (result != null && decimal.TryParse(result.ToString(), out decimal lastTotal))
                             {
-                                while (assetOrPayableReader.Read())
-                                {
-                                    decimal debit = assetOrPayableReader.GetDecimal(0);
-                                    decimal credit = assetOrPayableReader.GetDecimal(1);
-
-                                    if (type == 2)
-                                        total += debit - credit; // Asset account
-                                    else
-                                        total += credit - debit; // Accounts Payable account
-                                }
+                                total = lastTotal;
                             }
                         }
                     }
@@ -716,73 +768,117 @@ namespace BudgetBuddyAPI.Controllers
                             // Create a list to hold averaged TotalsReportEntry for each account
                             var averagesList = new List<TotalsReportEntry>();
 
-                            // Get the current month and year
-                            var currentDate = DateTime.Now;
-                            var currentMonth = currentDate.Month;
-                            var currentYear = currentDate.Year;
-
-                            // Calculate the start month (previous six months)
-                            var startMonth = currentMonth - 6;
-                            if (startMonth <= 0)
-                            {
-                                startMonth += 12;
-                                currentYear--; // Adjust the year if start month is in the previous year
-                            }
-
-                            Console.WriteLine($"Start Month: {startMonth}");
-
                             // Process each account name
                             foreach (var accountTableName in accountNameList)
                             {
-                                // Initialize variables for calculating average total
-                                decimal total = 0;
-                                int monthsWithValues = 0;
+                                // Fetch the Type from the specified accountTableName
+                                var accountTypeQuery = $"SELECT Type FROM {accountTableName} LIMIT 1";
+
                                 int type = 0;
-                                int category = 0;
 
-                                // Calculate average total over previous six months
-                                for (int i = 0; i < 6; i++)
+                                using (var typeCommand = new SQLiteCommand(accountTypeQuery, connection))
                                 {
-                                    var monthToCalculate = startMonth + i;
-                                    var yearToCalculate = currentYear;
-                                    if (monthToCalculate > 12)
+                                    object result = typeCommand.ExecuteScalar();
+                                    if (result != null && int.TryParse(result.ToString(), out type))
                                     {
-                                        monthToCalculate -= 12;
-                                        yearToCalculate++;
+                                        // Check if the account type is 2 (Asset) or 4 (Accounts Payable)
+                                        if (type == 2 || type == 4)
+                                        {
+                                            // Retrieve the total from the last entry
+                                            var totalQuery = $"SELECT Total FROM {accountTableName} ORDER BY Entry DESC LIMIT 1";
+
+                                            using (var totalCommand = new SQLiteCommand(totalQuery, connection))
+                                            {
+                                                object totalResult = totalCommand.ExecuteScalar();
+                                                if (totalResult != null && decimal.TryParse(totalResult.ToString(), out decimal total))
+                                                {
+                                                    // Create a TotalsReportEntry with the total
+                                                    var totalReportEntry = new TotalsReportEntry
+                                                    {
+                                                        AccountName = accountTableName,
+                                                        Type = type,
+                                                        Category = 1,
+                                                        Total = total
+                                                    };
+
+                                                    // Add the result to the list
+                                                    averagesList.Add(totalReportEntry);
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            // Calculate average total for other account types (1 and 3)
+                                            // Initialize variables for calculating average total
+                                            decimal total = 0;
+                                            int monthsWithValues = 0;
+                                            int category = 0;
+
+                                            // Get the current month and year
+                                            var currentDate = DateTime.Now;
+                                            var currentMonth = currentDate.Month;
+                                            var currentYear = currentDate.Year;
+
+                                            // Calculate the start month (previous six months)
+                                            var startMonth = currentMonth - 6;
+                                            if (startMonth <= 0)
+                                            {
+                                                startMonth += 12;
+                                                currentYear--; // Adjust the year if start month is in the previous year
+                                            }
+
+                                            Console.WriteLine($"Start Month: {startMonth}");
+
+                                            // Calculate average total over previous six months
+                                            for (int i = 0; i < 6; i++)
+                                            {
+                                                var monthToCalculate = startMonth + i;
+                                                var yearToCalculate = currentYear;
+                                                if (monthToCalculate > 12)
+                                                {
+                                                    monthToCalculate -= 12;
+                                                    yearToCalculate++;
+                                                }
+
+                                                // Call the TotalsPerMonth helper function
+                                                var totalsReportEntry = TotalsPerMonth(monthToCalculate, yearToCalculate, accountTableName);
+
+                                                // Set category
+                                                category = totalsReportEntry.Category;
+
+                                                // Check if the total is greater than 0
+                                                if (totalsReportEntry.Total > 0)
+                                                {
+                                                    total += totalsReportEntry.Total;
+                                                    monthsWithValues++;
+                                                }
+                                                Console.WriteLine($"Total: {totalsReportEntry.Total}");
+                                            }
+
+                                            Console.WriteLine($"To Average: {total}");
+                                            Console.WriteLine($"Months with values: {monthsWithValues}");
+                                            // Calculate average total
+                                            decimal averageTotal = monthsWithValues > 0 ? total / monthsWithValues : 0;
+
+                                            // Create a TotalsReportEntry with the averaged total
+                                            var averagesReportEntry = new TotalsReportEntry
+                                            {
+                                                AccountName = accountTableName,
+                                                Type = type,
+                                                Category = category,
+                                                Total = averageTotal
+                                            };
+
+                                            // Add the result to the list
+                                            averagesList.Add(averagesReportEntry);
+                                        }
                                     }
-
-                                    // Call the TotalsPerMonth helper function
-                                    var totalsReportEntry = TotalsPerMonth(monthToCalculate, yearToCalculate, accountTableName);
-
-                                    // Set type and category
-                                    type = totalsReportEntry.Type;
-                                    category = totalsReportEntry.Category;
-
-                                    // Check if the total is greater than 0
-                                    if (totalsReportEntry.Total > 0)
+                                    else
                                     {
-                                        total += totalsReportEntry.Total;
-                                        monthsWithValues++;
+                                        // Log or handle null or invalid type
+                                        Console.WriteLine($"Failed to retrieve account type for {accountTableName}.");
                                     }
-                                    Console.WriteLine($"Total: {totalsReportEntry.Total}");
                                 }
-
-                                Console.WriteLine($"To Average: {total}");
-                                Console.WriteLine($"Months with values: {monthsWithValues}");
-                                // Calculate average total
-                                decimal averageTotal = monthsWithValues > 0 ? total / monthsWithValues : 0;
-
-                                // Create a TotalsReportEntry with the averaged total
-                                var averagesReportEntry = new TotalsReportEntry
-                                {
-                                    AccountName = accountTableName,
-                                    Type = type,
-                                    Category = category,
-                                    Total = averageTotal
-                                };
-
-                                // Add the result to the list
-                                averagesList.Add(averagesReportEntry);
                             }
 
                             // Create a response object
@@ -806,6 +902,119 @@ namespace BudgetBuddyAPI.Controllers
                 return new JsonResult(new { success = false, message = "Internal server error." });
             }
         }
+
+        // Calculate the monthly total
+        decimal CalculateMonthlyTotal(string accountTableName, DateTime date, int type, decimal newDebit, decimal newCredit)
+        {
+            string dbFilePath = DatabasePathManager.GetDatabasePath();
+
+            using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
+            {
+                try
+                {
+                    connection.Open();
+
+                    int month = date.Month;
+                    int year = date.Year;
+
+                    string monthlyTotalQuery = $"SELECT SUM(Credit) AS TotalCredit, SUM(Debit) AS TotalDebit FROM {accountTableName} WHERE strftime('%Y-%m', Date) = @YearMonth";
+
+                    using (var command = new SQLiteCommand(monthlyTotalQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@YearMonth", $"{year}-{month.ToString("D2")}");
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                decimal totalCredit = Convert.ToDecimal(reader["TotalCredit"]);
+                                decimal totalDebit = Convert.ToDecimal(reader["TotalDebit"]);
+
+                                decimal total = 0;
+                                if (type == 1)
+                                {
+                                    total = totalCredit - totalDebit + newCredit - newDebit;
+                                }
+                                else if (type == 3)
+                                {
+                                    total = totalDebit - totalCredit + newDebit - newCredit;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Unsupported account type.");
+                                }
+
+                                return total;
+                            }
+                            else
+                            {
+                                Console.WriteLine("No data found for the specified month and year.");
+                                return 0;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An error occurred: {ex.Message}");
+                    return 0;
+                }
+            }
+        }
+
+        decimal CalculateRunningTotal(string accountTableName, int type, decimal debit, decimal credit)
+        {
+            string dbFilePath = DatabasePathManager.GetDatabasePath();
+
+            using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
+            {
+                try
+                {
+                    connection.Open();
+
+                    // Construct SQL command to retrieve the value of the Total column from the last entry
+                    string lastTotalQuery = $"SELECT Total FROM {accountTableName} ORDER BY Entry DESC LIMIT 1";
+
+                    using (var command = new SQLiteCommand(lastTotalQuery, connection))
+                    {
+                        // Retrieve the value of the Total column from the last entry
+                        object result = command.ExecuteScalar();
+
+                        // Convert the result to a decimal if it's not null
+                        decimal currentTotal = result != null ? Convert.ToDecimal(result) : 0;
+
+                        // Calculate the new total based on the account type
+                        decimal newTotal = 0;
+                        if (type == 2)
+                        {
+                            // Type 2: Add debit value and subtract credit value
+                            newTotal = currentTotal + debit - credit;
+                        }
+                        else if (type == 4)
+                        {
+                            // Type 4: Add credit value and subtract debit value
+                            newTotal = currentTotal + credit - debit;
+                        }
+                        else
+                        {
+                            // Handle unsupported account types
+                            Console.WriteLine("Unsupported account type.");
+                            return 0;
+                        }
+
+                        return newTotal;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Handle any exceptions
+                    Console.WriteLine($"An error occurred: {ex.Message}");
+                    return 0;
+                }
+            }
+        }
+
+
 
 
 

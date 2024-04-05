@@ -227,11 +227,21 @@ namespace BudgetBuddyAPI.Controllers
                     "Date DATE," +
                     "Description TEXT CHECK(length(Description) <= 255)," +
                     "Debit REAL CHECK(Debit >= 0)," +
-                    "Credit REAL CHECK(Credit >= 0));",
+                    "Credit REAL CHECK(Credit >= 0)," +
+                    "Total REAL);",
                     connection))
                 {
                     command.ExecuteNonQuery();
                 }
+
+                using (var command = new SQLiteCommand(
+                    "INSERT INTO Account_Income (Type, Category, Date, Description, Debit, Credit, Total) " +
+                    "VALUES (1, 1, DATE('now'), 'Account Created', 0, 0, 0);",
+                     connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+
 
                 using (var command = new SQLiteCommand(
                     "INSERT INTO AccountsList (Account_Name, Table_Name) VALUES ('Income', 'Account_Income');",
@@ -248,7 +258,16 @@ namespace BudgetBuddyAPI.Controllers
                     "Date DATE," +
                     "Description TEXT CHECK(length(Description) <= 255)," +
                     "Debit REAL CHECK(Debit >= 0)," +
-                    "Credit REAL CHECK(Credit >= 0));",
+                    "Credit REAL CHECK(Credit >= 0)," +
+                    "Total REAL);",
+                    connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+
+                using (var command = new SQLiteCommand(
+                    "INSERT INTO Account_Cash (Type, Category, Date, Description, Debit, Credit, Total) " +
+                    "VALUES (2, 1, DATE('now'), 'Account Created', 0, 0, 0);",
                     connection))
                 {
                     command.ExecuteNonQuery();
@@ -269,7 +288,16 @@ namespace BudgetBuddyAPI.Controllers
                     "Date DATE," +
                     "Description TEXT CHECK(length(Description) <= 255)," +
                     "Debit REAL CHECK(Debit >= 0)," +
-                    "Credit REAL CHECK(Credit >= 0));",
+                    "Credit REAL CHECK(Credit >= 0)," +
+                    "Total REAL);",
+                    connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+
+                using (var command = new SQLiteCommand(
+                    "INSERT INTO Account_Checking (Type, Category, Date, Description, Debit, Credit, Total) " +
+                    "VALUES (2, 1, DATE('now'), 'Account Created', 0, 0, 0);",
                     connection))
                 {
                     command.ExecuteNonQuery();
