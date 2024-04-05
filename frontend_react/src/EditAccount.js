@@ -60,22 +60,23 @@ const EditAccount = () => {
           const accounts = await Apis.getAccounts();
           setAccountList(accounts);
     
-          // Update the selected account name and fetch account entries
+          // Update the selected account name
           setSelectedAccountName(accountName);
     
-          // Fetch account entries only if the component is mounted
-          if (isMounted.current) {
-            fetchAccountEntries(accountName); // Pass accountName to fetchAccountEntries
-            // Set isMounted to false after the first render
-            isMounted.current = false;
-          }
         } catch (error) {
           // Handle errors
           console.error('Fetch accounts error:', error);
         }
       };
     
-      // Fetch Account entries when the component mounts
+      // Fetch accounts when the component mounts
+      fetchAccounts();
+    
+      // Set isMounted to false after the first render
+      isMounted.current = false;
+    }, []);
+    
+    useEffect(() => {
       const fetchAccountEntries = async (accountName) => { // Accept accountName as a parameter
         try {
           const entries = await Apis.getAccountEntries(accountName); // Use accountName here
@@ -85,28 +86,26 @@ const EditAccount = () => {
           if (entries.value.rows.length > 0) {
             const initialCategory = entries.value.rows[0].category;
             setCategory(initialCategory);
-      
+    
             // Enable checkboxes based on the initial category
             setNonExpenseChecked(initialCategory === 1);
             setFixedMonthlyChecked(initialCategory === 2);
             setVariableChecked(initialCategory === 3);
             setTemporaryChecked(initialCategory === 4);
           }
-      
+    
         } catch (error) {
           console.error('Fetch account entries error:', error);
         } finally {
           setLoading(false);
         }
       };
-      console.log('URL with account:', window.location.href);
-      console.log('Account Name:', accountName);
-      // Fetch accounts and account entries when the component mounts
-      fetchAccounts();
-
-      setEditedAccountName(accountName); // Set editedAccountName to the selected account name
     
-    }, [accountName, selectedAccountName]);
+      setEditedAccountName(accountName); // Set editedAccountName to the selected account name
+      fetchAccountEntries(accountName); // Call fetchAccountEntries with the current accountName
+    
+    }, [accountName]);
+    
     
     useEffect(() => {
       setHeaderName(editedAccountName);
@@ -473,6 +472,7 @@ const EditAccount = () => {
               <TableCell style={{ width: '25%' }}>Description</TableCell>
               <TableCell style={{ width: '17%' }}>Debit +</TableCell>
               <TableCell style={{ width: '18%' }}>Credit -</TableCell>
+              <TableCell style={{ width: '20%' }}>Total</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -485,6 +485,7 @@ const EditAccount = () => {
                 <TableCell>{entry.description}</TableCell>
                 <TableCell>{entry.debit > 0 ? renderCurrency(entry.debit) : renderCurrency(0)}</TableCell>
                 <TableCell>{entry.credit > 0 ? renderCurrency(entry.credit) : renderCurrency(0)}</TableCell>
+                <TableCell>{entry.total > 0 ? renderCurrency(entry.total) : renderCurrency(0)}</TableCell>
               </TableRow>
               ))}
             </TableBody>

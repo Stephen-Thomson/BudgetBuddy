@@ -132,11 +132,11 @@ const AdjustableBudget = () => {
           // Add a separator row
           assetColumnData.push('----------');
           assetTotalColumnData.push('----------');
-          expenseColumnData.push('----------');
+          //expenseColumnData.push('----------');
 
           assetColumnData.push('Total:');
           assetTotalColumnData.push(renderCurrency(aTotal));
-          expenseColumnData.push('Total:');
+          //expenseColumnData.push('Total:');
 
           stTotal = aTotal + iTotal;
           rTotal = stTotal - eTotal;
@@ -642,14 +642,14 @@ const handleExpenseBlur = (event, index) => {
     </tr>
 ))}
             <tr>
-              <td></td> {/* Empty cell for alignment */}
+              <td>----------</td>
               <td>----------</td>
               <td></td> {/* Empty cells for other columns */}
               <td></td>
               <td></td>
             </tr>
             <tr>
-              <td></td> {/* Empty cell for alignment */}
+              <td>Total</td>
               <td>{renderCurrency(expenseTotal)}</td>
             </tr>
 
