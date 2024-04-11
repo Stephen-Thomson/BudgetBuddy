@@ -48,6 +48,7 @@ const GeneralJournal = () => {
         const fetchAccounts = async () => {
           try {
             const accounts = await Apis.getAccounts();
+            console.log('API Response:', accounts);
             setAccountList(accounts);
           } catch (error) {
             // Handle errors

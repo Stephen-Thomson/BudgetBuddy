@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.IO;
 using System.Data.SQLite;
 using System.IO;
 using Microsoft.Extensions.FileProviders;
@@ -305,6 +304,29 @@ namespace BudgetBuddyAPI.Controllers
 
                 using (var command = new SQLiteCommand(
                     "INSERT INTO AccountsList (Account_Name, Table_Name) VALUES ('Checking', 'Account_Checking');",
+                    connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+
+                // Create ToDoList table
+                using (var command = new SQLiteCommand(
+                    "CREATE TABLE IF NOT EXISTS ToDoList (" +
+                    "ID INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "TitleDescription TEXT," +
+                    "Date DATETIME," +
+                    "Time TEXT," +
+                    "Repeat INTEGER," +
+                    "Notification BOOLEAN);",
+                    connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+
+                // Insert the first entry into ToDoList
+                using (var command = new SQLiteCommand(
+                    "INSERT INTO ToDoList (TitleDescription, Date, Time, Repeat, Notification) " +
+                    "VALUES ('Please Create Tasks', DATETIME('now'), '0:00', 0, 0);",
                     connection))
                 {
                     command.ExecuteNonQuery();

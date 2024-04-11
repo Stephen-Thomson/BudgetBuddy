@@ -11,7 +11,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 import Apis from './Apis'; // Import the Apis object
 
-const LoginPage = () => {
+const LoginPage = (props) => {
     const [username, setUsername] = useState(''); // State to store username input
     const [password, setPassword] = useState(''); // State to store password input
     const [rememberMe, setRememberMe] = useState(false); // State for the checkbox: initially unchecked (false)
@@ -84,6 +84,10 @@ const LoginPage = () => {
           navigate('/selectFunction');
 
           console.log('Logged in successfully!');
+
+          // Call the onLoginSuccess function to inform the parent component
+          props.onLoginSuccess();
+
         }
       } catch (error) {
         // Handle errors
@@ -100,6 +104,10 @@ const LoginPage = () => {
         // After successfully creating the account, proceed to navigate to the next page (SelectFunction.js)
         console.log('Account created successfully!');
         navigate('/selectFunction');
+
+        // Call the onLoginSuccess function to inform the parent component
+        props.onLoginSuccess();
+
       } catch (error) {
         console.error('Error creating account:', error);
       }

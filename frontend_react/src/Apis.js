@@ -213,7 +213,29 @@ deleteTasks: async (selectedTasks) => {
   }
 },
 
+// API call to check for task notifications
+checkTasks: async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/api/checkTasks`);
 
+    return response.data; // Return the data received from the backend
+  } catch (error) {
+    // Handle errors
+    console.error('Check tasks error:', error);
+    throw error;
+  }
+},
+
+// API call to update repeat tasks
+updateRepeat: async () => {
+  try {
+    const response = await axios.post(`${BASE_URL}/api/updateRepeat`);
+    return response.data; 
+  } catch (error) {
+    console.error('Update Repeat error: ', error);
+    throw error;
+  }
+},
 
 };
 
