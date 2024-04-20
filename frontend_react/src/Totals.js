@@ -2,52 +2,31 @@ import React, { useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
 import Apis from './Apis';
-import {
-  Tab,
-  TextField,
-  TableContainer,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Button,
-  Paper,
-  FormControl,
-  FormLabel,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
-  CircularProgress,
-} from '@mui/material';
+import { CircularProgress } from '@mui/material';
 
 const Totals = () => {
     const navigate = useNavigate(); // Initialize the navigate function
-    const [navigateValue, setNavigateValue] = useState('');
-    const [viewEditValue, setViewEditValue] = useState('');
-    const [reportsValue, setReportsValue] = useState('');
-    const [createValue, setCreateValue] = useState('');
-    const [helpValue, setHelpValue] = useState('');
-    const [logoutValue, setLogoutValue] = useState('');   
+    const [navigateValue] = useState(''); // State to hold the value of the "Navigate" dropdown menu
+    const [viewEditValue] = useState(''); // State to hold the value of the "View/Edit" dropdown menu
+    const [reportsValue] = useState(''); // State to hold the value of the "Reports" dropdown menu
+    const [createValue] = useState(''); // State to hold the value of the "Create" dropdown menu
+    const [helpValue] = useState(''); // State to hold the value of the "Help" dropdown menu
+    const [logoutValue] = useState(''); // State to hold the value of the "Logout" dropdown menu
     const [accountList, setAccountList] = useState([]); // State to hold the list of accounts
     const [loading, setLoading] = useState(true); // State to indicate if the page is loading
-    const [totals, setTotals] = useState({ totalsList: [] }); // State to hold the totals
-    const [expenseColumn, setExpenseColumn] = useState([]);
-    const [expenseTotalColumn, setExpenseTotalColumn] = useState([]);
-    const [incomeDebtColumn, setIncomeDebtColumn] = useState([]);
-    const [incomeDebtTotalColumn, setIncomeDebtTotalColumn] = useState([]);
-    const [assetColumn, setAssetColumn] = useState([]);
-    const [assetTotalColumn, setAssetTotalColumn] = useState([]);
-    const [expenseTotal, setExpenseTotal] = useState(0);
-    const [assetTotal, setAssetTotal] = useState(0);
-    const [expenseColor, setExpenseColor] = useState([]);
-
-
+    const [expenseColumn, setExpenseColumn] = useState([]); // State to hold the list of expenses
+    const [expenseTotalColumn, setExpenseTotalColumn] = useState([]); // State to hold the total expenses
+    const [incomeDebtColumn, setIncomeDebtColumn] = useState([]); // State to hold the list of income/debt accounts
+    const [incomeDebtTotalColumn, setIncomeDebtTotalColumn] = useState([]); // State to hold the total income/debt accounts
+    const [assetColumn, setAssetColumn] = useState([]); // State to hold the list of assets
+    const [assetTotalColumn, setAssetTotalColumn] = useState([]); // State to hold the total assets
+    const [expenseColor, setExpenseColor] = useState([]); // State to hold the color of expenses
+    //const [expenseTotal, setExpenseTotal] = useState(0); // State to hold the total expenses
+    //const [assetTotal, setAssetTotal] = useState(0); // State to hold the total assets
 
     useEffect(() => {
         // Fetch the list of accounts from the backend using the getAccounts API
@@ -72,7 +51,7 @@ const Totals = () => {
             const totalsData = await Apis.getTotals(currentMonth, currentYear);
         
             // Log the received data
-            console.log('Totals Data:', totalsData.value.totalsList);
+            //console.log('Totals Data:', totalsData.value.totalsList);
             //setTotals(totalsData.value.totalsList); // Update the state with the fetched totals
         
             // Initialize separate arrays for each column
@@ -84,28 +63,28 @@ const Totals = () => {
             const assetTotalColumnData = [];
             const colorData = [];
 
+            // Initialize total variables
             let eTotal = 0;
             let aTotal = 0;
         
-            //calculation problems
             // Populate the arrays based on the category
             totalsData.value.totalsList.forEach(account => {
               if (account) {
                 switch (account.type) {
-                  case 1:
+                  case 1: // Income
                     incomeDebtColumnData.push(account.accountName);
                     incomeDebtTotalColumnData.push(renderCurrency(account.total));
                     break;
-                  case 4:
+                  case 4: // Debt
                     incomeDebtColumnData.push(account.accountName);
                     incomeDebtTotalColumnData.push(renderCurrency(account.total));
                     break;
-                  case 2:
+                  case 2: // Asset
                     assetColumnData.push(account.accountName);
                     assetTotalColumnData.push(renderCurrency(account.total));
                     aTotal += account.total;
                     break;
-                  case 3:
+                  case 3: // Expense
                     expenseColumnData.push(account.accountName);
                     expenseTotalColumnData.push(renderCurrency(account.total));
                     eTotal += account.total;
@@ -123,6 +102,7 @@ const Totals = () => {
             expenseColumnData.push('----------');
             expenseTotalColumnData.push('----------');
 
+            // Add the total row
             assetColumnData.push('Total:');
             assetTotalColumnData.push(renderCurrency(aTotal));
             expenseColumnData.push('Total:');
@@ -136,26 +116,24 @@ const Totals = () => {
             setExpenseColumn(expenseColumnData);
             setExpenseTotalColumn(expenseTotalColumnData);
             setExpenseColor(colorData);
-            setExpenseTotal(eTotal);
-            setAssetTotal(aTotal);
+            //setExpenseTotal(eTotal);
+            //setAssetTotal(aTotal);
             
-            console.log('Expense Column:', expenseColumn);
-            console.log('Expense Total Column:', expenseTotalColumn);
-            console.log('Income/Debt Column:', incomeDebtColumn);
-            console.log('Income/Debt Total Column:', incomeDebtTotalColumn);
-            console.log('Asset Column:', assetColumn);
-            console.log('Asset Total Column:', assetTotalColumn);
+            // console.log('Expense Column:', expenseColumn);
+            // console.log('Expense Total Column:', expenseTotalColumn);
+            // console.log('Income/Debt Column:', incomeDebtColumn);
+            // console.log('Income/Debt Total Column:', incomeDebtTotalColumn);
+            // console.log('Asset Column:', assetColumn);
+            // console.log('Asset Total Column:', assetTotalColumn);
 
             setLoading(false); // Set loading to false once data is fetched
           } catch (error) {
-            // Handle errors
+            // Error code
             console.error('Fetch totals error:', error);
           }
         };
         
-
         fetchTotals(); // Call the fetchTotals function to get the totals
-
       }, []);
 
     // Function to handle menu item selection for "Navigate"
@@ -198,7 +176,6 @@ const Totals = () => {
             case 'totals':
                 navigate('/totals'); // Navigate to Totals.js
                 break;
-        // Add more cases for other "Reports" options if needed
             default:
                 break;
         }
@@ -236,9 +213,11 @@ const Totals = () => {
     };
   
 
+    // Helper function to render currency in USD format
     const renderCurrency = (value) => {
       // Check if the value is greater than 0
       if (value > 0) {
+        // Return the value in currency format
         return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
       } else {
         // If the value is 0, display '0.00'
@@ -250,12 +229,11 @@ const Totals = () => {
     const getExpenseColor = (category) => {
       switch (category) {
         case 2:
-          return '#CC00CC'; // Yellow for category 1
+          return '#CC00CC'; // Purple for category 2 - Fixed Monthly
         case 3:
-          return '#50D092'; // Orange-Red for category 2
+          return '#50D092'; // Green for category 3 - Variable
         case 4:
-          return '#00C0FF'; // Blue-Violet for category 3
-        // Add more cases as needed
+          return '#00C0FF'; // Orange for category 4 - Temporary
         default:
           return '#FFFFFF'; // Default to white
       }
@@ -309,7 +287,6 @@ const Totals = () => {
                   <MenuItem value="adjustableBudget">Adjustable Budget</MenuItem>
                   <MenuItem value="currentBudget">Current Budget</MenuItem>
                   <MenuItem value="totals">Totals</MenuItem>
-                  {/* Add more report options */}
                 </Select>
               </div>
             </div>
@@ -357,11 +334,11 @@ const Totals = () => {
   
         {/* Loading Indicator */}
         {loading && (
-                    <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                      <CircularProgress />
-                      <p>Loading...</p>
-                    </div>
-              )}
+          <div style={{ textAlign: 'center', marginTop: '20px' }}>
+            <CircularProgress />
+            <p>Loading...</p>
+          </div>
+        )}
 
         {/* Page Header */}
         <div className="page-header" style={{ backgroundColor: '#E1DDE8', textAlign: 'center' }}>
@@ -395,6 +372,7 @@ const Totals = () => {
       {!loading && (
         <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px', backgroundColor: 'white' }}>
           <thead>
+            {/* Table Header */}
             <tr>
               <th style={{ textAlign: 'left' }}>Expenses</th>
               <th style={{ textAlign: 'left' }}>Expense Totals</th>
@@ -410,14 +388,18 @@ const Totals = () => {
               <tr key={index}>
                 {/* Expense Column */}
                 <td style={{ backgroundColor: getExpenseColor(expenseColor[index]) }}>{expenseColumn[index]}</td>
+                {/* Expense Total Column */}
                 <td>{expenseTotalColumn[index]}</td>
+                {/* Income/Debt Column */}
                 <td>{incomeDebtColumn[index]}</td>
+                {/* Income/Debt Total Column */}
                 <td>{incomeDebtTotalColumn[index]}</td>
+                {/* Asset Column */}
                 <td>{assetColumn[index]}</td>
+                {/* Asset Total Column */}
                 <td>{assetTotalColumn[index]}</td>
               </tr>
             ))}
-
           </tbody>
         </table>
       )}
@@ -425,12 +407,8 @@ const Totals = () => {
       {!loading && (expenseColumn.length === 0 && incomeDebtColumn.length === 0 && assetColumn.length === 0) && (
         <p>No data available.</p>
       )}
-
     </div>
     </div>
-
-
-
   );
 };
 

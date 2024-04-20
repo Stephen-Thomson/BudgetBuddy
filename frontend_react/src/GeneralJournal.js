@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   AppBar,
   Button,
-  Container,
   Paper,
   Table,
   TableBody,
@@ -14,8 +13,7 @@ import {
   Toolbar,
   Typography,
   Select,
-  MenuItem,
-} from '@mui/material';
+  MenuItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import Apis from './Apis';
@@ -24,42 +22,39 @@ import 'react-datepicker/dist/react-datepicker.css'; // Import the styles for th
 
 const GeneralJournal = () => {
     const navigate = useNavigate(); // Initialize the navigate function
-    const [navigateValue, setNavigateValue] = useState('');
-    const [viewEditValue, setViewEditValue] = useState('');
-    const [reportsValue, setReportsValue] = useState('');
-    const [createValue, setCreateValue] = useState('');
-    const [helpValue, setHelpValue] = useState('');
-    const [logoutValue, setLogoutValue] = useState('');    
+    const [navigateValue] = useState(''); // State to hold the selected value for "Navigate"
+    const [viewEditValue] = useState(''); // State to hold the selected value for "View/Edit"
+    const [reportsValue] = useState(''); // State to hold the selected value for "Reports"
+    const [createValue] = useState(''); // State to hold the selected value for "Create"
+    const [helpValue] = useState(''); // State to hold the selected value for "Help"
+    const [logoutValue] = useState(''); // State to hold the selected value for "Logout"
     const [accountList, setAccountList] = useState([]); // State to hold the list of accounts
-    const [rows, setRows] = useState(Array(10).fill(null).map((_, index) => ({ id: index, color: index % 2 === 0 ? '#E1DDE8' : '#C3CBC0' })));
-    const [selectedDate, setSelectedDate] = useState(new Date());
-    const [accounts, setAccounts] = useState([]); // Account column
-    const [descriptions, setDescriptions] = useState(['']); // Description column
-    const [debits, setDebits] = useState([]); // Debit column
-    const [credits, setCredits] = useState([]); // Credit column
-    const [debitErrors, setDebitErrors] = useState(Array(10).fill(''));
-    const [creditErrors, setCreditErrors] = useState(Array(10).fill(''));
-    const [validationErrors, setValidationErrors] = useState([]);
-    const [postButtonClicked, setPostButtonClicked] = useState(false);
-    const [activeCell, setActiveCell] = useState(); // Initialize the activeCell state
+    const [rows, setRows] = useState(Array(10).fill(null).map((_, index) => ({ id: index, color: index % 2 === 0 ? '#E1DDE8' : '#C3CBC0' }))); // Rows for the journal entries
+    const [selectedDate, setSelectedDate] = useState(new Date()); // State to hold the selected date
+    const [accounts, setAccounts] = useState([]); // State to hold the accounts
+    const [descriptions, setDescriptions] = useState(['']); // State to hold the descriptions
+    const [debits, setDebits] = useState([]); // State to hold the debits
+    const [credits, setCredits] = useState([]); // State to hold the credits
+    const [debitErrors, setDebitErrors] = useState(Array(10).fill('')); // State to hold the debit errors
+    const [creditErrors, setCreditErrors] = useState(Array(10).fill('')); // State to hold the credit errors
+    const [validationErrors, setValidationErrors] = useState([]); // State to hold the validation errors
+    const [postButtonClicked, setPostButtonClicked] = useState(false); // State to track if the post button was clicked
 
     useEffect(() => {
         // Fetch the list of accounts from the backend using the getAccounts API
         const fetchAccounts = async () => {
           try {
             const accounts = await Apis.getAccounts();
-            console.log('API Response:', accounts);
+            //console.log('API Response:', accounts);
             setAccountList(accounts);
           } catch (error) {
-            // Handle errors
+            // Error code
             console.error('Fetch accounts error:', error);
           }
         };
       
         fetchAccounts(); // Call the fetchAccounts function to get the accounts
-
-
-    }, []); // Run this effect only once, when the component mounts
+    }, []);
 
     // Function to handle menu item selection for "Navigate"
     const handleNavigate = (event) => {
@@ -101,7 +96,6 @@ const GeneralJournal = () => {
             case 'totals':
                 navigate('/totals'); // Navigate to Totals.js
                 break;
-        // Add more cases for other "Reports" options if needed
             default:
                 break;
         }
@@ -138,7 +132,7 @@ const GeneralJournal = () => {
         navigate('/'); // Navigate to LoginPage.js
     };
      
-    {/* Function to add more rows */}
+    // Function to add more rows to the journal entries table
     const addRows = () => {
       const newRows = Array(10).fill(null).map((_, index) => ({ id: rows.length + index, color: (rows.length + index) % 2 === 0 ? '#E1DDE8' : '#C3CBC0' }));
       setRows([...rows, ...newRows]);
@@ -147,192 +141,187 @@ const GeneralJournal = () => {
     {/* Function to handle key press (e.g., "Tab" key) */}
     const handleKeyPress = (event) => {
         // Check if the "Tab" key was pressed on the last row
-  const currentId = event.target.id; // Get the id of the current element
+        const currentId = event.target.id; // Get the id of the current element
 
-  if (event.key === 'Tab') {
-    // Add more rows when the "Tab" key is pressed
-    if (currentId !== '') {
-      console.log(accounts);
-      console.log(descriptions);
-      console.log(debits);
-      console.log(credits);
-    }
-    if (currentId === `credit-${rows.length - 1}`) {
-      addRows();
-    }
-  }
-};
+      if (event.key === 'Tab') {
+        // Add more rows when the "Tab" key is pressed
+        // if (currentId !== '') {
+        //   console.log(accounts);
+        //   console.log(descriptions);
+        //   console.log(debits);
+        //   console.log(credits);
+        // }
+        if (currentId === `credit-${rows.length - 1}`) {
+          addRows();
+        }
+      }
+    };
 
+    // Function to handle date changes
     const handleDateChange = (date) => {
       setSelectedDate(date);
     };
 
-      // Function to handle adding a new row
-  const addRow = () => {
-    // Add empty entries to each column
-    setAccounts([...accounts, null]);
-    setDescriptions([...descriptions, null]);
-    setDebits([...debits, null]);
-    setCredits([...credits, null]);
-  };
-
-  const isValidInput = (input) => {
-    const isValid = /^[0-9]*\.?[0-9]{0,2}$/.test(input);
-    return isValid ? '' : 'Invalid input. Please enter a valid dollar amount.';
-  };
+    // Function to validate the input in the Debit and Credit columns
+    const isValidInput = (input) => {
+      const isValid = /^[0-9]*\.?[0-9]{0,2}$/.test(input);
+      return isValid ? '' : 'Invalid input. Please enter a valid dollar amount.';
+    };
   
-  // Function to handle selecting an account for the Account column
-  const handleAccountSelect = (event, rowIndex) => {
-    const selectedAccount = event.target.value;
+    // Function to handle selecting an account for the Account column
+    const handleAccountSelect = (event, rowIndex) => {
+      const selectedAccount = event.target.value;
 
-    // Update the accounts array with the selected account at the specified rowIndex
-    const updatedAccounts = [...accounts];
-    updatedAccounts[rowIndex] = selectedAccount;
-    setAccounts(updatedAccounts);
-  };
+      // Update the accounts array with the selected account at the specified rowIndex
+      const updatedAccounts = [...accounts];
+      updatedAccounts[rowIndex] = selectedAccount;
+      setAccounts(updatedAccounts);
+    };
 
-  // Function to handle changing the Description in a specific row
-  const handleDescriptionChange = (event, rowIndex) => {
-    const { value } = event.target;
-    const newDescriptions = [...descriptions];
-    newDescriptions[rowIndex] = value;
-    setDescriptions(newDescriptions);
-  };
+    // Function to handle changing the Description in a specific row
+    const handleDescriptionChange = (event, rowIndex) => {
+      const { value } = event.target;
+      const newDescriptions = [...descriptions];
+      newDescriptions[rowIndex] = value;
+      setDescriptions(newDescriptions);
+    };
 
-  // Function to handle changes in the Debit column
-const handleDebitChange = (event, rowIndex) => {
-  const { value } = event.target;
-  const errorMessage = isValidInput(value);
-  
-  const newDebitErrors = [...debitErrors];
-  newDebitErrors[rowIndex] = errorMessage;
-  setDebitErrors(newDebitErrors);
+    // Function to handle changes in the Debit column
+    const handleDebitChange = (event, rowIndex) => {
+      const { value } = event.target;
+      // Validate the input
+      const errorMessage = isValidInput(value);
+      
+      const newDebitErrors = [...debitErrors];
+      newDebitErrors[rowIndex] = errorMessage;
+      setDebitErrors(newDebitErrors);
 
-  if (errorMessage === '') {
-    const newDebit = [...debits];
-    newDebit[rowIndex] = value;
-    setDebits(newDebit);
+      // Update the debits array with the new value at the specified rowIndex
+      if (errorMessage === '') {
+        const newDebit = [...debits];
+        newDebit[rowIndex] = value;
+        setDebits(newDebit);
 
-    const newCredits = [...credits];
-    newCredits[rowIndex] = '0.00';
-    setCredits(newCredits);
-  }
-};
+        // Clear the credit value for the same row
+        const newCredits = [...credits];
+        newCredits[rowIndex] = '0.00';
+        setCredits(newCredits);
+      }
+    };
 
-// Function to handle changes in the Credit column
-const handleCreditChange = (event, rowIndex) => {
-  const { value } = event.target;
-  const errorMessage = isValidInput(value);
+    // Function to handle changes in the Credit column
+    const handleCreditChange = (event, rowIndex) => {
+      const { value } = event.target;
+      const errorMessage = isValidInput(value);
 
-  const newCreditErrors = [...creditErrors];
-  newCreditErrors[rowIndex] = errorMessage;
-  setCreditErrors(newCreditErrors);
+      const newCreditErrors = [...creditErrors];
+      newCreditErrors[rowIndex] = errorMessage;
+      setCreditErrors(newCreditErrors);
 
-  if (errorMessage === '') {
-    const newCredit = [...credits];
-    newCredit[rowIndex] = value;
-    setCredits(newCredit);
+      // Update the credits array with the new value at the specified rowIndex
+      if (errorMessage === '') {
+        const newCredit = [...credits];
+        newCredit[rowIndex] = value;
+        setCredits(newCredit);
 
-    const newDebits = [...debits];
-    newDebits[rowIndex] = '0.00';
-    setDebits(newDebits);
-  }
-};
+        // Clear the debit value for the same row
+        const newDebits = [...debits];
+        newDebits[rowIndex] = '0.00';
+        setDebits(newDebits);
+      }
+    };
 
 
-  // Function to handle blur in the Debit column
-const handleDebitBlur = (event, rowIndex) => {
-  const numericValue = parseFloat(event.target.value);
-  const formattedValue = isNaN(numericValue) ? '' : `$${numericValue.toFixed(2)}`;
+    // Function to handle blur in the Debit column
+    const handleDebitBlur = (event, rowIndex) => {
+      const numericValue = parseFloat(event.target.value);
+      const formattedValue = isNaN(numericValue) ? '' : `$${numericValue.toFixed(2)}`;
 
-  const newDebits = [...debits];
-  newDebits[rowIndex] = formattedValue;
-  setDebits(newDebits);
-};
+      const newDebits = [...debits];
+      newDebits[rowIndex] = formattedValue;
+      setDebits(newDebits);
+    };
 
-// Function to handle blur in the Credit column
-const handleCreditBlur = (event, rowIndex) => {
-  const numericValue = parseFloat(event.target.value);
-  const formattedValue = isNaN(numericValue) ? '' : `$${numericValue.toFixed(2)}`;
+    // Function to handle blur in the Credit column
+    const handleCreditBlur = (event, rowIndex) => {
+      const numericValue = parseFloat(event.target.value);
+      const formattedValue = isNaN(numericValue) ? '' : `$${numericValue.toFixed(2)}`;
 
-  const newCredits = [...credits];
-  newCredits[rowIndex] = formattedValue;
-  setCredits(newCredits);
-};
+      const newCredits = [...credits];
+      newCredits[rowIndex] = formattedValue;
+      setCredits(newCredits);
+    };
 
-const validateRows = () => {
-  const errors = [];
+    // Function to validate the rows in the journal entries table
+    const validateRows = () => {
+      const errors = [];
 
-  rows.forEach((row, rowIndex) => {
-    const account = accounts[rowIndex];
-    const debit = debits[rowIndex] ? parseFloat((debits[rowIndex] || '').replace('$', '')) : 0;
-    const credit = credits[rowIndex] ? parseFloat((credits[rowIndex] || '').replace('$', '')) : 0;
+      // Iterate over each row in the table
+      rows.forEach((row, rowIndex) => {
+        const account = accounts[rowIndex];
+        const debit = debits[rowIndex] ? parseFloat((debits[rowIndex] || '').replace('$', '')) : 0;
+        const credit = credits[rowIndex] ? parseFloat((credits[rowIndex] || '').replace('$', '')) : 0;
 
-    // Check if the row has input in at least one column
-    if (account || debit !== 0 || credit !== 0) {
-      // Check individual columns for errors
-      if (!account) {
-        errors.push(`Please select an account for row ${rowIndex + 1}.`);
+        // Check if the row has input in at least one column
+        if (account || debit !== 0 || credit !== 0) {
+          // Check individual columns for errors
+          if (!account) {
+            errors.push(`Please select an account for row ${rowIndex + 1}.`);
+          }
+
+          // Check if both debit and credit columns have values
+          if (debit === 0 && credit === 0) {
+            errors.push(`Please enter a value in either debit or credit for row ${rowIndex + 1}.`);
+          }
+        }
+      });
+
+      // Check if the debit and credit totals match
+      const debitTotal = debits.reduce((total, value) => total + (parseFloat((value || '').replace('$', '')) || 0), 0).toFixed(2);
+      const creditTotal = credits.reduce((total, value) => total + (parseFloat((value || '').replace('$', '')) || 0), 0).toFixed(2);
+
+      if (debitTotal !== creditTotal) {
+        errors.push('Debit and credit totals do not match.');
       }
 
-      if (debit === 0 && credit === 0) {
-        errors.push(`Please enter a value in either debit or credit for row ${rowIndex + 1}.`);
+      setValidationErrors(errors); // Set errors in state
+      return errors;
+    };
+
+    // Function to handle posting the journal entries
+    const handlePostEntries = async () => {
+      // Set postButtonClicked to true
+      setPostButtonClicked(true);
+
+      // Validate the rows and get the errors
+      const errors = validateRows();
+
+      // Set the validation errors in state
+      setValidationErrors(errors);
+
+      // If there are no errors, proceed with posting entries
+      if (errors.length === 0) {
+        try {
+          // Call the API to post entries
+          const response = await Apis.postGJ(
+            selectedDate,
+            accounts,
+            descriptions,
+            debits,
+            credits
+          );
+
+          // Optional: Clear validation errors after successful submission
+          setValidationErrors([]);
+
+          // Navigate to the GeneralJournal page after successful submission
+          navigate('/postSuccess');
+        } catch (error) {
+          // Error code
+          console.error('PostGJ API error:', error);
+        }
       }
-    }
-  });
-
-  const debitTotal = debits.reduce((total, value) => total + (parseFloat((value || '').replace('$', '')) || 0), 0).toFixed(2);
-  const creditTotal = credits.reduce((total, value) => total + (parseFloat((value || '').replace('$', '')) || 0), 0).toFixed(2);
-
-  console.log('Debit total:', debitTotal);
-  console.log('Credit total:', creditTotal);
-  if (debitTotal !== creditTotal) {
-    errors.push('Debit and credit totals do not match.');
-  }
-
-  setValidationErrors(errors); // Set errors in state
-  return errors;
-};
-
-
-
-
-const handlePostEntries = async () => {
-  // Set postButtonClicked to true
-  setPostButtonClicked(true);
-
-  // Validate the rows and get the errors
-  const errors = validateRows();
-
-  // Set the validation errors in state
-  setValidationErrors(errors);
-
-  // If there are no errors, proceed with posting entries
-  if (errors.length === 0) {
-    try {
-      // Call the API to post entries
-      const response = await Apis.postGJ(
-        selectedDate,
-        accounts,
-        descriptions,
-        debits,
-        credits
-      );
-
-      // Handle the response as needed
-      console.log('PostGJ response:', response);
-
-      // Optional: Clear validation errors after successful submission
-      setValidationErrors([]);
-
-      // Navigate to the GeneralJournal page after successful submission
-      navigate('/postSuccess');
-    } catch (error) {
-      // Handle API call errors
-      console.error('PostGJ API error:', error);
-    }
-  }
-};
+    };
 
         
   return (
@@ -383,7 +372,6 @@ const handlePostEntries = async () => {
                 <MenuItem value="adjustableBudget">Adjustable Budget</MenuItem>
                 <MenuItem value="currentBudget">Current Budget</MenuItem>
                 <MenuItem value="totals">Totals</MenuItem>
-                {/* Add more report options */}
               </Select>
             </div>
           </div>
@@ -438,6 +426,7 @@ const handlePostEntries = async () => {
       <TableContainer component={Paper} style={{ marginTop: '20px' }}>
         <Table className="journal-table">
           <TableHead>
+            {/* Table Header */}
             <TableRow style={{ backgroundColor: '#C3CBC0' }}>
               <TableCell style={{ width: '20%' }}>Date</TableCell>
               <TableCell style={{ width: '20%' }}>Account</TableCell>
@@ -455,7 +444,6 @@ const handlePostEntries = async () => {
                 onKeyDown={handleKeyPress}
                 tabIndex={0}
               >
-                {/* Render cells for each column here */}
                 {/* Date Column */}
                 <TableCell>
                   {rowIndex === 0 ? (
@@ -485,50 +473,49 @@ const handlePostEntries = async () => {
                         </MenuItem>
                       ))}
                     </Select>
-                  </TableCell>
+                </TableCell>
 
-                  <TableCell style={{ padding: '16px' }}>
-  <TextField
-    variant="outlined" // You can adjust the variant based on your design
-    fullWidth // Makes the TextField take up the entire width of the cell
-    value={descriptions[rowIndex] || ''}
-    onChange={(e) => handleDescriptionChange(e, rowIndex)}
-    // You can further customize the TextField with other props as needed
-  />
-</TableCell>
+                {/* Description Column */}
+                <TableCell style={{ padding: '16px' }}>
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    value={descriptions[rowIndex] || ''}
+                    onChange={(e) => handleDescriptionChange(e, rowIndex)}
+                  />
+                </TableCell>
 
-<TableCell>
-  <TextField
-    variant="outlined"
-    fullWidth
-    value={debits[rowIndex] || ''}
-    onChange={(event) => handleDebitChange(event, rowIndex)}
-    onBlur={(event) => handleDebitBlur(event, rowIndex, 4)}
-    error={Boolean(debitErrors[rowIndex])}
-    helperText={debitErrors[rowIndex]}
-  />
-</TableCell>
-
-<TableCell>
-  <TextField
-    variant="outlined"
-    fullWidth
-    value={credits[rowIndex] || ''}
-    onChange={(event) => handleCreditChange(event, rowIndex)}
-    onBlur={(event) => handleCreditBlur(event, rowIndex)}
-    error={Boolean(creditErrors[rowIndex])}
-    helperText={creditErrors[rowIndex]}
-    inputProps={{ id: `credit-${rowIndex}` }}
-  />
-</TableCell>
-
-
+                {/* Debit Column */}
+                <TableCell>
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    value={debits[rowIndex] || ''}
+                    onChange={(event) => handleDebitChange(event, rowIndex)}
+                    onBlur={(event) => handleDebitBlur(event, rowIndex, 4)}
+                    error={Boolean(debitErrors[rowIndex])}
+                    helperText={debitErrors[rowIndex]}
+                  />
+                </TableCell>
+                      
+                {/* Credit Column */}
+                <TableCell>
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    value={credits[rowIndex] || ''}
+                    onChange={(event) => handleCreditChange(event, rowIndex)}
+                    onBlur={(event) => handleCreditBlur(event, rowIndex)}
+                    error={Boolean(creditErrors[rowIndex])}
+                    helperText={creditErrors[rowIndex]}
+                    inputProps={{ id: `credit-${rowIndex}` }}
+                  />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-
 
       {/* Footer */}
       <div className="page-footer" style={{ backgroundColor: '#E1DDE8', textAlign: 'center' }}>

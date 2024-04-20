@@ -2,188 +2,201 @@ import React, { useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
 import Apis from './Apis';
-import { Tab, TextField, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, Button, Paper } from '@mui/material';
+import { TextField, 
+  TableContainer, 
+  Table, 
+  TableHead, 
+  TableBody, 
+  TableRow, 
+  TableCell, 
+  Button, 
+  Paper } from '@mui/material';
 
 const CreateAsset = () => {
   const navigate = useNavigate(); // Initialize the navigate function
-  const [navigateValue, setNavigateValue] = useState('');
-  const [viewEditValue, setViewEditValue] = useState('');
-  const [reportsValue, setReportsValue] = useState('');
-  const [createValue, setCreateValue] = useState('');
-  const [helpValue, setHelpValue] = useState('');
-  const [logoutValue, setLogoutValue] = useState('');   
+  const [navigateValue] = useState(''); // State to hold the selected value for "Navigate"
+  const [viewEditValue] = useState(''); // State to hold the selected value for "View/Edit"
+  const [reportsValue] = useState(''); // State to hold the selected value for "Reports"
+  const [createValue] = useState(''); // State to hold the selected value for "Create"
+  const [helpValue] = useState(''); // State to hold the selected value for "Help"
+  const [logoutValue] = useState(''); // State to hold the selected value for "Logout"
   const [accountList, setAccountList] = useState([]); // State to hold the list of accounts
-  const [type, setType] = useState(2);
-  const [category, setCategory] = useState(1);
-  const [accountName, setAccountName] = useState('');
+  const [type] = useState(2); // This will hold the value for the type
+  const [category] = useState(1); // This will hold the value for the category
+  const [accountName, setAccountName] = useState(''); // This will hold account name
   const [dvalue, setDvalue] = useState('0.00'); // This will hold the value
   const [cvalue, setCvalue] = useState('0.00'); // This will hold the value
-  const [description, setDescription] = useState('Beginning Balance');
-  const [debitError, setDebitError] = useState('');
-  const [creditError, setCreditError] = useState('');
-  const [rows, setRows] = useState(Array(10).fill(null).map((_, index) => ({ id: index, color: index % 2 === 0 ? '#E1DDE8' : '#C3CBC0' })));
-  const [accountNameError, setAccountNameError] = useState('');
+  const [description] = useState('Beginning Balance'); // This will hold the description
+  const [debitError, setDebitError] = useState(''); // This will hold the error message
+  const [creditError, setCreditError] = useState(''); // This will hold the error message
+  const [rows] = useState(Array(10).fill(null).map((_, index) => ({ id: index, color: index % 2 === 0 ? '#E1DDE8' : '#C3CBC0' }))); // This will hold the rows
+  const [accountNameError, setAccountNameError] = useState(''); // This will hold the error message
 
-    useEffect(() => {
-        // Fetch the list of accounts from the backend using the getAccounts API
-        const fetchAccounts = async () => {
-          try {
-            const accounts = await Apis.getAccounts();
-            setAccountList(accounts);
-          } catch (error) {
-            // Handle errors
-            console.error('Fetch accounts error:', error);
-          }
-        };
-      
-        fetchAccounts(); // Call the fetchAccounts function to get the accounts
-      }, []);
-
-    // Function to handle menu item selection for "Navigate"
-    const handleNavigate = (event) => {
-        const value = event.target.value; // Get the selected value
-        // Navigate based on the value
-        switch (value) {
-            case 'todo':
-                navigate('/todo'); // Navigate to the ToDo.js page
-                break;
-            case 'generalJournal':
-                navigate('/generalJournal'); // Navigate to the GeneralJournal.js page
-                break;
-            default:
-                break;
-        }
-    };
-
-    // Function to handle menu item selection for "View/Edit"
-    const handleViewEdit = (event) => {
-        const selectedAccount = event.target.value;
-        if (selectedAccount === 'generalJournal') {
-          navigate('/generalJournalView'); // Navigate to GeneralJournalView.js
-        } else {
-          // Navigate to EditAccount.js with the selected account information
-          navigate(`/editAccount/${selectedAccount}`);
-        }
-      };
-
-    // Function to handle menu item selection for "Reports"
-    const handleReports = (event) => {
-        const value = event.target.value;
-        switch (value) {
-            case 'adjustableBudget':
-                navigate('/adjustableBudget'); // Navigate to AdjustableBudget.js
-                break;
-            case 'currentBudget':
-                navigate('/currentBudget'); // Navigate to CurrentBudget.js
-                break;
-            case 'totals':
-                navigate('/totals'); // Navigate to Totals.js
-                break;
-        // Add more cases for other "Reports" options if needed
-            default:
-                break;
-        }
-    };
-
-    // Function to handle menu item selection for "Create"
-    const handleCreate = (event) => {
-        const value = event.target.value;
-        switch (value) {
-            case 'income':
-                navigate('/createIncome'); // Navigate to CreateIncome.js
-                break;
-            case 'asset':
-                navigate('/createAsset'); // Navigate to CreateAsset.js
-                break;
-            case 'expense':
-                navigate('/createExpense'); // Navigate to CreateExpense.js
-                break;
-            case 'payable':
-                navigate('/createAccountPayable') // Navigate to CreateAccountPayable.js
-                break;
-            default:
-                break;
-        }
-    };
-
-    // Function to handle menu item selection for "Help"
-    const handleHelp = () => {
-        navigate('/help'); // Navigate to Help.js
-    };
-  
-    // Function to handle menu item selection for "Logout"
-    const handleLogout = () => {
-        navigate('/'); // Navigate to LoginPage.js
-    };
-
-    const isValidInput = (input) => {
-      const isValid = /^[0-9]*\.?[0-9]{0,2}$/.test(input);
-      return isValid ? '' : 'Invalid input. Please enter a valid dollar amount.';
-    };
-  
-    const validateAccountName = () => {
-      // Trim accountName to remove leading and trailing whitespaces
-      const trimmedAccountName = accountName.trim();
-  
-      // Check if the trimmed accountName is empty
-      if (trimmedAccountName === '') {
-        setAccountNameError('Please enter a name for the account');
-        return false;
-      }
-  
-      // Check if the accountName already exists in the accountList
-      if (accountList.includes(trimmedAccountName)) {
-        setAccountNameError('Account Name already exists');
-        return false;
-      }
-  
-      // If all checks pass, clear any previous errors
-      setAccountNameError('');
-      return true;
-    };
-    
-    const handleDebitChange = (event) => {
-      const { value } = event.target;
-      const errorMessage = isValidInput(value);
-    
-      setDebitError(errorMessage);
-    
-      if (errorMessage === '') {
-        setDvalue(value);
-        setCvalue('0.00');
+  useEffect(() => {
+    // Fetch the list of accounts from the backend using the getAccounts API
+    const fetchAccounts = async () => {
+      try {
+        const accounts = await Apis.getAccounts();
+        setAccountList(accounts);
+      } catch (error) {
+        // Handle errors
+        console.error('Fetch accounts error:', error);
       }
     };
   
-    const handleCreditChange = (event) => {
-      const { value } = event.target;
-      const errorMessage = isValidInput(value);
-    
-      setCreditError(errorMessage);
-    
-      if (errorMessage === '') {
-        setCvalue(value);
-        setDvalue('0.00');
+    fetchAccounts(); // Call the fetchAccounts function to get the accounts
+  }, []);
+
+  // Function to handle menu item selection for "Navigate"
+  const handleNavigate = (event) => {
+    const value = event.target.value; // Get the selected value
+    // Navigate based on the value
+    switch (value) {
+        case 'todo':
+            navigate('/todo'); // Navigate to the ToDo.js page
+            break;
+        case 'generalJournal':
+            navigate('/generalJournal'); // Navigate to the GeneralJournal.js page
+            break;
+        default:
+            break;
+    }
+  };
+
+  // Function to handle menu item selection for "View/Edit"
+  const handleViewEdit = (event) => {
+    const selectedAccount = event.target.value;
+    if (selectedAccount === 'generalJournal') {
+      navigate('/generalJournalView'); // Navigate to GeneralJournalView.js
+    } else {
+      // Navigate to EditAccount.js with the selected account information
+      navigate(`/editAccount/${selectedAccount}`);
+    }
+  };
+
+  // Function to handle menu item selection for "Reports"
+  const handleReports = (event) => {
+    const value = event.target.value;
+    switch (value) {
+        case 'adjustableBudget':
+            navigate('/adjustableBudget'); // Navigate to AdjustableBudget.js
+            break;
+        case 'currentBudget':
+            navigate('/currentBudget'); // Navigate to CurrentBudget.js
+            break;
+        case 'totals':
+            navigate('/totals'); // Navigate to Totals.js
+            break;
+        default:
+            break;
+    }
+  };
+
+  // Function to handle menu item selection for "Create"
+  const handleCreate = (event) => {
+      const value = event.target.value;
+      switch (value) {
+          case 'income':
+              navigate('/createIncome'); // Navigate to CreateIncome.js
+              break;
+          case 'asset':
+              navigate('/createAsset'); // Navigate to CreateAsset.js
+              break;
+          case 'expense':
+              navigate('/createExpense'); // Navigate to CreateExpense.js
+              break;
+          case 'payable':
+              navigate('/createAccountPayable') // Navigate to CreateAccountPayable.js
+              break;
+          default:
+              break;
       }
-    };
+  };
+
+  // Function to handle menu item selection for "Help"
+  const handleHelp = () => {
+      navigate('/help'); // Navigate to Help.js
+  };
+
+  // Function to handle menu item selection for "Logout"
+  const handleLogout = () => {
+      navigate('/'); // Navigate to LoginPage.js
+  };
+
+  // Function to validate the input for debit and credit fields
+  const isValidInput = (input) => {
+    const isValid = /^[0-9]*\.?[0-9]{0,2}$/.test(input); // Check if the input is a valid dollar amount
+    return isValid ? '' : 'Invalid input. Please enter a valid dollar amount.';
+  };
+
+  // Function to validate the account name
+  const validateAccountName = () => {
+    // Trim accountName to remove leading and trailing whitespaces
+    const trimmedAccountName = accountName.trim();
+
+    // Check if the trimmed accountName is empty
+    if (trimmedAccountName === '') {
+      setAccountNameError('Please enter a name for the account');
+      return false;
+    }
+
+    // Check if the accountName already exists in the accountList
+    if (accountList.includes(trimmedAccountName)) {
+      setAccountNameError('Account Name already exists');
+      return false;
+    }
+
+    // If all checks pass, clear any previous errors
+    setAccountNameError('');
+    return true;
+  };
   
-    const handleDebitBlur = () => {
-      const numericValue = parseFloat(dvalue);
-      const formattedValue = isNaN(numericValue) ? '' : `$${numericValue.toFixed(2)}`;
-      setDvalue(formattedValue);
-    };
+  // Function to handle the change event for the debit field
+  const handleDebitChange = (event) => {
+    const { value } = event.target;
+    const errorMessage = isValidInput(value);
   
-    const handleCreditBlur = () => {
-      const numericValue = parseFloat(cvalue);
-      const formattedValue = isNaN(numericValue) ? '' : `$${numericValue.toFixed(2)}`;
-      setCvalue(formattedValue);
-    };
+    setDebitError(errorMessage);
   
-    const handleCreateAccountClick = async () => {
+    if (errorMessage === '') {
+      setDvalue(value); // Set the value of the debit field
+      setCvalue('0.00'); // Reset the credit field
+    }
+  };
+
+  // Function to handle the change event for the credit field
+  const handleCreditChange = (event) => {
+    const { value } = event.target;
+    const errorMessage = isValidInput(value);
+  
+    setCreditError(errorMessage);
+  
+    if (errorMessage === '') {
+      setCvalue(value); // Set the value of the credit field
+      setDvalue('0.00'); // Reset the debit field
+    }
+  };
+
+  // Function to handle the blur event for the debit field
+  const handleDebitBlur = () => {
+    const numericValue = parseFloat(dvalue);
+    const formattedValue = isNaN(numericValue) ? '' : `$${numericValue.toFixed(2)}`; // Format the value to 2 decimal places
+    setDvalue(formattedValue);
+  };
+
+  // Function to handle the blur event for the credit field
+  const handleCreditBlur = () => {
+    const numericValue = parseFloat(cvalue);
+    const formattedValue = isNaN(numericValue) ? '' : `$${numericValue.toFixed(2)}`; // Format the value to 2 decimal places
+    setCvalue(formattedValue);
+  };
+  
+  // Function to handle the "Create" button click
+  const handleCreateAccountClick = async () => {
     // Validate the account name
     const isAccountNameValid = validateAccountName();
 
@@ -209,99 +222,97 @@ const CreateAsset = () => {
     }
   };
   
-    return (
-      <div>
-        {/* Top App Bar */}
-        <AppBar position="static" style={{ backgroundColor: '#C7C7C7'}}>
-          <Toolbar>
-            {/* Drop-Down Menus */}
-  
-            <div style={{ marginRight: '16px', marginLeft: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
-                  Navigate
-                </Typography>
-                <Select label="Navigate" onChange={handleNavigate} value={navigateValue}>
-                  <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
-                  <MenuItem value="todo">To-Do List</MenuItem>
-                  <MenuItem value="generalJournal">General Journal</MenuItem>
-                </Select>
-              </div>
+  return (
+    <div>
+      {/* Top App Bar */}
+      <AppBar position="static" style={{ backgroundColor: '#C7C7C7'}}>
+        <Toolbar>
+          {/* Drop-Down Menus */}
+          <div style={{ marginRight: '16px', marginLeft: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
+                Navigate
+              </Typography>
+              <Select label="Navigate" onChange={handleNavigate} value={navigateValue}>
+                <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
+                <MenuItem value="todo">To-Do List</MenuItem>
+                <MenuItem value="generalJournal">General Journal</MenuItem>
+              </Select>
             </div>
-  
-            <div style={{ marginRight: '16px', marginLeft: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
-                  View/Edit
-                </Typography>
-                <Select label="View/Edit" onChange={handleViewEdit} value={viewEditValue}>
-                  <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
-                  <MenuItem value="generalJournal">General Journal</MenuItem>
-                  {/* Populate the dropdown menu with accounts from state */}
-                  {accountList.map((account) => (
-                    <MenuItem key={account} value={account}>
-                      {account}
-                    </MenuItem>
-                    ))}
-                </Select>
-              </div>
+          </div>
+
+          <div style={{ marginRight: '16px', marginLeft: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
+                View/Edit
+              </Typography>
+              <Select label="View/Edit" onChange={handleViewEdit} value={viewEditValue}>
+                <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
+                <MenuItem value="generalJournal">General Journal</MenuItem>
+                {/* Populate the dropdown menu with accounts from state */}
+                {accountList.map((account) => (
+                  <MenuItem key={account} value={account}>
+                    {account}
+                  </MenuItem>
+                  ))}
+              </Select>
             </div>
-  
-            <div style={{ marginRight: '16px', marginLeft: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
-                  Reports
-                </Typography>
-                <Select label="Reports" onChange={handleReports} value={reportsValue}>
-                  <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
-                  <MenuItem value="adjustableBudget">Adjustable Budget</MenuItem>
-                  <MenuItem value="currentBudget">Current Budget</MenuItem>
-                  <MenuItem value="totals">Totals</MenuItem>
-                  {/* Add more report options */}
-                </Select>
-              </div>
+          </div>
+
+          <div style={{ marginRight: '16px', marginLeft: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
+                Reports
+              </Typography>
+              <Select label="Reports" onChange={handleReports} value={reportsValue}>
+                <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
+                <MenuItem value="adjustableBudget">Adjustable Budget</MenuItem>
+                <MenuItem value="currentBudget">Current Budget</MenuItem>
+                <MenuItem value="totals">Totals</MenuItem>
+              </Select>
             </div>
-  
-            <div style={{ marginRight: '16px', marginLeft: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
-                  Create
-                </Typography>
-                <Select label="Create" onChange={handleCreate} value={createValue}>
-                  <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
-                  <MenuItem value="income">Income Account</MenuItem>
-                  <MenuItem value="asset">Asset Account</MenuItem>
-                  <MenuItem value="expense">Expense Account</MenuItem>
-                  <MenuItem value="payable">Payable(Credit) Account</MenuItem>
-                </Select>
-              </div>
+          </div>
+
+          <div style={{ marginRight: '16px', marginLeft: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
+                Create
+              </Typography>
+              <Select label="Create" onChange={handleCreate} value={createValue}>
+                <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
+                <MenuItem value="income">Income Account</MenuItem>
+                <MenuItem value="asset">Asset Account</MenuItem>
+                <MenuItem value="expense">Expense Account</MenuItem>
+                <MenuItem value="payable">Payable(Credit) Account</MenuItem>
+              </Select>
             </div>
-  
-            <div style={{ marginRight: '16px', marginLeft: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
-                  Help
-                </Typography>
-                <Select label="Help" onChange={handleHelp} value={helpValue}>
-                  <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
-                  <MenuItem value="documentation">Documentation</MenuItem>
-                </Select>
-              </div>
+          </div>
+
+          <div style={{ marginRight: '16px', marginLeft: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
+                Help
+              </Typography>
+              <Select label="Help" onChange={handleHelp} value={helpValue}>
+                <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
+                <MenuItem value="documentation">Documentation</MenuItem>
+              </Select>
             </div>
-  
-            <div style={{ marginRight: '16px', marginLeft: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
-                  Logout
-                </Typography>
-                <Select label="Logout" onChange={handleLogout} value={logoutValue}>
-                  <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
-                  <MenuItem value="logout">Logout</MenuItem>
-                </Select>
-              </div>
+          </div>
+
+          <div style={{ marginRight: '16px', marginLeft: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
+                Logout
+              </Typography>
+              <Select label="Logout" onChange={handleLogout} value={logoutValue}>
+                <MenuItem value="" style={{ display: 'none' }} disabled>Select an option</MenuItem>
+                <MenuItem value="logout">Logout</MenuItem>
+              </Select>
             </div>
-          </Toolbar>
-        </AppBar>
+          </div>
+        </Toolbar>
+      </AppBar>
   
       {/* Page Header */}
       <div className="page-header" style={{ backgroundColor: '#E1DDE8', textAlign: 'center' }}>
@@ -325,7 +336,7 @@ const CreateAsset = () => {
             {rows.map((row, rowIndex) => (
               <TableRow key={row.id} style={{ backgroundColor: row.color }}>
                 {rowIndex === 0 ? (
-                  // Render content for the first row with information and input
+                  // Render content for the first row with information and input fields
                   <React.Fragment>
                     <TableCell>
                       {/* Date column with current date MM/DD/YYYY */}
@@ -377,9 +388,8 @@ const CreateAsset = () => {
                     </TableCell>
                   </React.Fragment>
                   ) : (
-                  // Render content for other rows (blank)
+                  // Render content for other rows (blank cells)
                   <React.Fragment>
-                    {/* ... other cells */}
                     <TableCell></TableCell>
                     <TableCell></TableCell>
                     <TableCell></TableCell>

@@ -57,8 +57,8 @@ const LoginPage = (props) => {
       }
 
         // Debug print
-        console.log('Username:', username);
-        console.log('Password:', password);
+        // console.log('Username:', username);
+        // console.log('Password:', password);
   
         // Make the API call to the backend's HandleLogin endpoint
         const response = await Apis.login(username, password);
@@ -83,7 +83,7 @@ const LoginPage = (props) => {
           // If the login is successful (username and password match), navigate to SelectFunction.js
           navigate('/selectFunction');
 
-          console.log('Logged in successfully!');
+          //console.log('Logged in successfully!');
 
           // Call the onLoginSuccess function to inform the parent component
           props.onLoginSuccess();
@@ -102,8 +102,8 @@ const LoginPage = (props) => {
         const response = await Apis.createAccount(username, password);
   
         // After successfully creating the account, proceed to navigate to the next page (SelectFunction.js)
-        console.log('Account created successfully!');
-        navigate('/selectFunction');
+        //console.log('Account created successfully!');
+        navigate('/selectFunction'); // Navigate to the SelectFunction.js page
 
         // Call the onLoginSuccess function to inform the parent component
         props.onLoginSuccess();
@@ -139,18 +139,17 @@ const LoginPage = (props) => {
       </Dialog>
     );
   
-    // Visual Architecture
     return (
         <div
             style={{
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center', // Center items horizontally
-            justifyContent: 'center', // Center items vertically
-            minHeight: '100vh', // Set minimum height to fill the entire viewport
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '100vh',
             backgroundColor: 'black',
             color: '#1E90FF',
-            textAlign: 'center', // Center text horizontally and vertically
+            textAlign: 'center',
         }}
         >
           <h1>Enter Username and Password to Login or Create a New Account</h1>
@@ -160,16 +159,16 @@ const LoginPage = (props) => {
               Username:
             </label>
             <TextField
-              id="username" // What textfield called
-              variant="outlined" // Styling
+              id="username"
+              variant="outlined"
               style={{
                 backgroundColor: 'white',
                 borderRadius: '5px',
                 margin: '5px',
-                color: 'black', // Set text color to black
+                color: 'black',
               }}
               value={username}
-              onChange={handleUsernameChange} // Setting the useState
+              onChange={handleUsernameChange}
             />
           </div>
           <div>
@@ -178,17 +177,17 @@ const LoginPage = (props) => {
               Password:
             </label>
             <TextField
-              id="password" // What textfield called
-              type="password" // Sets type to password so entered data is masked
-              variant="outlined" // Styling
+              id="password"
+              type="password"
+              variant="outlined"
               style={{
                 backgroundColor: 'white',
                 borderRadius: '5px',
                 margin: '5px',
-                color: 'black', // Set text color to black
+                color: 'black',
               }}
               value={password}
-              onChange={handlePasswordChange} // Setting the useState
+              onChange={handlePasswordChange}
             />
           </div>
           {/* This div contains the Remember Me Checkbox */}
@@ -198,12 +197,12 @@ const LoginPage = (props) => {
                 checked={rememberMe}
                 onChange={(event) => setRememberMe(event.target.checked)}
                 style={{
-                  color: 'white', // Change the color of the checkbox itself (unchecked state)
+                  color: 'white',
                 }}
                 checkedIcon={
                   <span
                     style={{
-                      color: 'purple', // Change the color of the check icon when checked
+                      color: 'purple',
                     }}
                   >
                     &#x2714; {/* Custom check icon */}
@@ -218,13 +217,13 @@ const LoginPage = (props) => {
           {/* This div contains the submit button */}
           <div>
             <Button
-              onClick={handleLogin} // Calls function for clicking submit button
+              onClick={handleLogin}
               variant="contained"
               style={{
-                backgroundColor: '#D7AD00', // Background color
-                color: 'black', // Text color
-                fontWeight: 'bold', // Bold text
-                borderRadius: '8px', // Rounded corners
+                backgroundColor: '#D7AD00',
+                color: 'black',
+                fontWeight: 'bold',
+                borderRadius: '8px',
               }}
               disabled={
                 username.trim().length === 0 ||

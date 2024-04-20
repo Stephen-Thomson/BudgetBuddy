@@ -2,62 +2,43 @@ import React, { useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
 import Apis from './Apis';
-import {
-  Tab,
-  TextField,
-  TableContainer,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Button,
-  Paper,
-  FormControl,
-  FormLabel,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
-  CircularProgress,
-} from '@mui/material';
+import { CircularProgress } from '@mui/material';
 
 const CurrentBudget = () => {
     const navigate = useNavigate(); // Initialize the navigate function
-    const [navigateValue, setNavigateValue] = useState('');
-    const [viewEditValue, setViewEditValue] = useState('');
-    const [reportsValue, setReportsValue] = useState('');
-    const [createValue, setCreateValue] = useState('');
-    const [helpValue, setHelpValue] = useState('');
-    const [logoutValue, setLogoutValue] = useState('');   
+    const [navigateValue] = useState(''); // State to hold the selected value for "Navigate"
+    const [viewEditValue] = useState(''); // State to hold the selected value for "View/Edit"
+    const [reportsValue] = useState(''); // State to hold the selected value for "Reports"
+    const [createValue] = useState(''); // State to hold the selected value for "Create"
+    const [helpValue] = useState(''); // State to hold the selected value for "Help"
+    const [logoutValue] = useState(''); // State to hold the selected value for "Logout"
     const [accountList, setAccountList] = useState([]); // State to hold the list of accounts
     const [loading, setLoading] = useState(true); // State to indicate if the page is loading
-    const [totals, setTotals] = useState({ totalsList: [] }); // State to hold the totals
-    const [expenseColumn, setExpenseColumn] = useState([]);
-    const [expenseTotalColumn, setExpenseTotalColumn] = useState([]);
-    const [incomeDebtColumn, setIncomeDebtColumn] = useState([]);
-    const [incomeDebtTotalColumn, setIncomeDebtTotalColumn] = useState([]);
-    const [assetColumn, setAssetColumn] = useState([]);
-    const [assetTotalColumn, setAssetTotalColumn] = useState([]);
-    const [expenseTotal, setExpenseTotal] = useState(0);
-    const [assetTotal, setAssetTotal] = useState(0);
-    const [incomeTotal, setIncomeTotal] = useState(0);
-    const [expenseColor, setExpenseColor] = useState([]);
-    const [remainingTotal, setRemainingTotal] = useState(0);
-    const [startingTotal, setStartingTotal] = useState(0);
-    const [currentMonth, setCurrentMonth] = useState(new Date().getMonth()); // Get the current month [0-11
-    const [bColumn1, setBColumn1] = useState(['Starting Balance', 'Total Expenses', 'Total Remaining']);
-    const [bColumn2, setBColumn2] = useState([]);
-    const [bColumn3, setBColumn3] = useState([]);
-    const [bColumn4, setBColumn4] = useState([]);
-    const [bColumn5, setBColumn5] = useState([]);
-    const [bColumn6, setBColumn6] = useState([]);
-    const [bColumn7, setBColumn7] = useState([]);
-    const [budgetRows, setBudgetRows] = useState([0, 1, 2]);
+    const [expenseColumn, setExpenseColumn] = useState([]); // State to hold the list of expense accounts
+    const [expenseTotalColumn, setExpenseTotalColumn] = useState([]); // State to hold the list of expense totals
+    const [incomeDebtColumn, setIncomeDebtColumn] = useState([]); // State to hold the list of income/debt accounts
+    const [incomeDebtTotalColumn, setIncomeDebtTotalColumn] = useState([]); // State to hold the list of income/debt totals
+    const [assetColumn, setAssetColumn] = useState([]); // State to hold the list of asset accounts
+    const [assetTotalColumn, setAssetTotalColumn] = useState([]); // State to hold the list of asset totals
+    const [expenseTotal, setExpenseTotal] = useState(0); // State to hold the total expenses
+    const [assetTotal, setAssetTotal] = useState(0); // State to hold the total assets
+    const [incomeTotal, setIncomeTotal] = useState(0); // State to hold the total income/debt
+    const [expenseColor, setExpenseColor] = useState([]); // State to hold the list of expense colors
+    const [remainingTotal, setRemainingTotal] = useState(0); // State to hold the remaining total
+    const [startingTotal, setStartingTotal] = useState(0); // State to hold the starting total
+    const [currentMonth] = useState(new Date().getMonth()); // Get the current month [0-11
+    const [bColumn1] = useState(['Starting Balance', 'Total Expenses', 'Total Remaining']); // Array to hold the first column values
+    const [bColumn2, setBColumn2] = useState([]); // State to hold the second column values
+    const [bColumn3, setBColumn3] = useState([]); // State to hold the third column values
+    const [bColumn4, setBColumn4] = useState([]); // State to hold the fourth column values
+    const [bColumn5, setBColumn5] = useState([]); // State to hold the fifth column values
+    const [bColumn6, setBColumn6] = useState([]); // State to hold the sixth column values
+    const [bColumn7, setBColumn7] = useState([]); // State to hold the seventh column values
+    const [budgetRows] = useState([0, 1, 2]); // Array to hold the row indices for the budget table
 
 
 
@@ -83,7 +64,7 @@ const CurrentBudget = () => {
             const averagesData = await Apis.getAverages();
     
             // Log the received data
-            console.log('Averages Data:', averagesData.value.averagesList);
+            //console.log('Averages Data:', averagesData.value.averagesList);
       
             // Initialize separate arrays for each column
             const expenseColumnData = [];
@@ -94,32 +75,32 @@ const CurrentBudget = () => {
             const assetTotalColumnData = [];
             const colorData = [];
 
+            // Initialize totals
             let eTotal = 0;
             let aTotal = 0;
             let iTotal = 0;
             let stTotal = 0;
             let rTotal = 0;
         
-            //calculation problems
             // Populate the arrays based on the category
             averagesData.value.averagesList.forEach(account => {
               if (account) {
                 switch (account.type) {
-                  case 1:
+                  case 1: // Income/Debt
                     incomeDebtColumnData.push(account.accountName);
                     incomeDebtTotalColumnData.push(renderCurrency(account.total));
                     iTotal += account.total;
                     break;
-                  case 4:
+                  case 4: // Income/Debt
                     incomeDebtColumnData.push(account.accountName);
                     incomeDebtTotalColumnData.push(renderCurrency(account.total));
                     break;
-                  case 2:
+                  case 2: // Asset
                     assetColumnData.push(account.accountName);
                     assetTotalColumnData.push(renderCurrency(account.total));
                     aTotal += account.total;
                     break;
-                  case 3:
+                  case 3: // Expense
                     expenseColumnData.push(account.accountName);
                     expenseTotalColumnData.push(renderCurrency(account.total));
                     eTotal += account.total;
@@ -137,11 +118,13 @@ const CurrentBudget = () => {
             expenseColumnData.push('----------');
             expenseTotalColumnData.push('----------');
 
+            // Add the total row
             assetColumnData.push('Total:');
             assetTotalColumnData.push(renderCurrency(aTotal));
             expenseColumnData.push('Total:');
             expenseTotalColumnData.push(renderCurrency(eTotal));
 
+            // Calculate the starting total and remaining total
             stTotal = aTotal + iTotal;
             rTotal = stTotal - eTotal;
 
@@ -166,7 +149,7 @@ const CurrentBudget = () => {
           }
           catch (error)
           {
-            // Handle errors
+            // Error code
             console.error('Fetch totals error:', error);
           }
         };
@@ -177,7 +160,7 @@ const CurrentBudget = () => {
       }, []);
 
       useEffect(() => {
-        startBudget(); // Call startBudget when this component mounts or when certain dependencies change
+        startBudget(); // Call startBudget when this component mounts or when incomeTotal changes
       }, [incomeTotal]);
 
     // Function to handle menu item selection for "Navigate"
@@ -220,7 +203,6 @@ const CurrentBudget = () => {
             case 'totals':
                 navigate('/totals'); // Navigate to Totals.js
                 break;
-        // Add more cases for other "Reports" options if needed
             default:
                 break;
         }
@@ -257,9 +239,11 @@ const CurrentBudget = () => {
         navigate('/'); // Navigate to LoginPage.js
     };
   
+    // Helper function to render currency values
     const renderCurrency = (value) => {
       // Check if the value is greater than 0
       if (value > 0) {
+        // Format the value as currency
         return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
       } else {
         // If the value is 0, display '0.00'
@@ -271,17 +255,17 @@ const CurrentBudget = () => {
     const getExpenseColor = (category) => {
       switch (category) {
         case 2:
-          return '#CC00CC'; // Yellow for category 1
+          return '#CC00CC'; // Purple for category 2 - Fixed Monthly
         case 3:
-          return '#50D092'; // Orange-Red for category 2
+          return '#50D092'; // Green for category 3 - Variable
         case 4:
-          return '#00C0FF'; // Blue-Violet for category 3
-        // Add more cases as needed
+          return '#00C0FF'; // Orange for category 4 - Temporary
         default:
           return '#FFFFFF'; // Default to white
       }
     };
 
+    // Helper function to get the month name based on the month index
     const getMonthName = (monthIndex) => {
       const months = [
         "January", "February", "March", "April", "May", "June",
@@ -290,6 +274,7 @@ const CurrentBudget = () => {
       return months[monthIndex % 12];
     };  
 
+    // Function to calculate the budget values
     const startBudget = () => {
       // Array to hold calculated values
       let calcedValues;
@@ -299,13 +284,14 @@ const CurrentBudget = () => {
       let inVal = incomeTotal;
       let remVal = 0;
 
-      console.log('startingTotal:', startingTotal);
-      console.log('expenseTotal:', expenseTotal);
-      console.log('remainingTotal:', remainingTotal);
-      console.log('assetTotal:', assetTotal);
-      console.log('incomeTotal:', incomeTotal);
-      console.log('expenseTotal:', expenseTotal);
+      // console.log('startingTotal:', startingTotal);
+      // console.log('expenseTotal:', expenseTotal);
+      // console.log('remainingTotal:', remainingTotal);
+      // console.log('assetTotal:', assetTotal);
+      // console.log('incomeTotal:', incomeTotal);
+      // console.log('expenseTotal:', expenseTotal);
   
+      // Calculate the budget values for the first month
       stVal = asVal + inVal;
       remVal = stVal - expVal;
       calcedValues = [];
@@ -316,6 +302,7 @@ const CurrentBudget = () => {
       calcedValues.push(remVal);
       setBColumn2(calcedValues);
   
+      // Calculate the budget values for the second month
       stVal = inVal + remVal;
       remVal = stVal - expVal;
       calcedValues = [];
@@ -326,6 +313,7 @@ const CurrentBudget = () => {
       calcedValues.push(remVal);
       setBColumn3(calcedValues);
   
+      // Calculate the budget values for the third month
       stVal = inVal + remVal;
       remVal = stVal - expVal;
       calcedValues = [];
@@ -336,6 +324,7 @@ const CurrentBudget = () => {
       calcedValues.push(remVal);
       setBColumn4(calcedValues);
   
+      // Calculate the budget values for the fourth month
       stVal = inVal + remVal;
       remVal = stVal - expVal;
       calcedValues = [];
@@ -346,6 +335,7 @@ const CurrentBudget = () => {
       calcedValues.push(remVal);
       setBColumn5(calcedValues);
   
+      // Calculate the budget values for the fifth month
       stVal = inVal + remVal;
       remVal = stVal - expVal;
       calcedValues = [];
@@ -356,6 +346,7 @@ const CurrentBudget = () => {
       calcedValues.push(remVal);
       setBColumn6(calcedValues);
   
+      // Calculate the budget values for the sixth month
       stVal = inVal + remVal;
       remVal = stVal - expVal;
       calcedValues = [];
@@ -416,7 +407,6 @@ const CurrentBudget = () => {
                   <MenuItem value="adjustableBudget">Adjustable Budget</MenuItem>
                   <MenuItem value="currentBudget">Current Budget</MenuItem>
                   <MenuItem value="totals">Totals</MenuItem>
-                  {/* Add more report options */}
                 </Select>
               </div>
             </div>
@@ -478,104 +468,103 @@ const CurrentBudget = () => {
         </div>
 
 
-      {/* Totals Section */}
-      <div style={{ margin: '20px' }}>
-      {/* Legend */}
-      <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#E1DDE8' }}>
-        <thead>
-          <tr>
-            <th style={{ padding: '10px', backgroundColor: '#FFFFFF' }}>Color Legend</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style={{ width: '20%', backgroundColor: '#CC00CC', padding: '10px', fontWeight: 'bold', textAlign: 'center' }}>Fixed Monthly</td>
-            <td style={{ width: '20%', backgroundColor: '#FFFFFF', padding: '10px' }}></td>
-            <td style={{ width: '20%', backgroundColor: '#50D092', padding: '10px', fontWeight: 'bold', textAlign: 'center' }}>Variable</td>
-            <td style={{ width: '20%', backgroundColor: '#FFFFFF', padding: '10px' }}></td>
-            <td style={{ width: '20%', backgroundColor: '#00C0FF', padding: '10px', fontWeight: 'bold', textAlign: 'center' }}>Temporary</td>
-          </tr>
-        </tbody>
-      </table>
-
-      {/* Totals Table */}
-      {!loading && (
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px', backgroundColor: 'white' }}>
+        {/* Totals Section */}
+        <div style={{ margin: '20px' }}>
+        {/* Legend */}
+        <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#E1DDE8' }}>
           <thead>
             <tr>
-              <th style={{ textAlign: 'left' }}>Expenses</th>
-              <th style={{ textAlign: 'left' }}>Expense Totals</th>
-              <th style={{ textAlign: 'left' }}>Income/Debt</th>
-              <th style={{ textAlign: 'left' }}>Income/Debt Totals</th>
-              <th style={{ textAlign: 'left' }}>Assets</th>
-              <th style={{ textAlign: 'left' }}>Asset Totals</th>
+              <th style={{ padding: '10px', backgroundColor: '#FFFFFF' }}>Color Legend</th>
             </tr>
           </thead>
           <tbody>
-            {/* Render rows based on the totals */}
-            {accountList.map((account, index) => (
-              <tr key={index}>
-                {/* Expense Column */}
-                <td style={{ backgroundColor: getExpenseColor(expenseColor[index]) }}>{expenseColumn[index]}</td>
-                <td>{expenseTotalColumn[index]}</td>
-                <td>{incomeDebtColumn[index]}</td>
-                <td>{incomeDebtTotalColumn[index]}</td>
-                <td>{assetColumn[index]}</td>
-                <td>{assetTotalColumn[index]}</td>
-              </tr>
-            ))}
-
+            <tr>
+              <td style={{ width: '20%', backgroundColor: '#CC00CC', padding: '10px', fontWeight: 'bold', textAlign: 'center' }}>Fixed Monthly</td>
+              <td style={{ width: '20%', backgroundColor: '#FFFFFF', padding: '10px' }}></td>
+              <td style={{ width: '20%', backgroundColor: '#50D092', padding: '10px', fontWeight: 'bold', textAlign: 'center' }}>Variable</td>
+              <td style={{ width: '20%', backgroundColor: '#FFFFFF', padding: '10px' }}></td>
+              <td style={{ width: '20%', backgroundColor: '#00C0FF', padding: '10px', fontWeight: 'bold', textAlign: 'center' }}>Temporary</td>
+            </tr>
           </tbody>
         </table>
-      )}
 
-      {/* Blank white space */}
-      <div style={{ height: '20px' }}></div>
+        {/* Totals Table */}
+        {!loading && (
+          <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px', backgroundColor: 'white' }}>
+            {/* Table Header */}
+            <thead>
+              <tr>
+                <th style={{ textAlign: 'left' }}>Expenses</th>
+                <th style={{ textAlign: 'left' }}>Expense Totals</th>
+                <th style={{ textAlign: 'left' }}>Income/Debt</th>
+                <th style={{ textAlign: 'left' }}>Income/Debt Totals</th>
+                <th style={{ textAlign: 'left' }}>Assets</th>
+                <th style={{ textAlign: 'left' }}>Asset Totals</th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* Render rows based on the totals */}
+              {accountList.map((account, index) => (
+                <tr key={index}>
+                  {/* Expense Column */}
+                  <td style={{ backgroundColor: getExpenseColor(expenseColor[index]) }}>{expenseColumn[index]}</td>
+                  <td>{expenseTotalColumn[index]}</td>
+                  <td>{incomeDebtColumn[index]}</td>
+                  <td>{incomeDebtTotalColumn[index]}</td>
+                  <td>{assetColumn[index]}</td>
+                  <td>{assetTotalColumn[index]}</td>
+                </tr>
+              ))}
 
-      {/* Budget table */}
-      {!loading && (
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px', backgroundColor: 'white' }}>
-        <thead>
-          {/* Header row */}
-          <tr>
-            {/* Empty cell */}
-            <th></th>
-            {/* Column headers for the next 6 months */}
-            {[0, 1, 2, 3, 4, 5].map((index) => (
-              <th key={index} style={{ textAlign: 'left' }}>
-                {/* Calculate the month name for each column header */}
-                {getMonthName(currentMonth + index)}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {/* Map through each row index */}
-          {budgetRows.map((rowIndex, index) => (
-            <tr key={index}>
-              {/* Render label for the first column */}
-              <td>{bColumn1[index]}</td>
-              <td>{renderCurrency(bColumn2[index])}</td>
-              <td>{renderCurrency(bColumn3[index])}</td>
-              <td>{renderCurrency(bColumn4[index])}</td>
-              <td>{renderCurrency(bColumn5[index])}</td>
-              <td>{renderCurrency(bColumn6[index])}</td>
-              <td>{renderCurrency(bColumn7[index])}</td>
+            </tbody>
+          </table>
+        )}
+
+        {/* Blank white space */}
+        <div style={{ height: '20px' }}></div>
+
+        {/* Budget table */}
+        {!loading && (
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px', backgroundColor: 'white' }}>
+          <thead>
+            {/* Header row */}
+            <tr>
+              {/* Empty cell */}
+              <th></th>
+              {/* Column headers for the next 6 months */}
+              {[0, 1, 2, 3, 4, 5].map((index) => (
+                <th key={index} style={{ textAlign: 'left' }}>
+                  {/* Calculate the month name for each column header */}
+                  {getMonthName(currentMonth + index)}
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    )}
+          </thead>
+          <tbody>
+            {/* Map through each row index */}
+            {budgetRows.map((rowIndex, index) => (
+              <tr key={index}>
+                {/* Render label for the first column */}
+                <td>{bColumn1[index]}</td>
+                {/* Render the values for the next 6 months */}
+                <td>{renderCurrency(bColumn2[index])}</td>
+                <td>{renderCurrency(bColumn3[index])}</td>
+                <td>{renderCurrency(bColumn4[index])}</td>
+                <td>{renderCurrency(bColumn5[index])}</td>
+                <td>{renderCurrency(bColumn6[index])}</td>
+                <td>{renderCurrency(bColumn7[index])}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        )}
 
-      {!loading && (expenseColumn.length === 0 && incomeDebtColumn.length === 0 && assetColumn.length === 0) && (
-        <p>No data available.</p>
-      )}
+        {!loading && (expenseColumn.length === 0 && incomeDebtColumn.length === 0 && assetColumn.length === 0) && (
+          <p>No data available.</p>
+        )}
 
+      </div>
     </div>
-    </div>
-
-
-
   );
 };
 

@@ -1,7 +1,8 @@
 import React from 'react';
 import Button from '@mui/material/Button';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { Link } from 'react-router-dom';
 
+// This component is a simple page that allows the user to select which function they wish to open.
 const SelectFunction = () => {
   return (
     <div

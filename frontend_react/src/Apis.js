@@ -18,6 +18,7 @@ const Apis = {
     }
   },
 
+  // API call to create account
   createAccount: async (username, password) => {
     try {
       const response = await axios.post(`${BASE_URL}/api/createaccount`, null, {
@@ -78,7 +79,7 @@ const Apis = {
     }
   },
 
-  // API call to create table in the backend
+  // API call to create account table
   createAccountTable: async (type, category, accountName, description, dvalue, cvalue) => {
     try {
       console.log('Data before sending:', { type, category, accountName, description, dvalue, cvalue });
@@ -144,11 +145,14 @@ const Apis = {
     }
   },
 
+  // API call to get averages
   getAverages: async () => {
     try {
         const response = await axios.get(`${BASE_URL}/api/getAverages`);
-        return response.data;
+
+        return response.data; // Return the data received from the backend
     } catch (error) {
+        // Handle errors
         console.error('Get Averages error: ', error);
         throw error;
     }
@@ -158,8 +162,10 @@ const Apis = {
   getTasks: async () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/getTasks`);
-      return response.data;
+
+      return response.data; // Return the data received from the backend
     } catch (error) {
+      // Handle errors
       console.error('Get Tasks error: ', error);
       throw error;
     }
@@ -169,73 +175,81 @@ const Apis = {
   createTask: async (newTaskData) => {
     try {
       const response = await axios.post(`${BASE_URL}/api/createTask`, newTaskData);
+
       return response.data; // Return the data received from the backend
     } catch (error) {
+      // Handle errors
       console.error('CreateTask error:', error);
-      throw error; // Throw the error to be handled by the caller
+      throw error;
     }
   },
 
-// API call to create a task
-updateTask: async (newTaskData) => {
-  try {
-    const response = await axios.post(`${BASE_URL}/api/updateTask`, newTaskData);
-    return response.data; // Return the data received from the backend
-  } catch (error) {
-    console.error('UpdateTask error:', error);
-    throw error; // Throw the error to be handled by the caller
-  }
-},
+  // API call to create a task
+  updateTask: async (newTaskData) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/api/updateTask`, newTaskData);
 
-// API call to get task
-getTask: async (taskId) => {
-  try {
-    const response = await axios.get(`${BASE_URL}/api/getTask`, {
-      params: { taskId },
-    });
+      return response.data; // Return the data received from the backend
+    } catch (error) {
+      // Handle errors
+      console.error('UpdateTask error:', error);
+      throw error;
+    }
+  },
 
-    return response.data; // Return the data received from the backend
-  } catch (error) {
-    // Handle errors
-    console.error('Get task error:', error);
-    throw error;
-  }
-},
+  // API call to get task
+  getTask: async (taskId) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/getTask`, {
+        params: { taskId },
+      });
 
-// API call to delete tasks
-deleteTasks: async (selectedTasks) => {
-  try {
-    const response = await axios.post(`${BASE_URL}/api/deleteTasks`, selectedTasks);
-    return response.data; // Return the data received from the backend
-  } catch (error) {
-    console.error('DeleteTasks error:', error);
-    throw error; // Throw the error to be handled by the caller
-  }
-},
+      return response.data; // Return the data received from the backend
+    } catch (error) {
+      // Handle errors
+      console.error('Get task error:', error);
+      throw error;
+    }
+  },
 
-// API call to check for task notifications
-checkTasks: async () => {
-  try {
-    const response = await axios.get(`${BASE_URL}/api/checkTasks`);
+  // API call to delete tasks
+  deleteTasks: async (selectedTasks) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/api/deleteTasks`, selectedTasks);
 
-    return response.data; // Return the data received from the backend
-  } catch (error) {
-    // Handle errors
-    console.error('Check tasks error:', error);
-    throw error;
-  }
-},
+      return response.data; // Return the data received from the backend
+    } catch (error) {
+      // Handle errors
+      console.error('DeleteTasks error:', error);
+      throw error;
+    }
+  },
 
-// API call to update repeat tasks
-updateRepeat: async () => {
-  try {
-    const response = await axios.post(`${BASE_URL}/api/updateRepeat`);
-    return response.data; 
-  } catch (error) {
-    console.error('Update Repeat error: ', error);
-    throw error;
-  }
-},
+  // API call to check for task notifications
+  checkTasks: async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/checkTasks`);
+
+      return response.data; // Return the data received from the backend
+    } catch (error) {
+      // Handle errors
+      console.error('Check tasks error:', error);
+      throw error;
+    }
+  },
+
+  // API call to update repeat tasks
+  updateRepeat: async () => {
+    try {
+      const response = await axios.post(`${BASE_URL}/api/updateRepeat`);
+
+      return response.data; 
+    } catch (error) {
+      // Handle errors
+      console.error('Update Repeat error: ', error);
+      throw error;
+    }
+  },
 
 };
 

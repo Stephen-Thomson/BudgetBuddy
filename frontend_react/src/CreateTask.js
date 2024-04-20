@@ -2,13 +2,11 @@ import React, { useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Apis from './Apis';
 import {
-  Tab,
   TextField,
   TableContainer,
   Table,
@@ -18,13 +16,8 @@ import {
   TableCell,
   Button,
   Paper,
-  FormControl,
-  FormLabel,
-  FormGroup,
   FormControlLabel,
-  Checkbox,
-  CircularProgress,
-} from '@mui/material';
+  Checkbox } from '@mui/material';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'; // Import the styles for the date picker
 import TimePicker from 'react-time-picker';
@@ -32,8 +25,9 @@ import 'react-time-picker/dist/TimePicker.css'; // Import the styles for the tim
 
 const CreateTask = () => {
     const navigate = useNavigate(); // Initialize the navigate function
-    const [navigateValue, setNavigateValue] = useState('');
+    const [navigateValue] = useState('');
 
+    // Default task object for the task list
     const defaultTask = {
       id: 1,
       titleDescription: 'Please Create Tasks',
@@ -44,21 +38,23 @@ const CreateTask = () => {
     };
 
     const [taskList, setTaskList] = useState([defaultTask]); // State to hold the list of tasks
-    const [editTaskValue, setEditTaskValue] = useState(''); // State to hold the value of the "Edit Task" dropdown menu
-    const [createDeleteValue, setCreateDeleteValue] = useState(''); // State to hold the value of the "Create/Delete" dropdown menu
-    const [helpValue, setHelpValue] = useState('');
-    const [logoutValue, setLogoutValue] = useState('');   
-    const [loading, setLoading] = useState(true);
+    const [editTaskValue] = useState(''); // State to hold the value of the "Edit Task" dropdown menu
+    const [createDeleteValue] = useState(''); // State to hold the value of the "Create/Delete" dropdown menu
+    const [helpValue] = useState(''); // State to hold the value of the "Help" dropdown menu
+    const [logoutValue] = useState(''); // State to hold the value of the "Logout" dropdown menu
+    const [loading, setLoading] = useState(true); // State to hold the loading status
     const [titleDescription, setTitleDescription] = useState(''); // State for Title/Description input
     const [selectedDate, setSelectedDate] = useState(new Date()); // State for Date picker
     const [selectedTime, setSelectedTime] = useState('12:00 PM'); // State for Time picker
     const [repeatValue, setRepeatValue] = useState(0); // State for Repeat dropdown value
     const [notificationChecked, setNotificationChecked] = useState(false); // State for Notification checkbox
-    const [currentTime, setCurrentTime] = useState(new Date()); // State for the current time
+    const [currentTime] = useState(new Date()); // State for the current time
 
     useEffect(() => {
+      // Fetch tasks from the backend API
       const fetchTasks = async () => {
           try {
+              // Call the getTasks function from the Apis module
               const rtasks = await Apis.getTasks();
               setTaskList(rtasks.value.tasks);
           } catch (error) {
@@ -72,7 +68,7 @@ const CreateTask = () => {
     }, []);
 
     // Add a console.log statement to print the value of taskList
-    console.log('Task List:', taskList);
+    //console.log('Task List:', taskList);
 
     // Function to handle menu item selection for "Navigate"
     const handleNavigate = (event) => {
@@ -90,6 +86,7 @@ const CreateTask = () => {
         }
     };
 
+    // Function to handle menu item selection for "Create/Delete"
     const handleCreateDeleteTask = (event) => {
       const value = event.target.value;
       switch (value) {
@@ -104,6 +101,7 @@ const CreateTask = () => {
       }
     };
 
+    // Function to handle menu item selection for "Edit Task"
     const handleEditTask = (event) => {
         const taskId = event.target.value;
         navigate(`/editTask/${taskId}`);
@@ -153,7 +151,6 @@ const CreateTask = () => {
 
     // Handle function for creating a new task
     const handleCreateTask = async () => {    
-        // Here you can gather all the data inputs and send them to the backend API
         const newTaskData = {
         titleDescription: titleDescription,
         date: selectedDate.toISOString(), // Send the date as an ISO string
@@ -260,82 +257,83 @@ const CreateTask = () => {
         {/* Page Content */}
         <TableContainer component={Paper} style={{ marginTop: '20px' }}>
             <Table className='task-list'>
-                <TableHead>
+              {/* Table Header */}
+              <TableHead>
                 <TableRow>
                     <TableCell>Title/Description</TableCell>
                     <TableCell>Date</TableCell>
                     <TableCell>Time</TableCell>
                     <TableCell>Repeat</TableCell>
                     <TableCell>Notification</TableCell>
-            </TableRow>
-            </TableHead>
-            <TableBody>
-            {loading ? (
-                <TableRow>
-                <TableCell colSpan={5}>Loading...</TableCell>
                 </TableRow>
-            ) : (
-                <TableRow>
-                <TableCell>
-                    <TextField
-                    label="Title/Description"
-                    variant="outlined"
-                    fullWidth
-                    value={titleDescription}
-                    onChange={(event) => setTitleDescription(event.target.value)}
-                    />
-                </TableCell>
-                <TableCell>
-                    <DatePicker
-                    selected={selectedDate}
-                    onChange={handleDateChange}
-                    dateFormat="M/dd/yyyy"
-                    todayButton="Today"
-                    isClearable
-                    showYearDropdown
-                    scrollableYearDropdown
-                    />
-                </TableCell>
-                <TableCell>
-                  <TimePicker
-                    onChange={handleTimeChange}
-                    value={currentTime}
-                    showSecond={false}
-                    format="h:mm a"
-                    use12Hours
-                  />
-                </TableCell>
-                <TableCell>
-                    <Select
-                    label="Repeat"
-                    onChange={handleRepeatChange}
-                    value={repeatValue}
-                    variant="outlined"
-                    fullWidth
-                    >
-                    <MenuItem value={0}>No Repeat</MenuItem>
-                    <MenuItem value={1}>Daily</MenuItem>
-                    <MenuItem value={2}>Weekly</MenuItem>
-                    <MenuItem value={3}>Monthly</MenuItem>
-                    </Select>
-                </TableCell>
-                <TableCell>
-                    <FormControlLabel
-                    control={<Checkbox onChange={handleNotificationChange} />}
-                    label="Notification"
-                    />
-                </TableCell>
-                </TableRow>
-            )}
+              </TableHead>
+              <TableBody>
+              {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={5}>Loading...</TableCell>
+                  </TableRow>
+              ) : (
+                  <TableRow>
+                    <TableCell>
+                        <TextField
+                        label="Title/Description"
+                        variant="outlined"
+                        fullWidth
+                        value={titleDescription}
+                        onChange={(event) => setTitleDescription(event.target.value)}
+                        />
+                    </TableCell>
+                    <TableCell>
+                        <DatePicker
+                        selected={selectedDate}
+                        onChange={handleDateChange}
+                        dateFormat="M/dd/yyyy"
+                        todayButton="Today"
+                        isClearable
+                        showYearDropdown
+                        scrollableYearDropdown
+                        />
+                    </TableCell>
+                    <TableCell>
+                      <TimePicker
+                        onChange={handleTimeChange}
+                        value={currentTime}
+                        showSecond={false}
+                        format="h:mm a"
+                        use12Hours
+                      />
+                    </TableCell>
+                    <TableCell>
+                        <Select
+                        label="Repeat"
+                        onChange={handleRepeatChange}
+                        value={repeatValue}
+                        variant="outlined"
+                        fullWidth
+                        >
+                        <MenuItem value={0}>No Repeat</MenuItem>
+                        <MenuItem value={1}>Daily</MenuItem>
+                        <MenuItem value={2}>Weekly</MenuItem>
+                        <MenuItem value={3}>Monthly</MenuItem>
+                        </Select>
+                    </TableCell>
+                    <TableCell>
+                        <FormControlLabel
+                        control={<Checkbox onChange={handleNotificationChange} />}
+                        label="Notification"
+                        />
+                    </TableCell>
+                  </TableRow>
+              )}
 
-            {/* Only one row for creating a new task */}
-            <TableRow>
-                <TableCell colSpan={5} align="center">
-                <Button variant="contained" color="primary" onClick={handleCreateTask}>
-                    Create
-                </Button>
-                </TableCell>
-            </TableRow>
+              {/* Only one row for creating a new task */}
+              <TableRow>
+                  <TableCell colSpan={5} align="center">
+                    <Button variant="contained" color="primary" onClick={handleCreateTask}>
+                        Create
+                    </Button>
+                  </TableCell>
+              </TableRow>
             </TableBody>
         </Table>
     </TableContainer>

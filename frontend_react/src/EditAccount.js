@@ -2,13 +2,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate, useParams } from 'react-router-dom';
 import Apis from './Apis';
 import {
-  Tab,
   TextField,
   TableContainer,
   Table,
@@ -23,31 +21,29 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
-  CircularProgress,
-} from '@mui/material';
+  CircularProgress } from '@mui/material';
 
 const EditAccount = () => {
     const navigate = useNavigate(); // Initialize the navigate function
-    const [navigateValue, setNavigateValue] = useState('');
-    const [viewEditValue, setViewEditValue] = useState('');
-    const [reportsValue, setReportsValue] = useState('');
-    const [createValue, setCreateValue] = useState('');
-    const [helpValue, setHelpValue] = useState('');
-    const [logoutValue, setLogoutValue] = useState('');   
+    const [navigateValue] = useState(''); // State to hold the selected value for "Navigate"
+    const [viewEditValue] = useState(''); // State to hold the selected value for "View/Edit"
+    const [reportsValue] = useState(''); // State to hold the selected value for "Reports"
+    const [createValue] = useState(''); // State to hold the selected value for "Create"
+    const [helpValue] = useState(''); // State to hold the selected value for "Help"
+    const [logoutValue] = useState(''); // State to hold the selected value for "Logout"
     const [accountList, setAccountList] = useState([]); // State to hold the list of accounts
-    // Retrieve the account name from the URL
-    const { accountName } = useParams();
-    const [selectedAccountName, setSelectedAccountName] = useState('');
+    const { accountName } = useParams(); // Retrieve the account name from the URL
+    const [selectedAccountName, setSelectedAccountName] = useState(''); // State to hold the selected account name
     const [accountEntries, setAccountEntries] = useState([]); // State to hold General Journal entries
     const [loading, setLoading] = useState(true); // State to indicate if the page is loading
     const [category, setCategory] = useState(0); // Default to 0 initially
-    const [nonExpenseChecked, setNonExpenseChecked] = useState(false);
-    const [fixedMonthlyChecked, setFixedMonthlyChecked] = useState(false);
-    const [variableChecked, setVariableChecked] = useState(false);
-    const [temporaryChecked, setTemporaryChecked] = useState(false);
-    const [editedAccountName, setEditedAccountName] = useState('');
-    const [accountNameError, setAccountNameError] = useState('');
-    const [categoryError, setCategoryError] = useState('');
+    const [nonExpenseChecked, setNonExpenseChecked] = useState(false); // State for non-expense checkbox
+    const [fixedMonthlyChecked, setFixedMonthlyChecked] = useState(false); // State for fixed monthly checkbox
+    const [variableChecked, setVariableChecked] = useState(false); // State for variable checkbox
+    const [temporaryChecked, setTemporaryChecked] = useState(false); // State for temporary checkbox
+    const [editedAccountName, setEditedAccountName] = useState(''); // State to hold the edited account name
+    const [accountNameError, setAccountNameError] = useState(''); // State to hold the account name error
+    const [categoryError, setCategoryError] = useState(''); // State to hold the category error
     const isMounted = useRef(true); // Use a ref to check if the component is mounted
     const [headerName, setHeaderName] = useState(''); // State to hold the header name
 
@@ -64,7 +60,7 @@ const EditAccount = () => {
           setSelectedAccountName(accountName);
     
         } catch (error) {
-          // Handle errors
+          // Error code
           console.error('Fetch accounts error:', error);
         }
       };
@@ -77,9 +73,11 @@ const EditAccount = () => {
     }, []);
     
     useEffect(() => {
+      // Function to fetch account entries based on the account name
       const fetchAccountEntries = async (accountName) => { // Accept accountName as a parameter
         try {
           const entries = await Apis.getAccountEntries(accountName); // Use accountName here
+          console.log('Account Entries:', entries);
           setAccountEntries(entries.value.rows);
     
           // Set category based on the first entry's category value
@@ -153,7 +151,6 @@ const EditAccount = () => {
             case 'totals':
                 navigate('/totals'); // Navigate to Totals.js
                 break;
-        // Add more cases for other "Reports" options if needed
             default:
                 break;
         }
@@ -194,6 +191,7 @@ const EditAccount = () => {
     const renderCurrency = (value) => {
       // Check if the value is greater than 0
       if (value > 0) {
+        // Format the value as currency
         return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
       } else {
         // If the value is 0, display '0.00'
@@ -201,6 +199,7 @@ const EditAccount = () => {
       }
     };
 
+    // Function to handle checkbox selection for Non-Expense
     const handleNonExpenseChange = () => {
       setNonExpenseChecked(true);
       setFixedMonthlyChecked(false);
@@ -210,6 +209,7 @@ const EditAccount = () => {
       setCategoryError(''); // Reset category error
     };
     
+    // Function to handle checkbox selection for Fixed Monthly
     const handleFixedMonthlyChange = () => {
       setNonExpenseChecked(false);
       setFixedMonthlyChecked(true);
@@ -219,6 +219,7 @@ const EditAccount = () => {
       setCategoryError(''); // Reset category error
     };
     
+    // Function to handle checkbox selection for Variable
     const handleVariableChange = () => {
       setNonExpenseChecked(false);
       setFixedMonthlyChecked(false);
@@ -228,6 +229,7 @@ const EditAccount = () => {
       setCategoryError(''); // Reset category error
     };
     
+    // Function to handle checkbox selection for Temporary
     const handleTemporaryChange = () => {
       setNonExpenseChecked(false);
       setFixedMonthlyChecked(false);
@@ -237,6 +239,7 @@ const EditAccount = () => {
       setCategoryError(''); // Reset category error 
     };
 
+    // Function to validate the account name
     const validateAccountName = () => {
       // Trim editedAccountName to remove leading and trailing whitespaces
       const trimmedEditedAccountName = editedAccountName.trim();
@@ -265,6 +268,7 @@ const EditAccount = () => {
       return true;
     };
 
+    // Function to handle saving changes
     const handleSaveChanges = async () => {
       // Validate account name
       const isAccountNameValid = validateAccountName();
@@ -292,14 +296,12 @@ const EditAccount = () => {
       }
 
         } catch (error) {
-          // Handle errors if any
+          // Error code
           console.error('Save changes error:', error);
         }
       }
     };
     
-    
-
     return (
       <div>
         {/* Top App Bar */}
@@ -348,7 +350,6 @@ const EditAccount = () => {
                   <MenuItem value="adjustableBudget">Adjustable Budget</MenuItem>
                   <MenuItem value="currentBudget">Current Budget</MenuItem>
                   <MenuItem value="totals">Totals</MenuItem>
-                  {/* Add more report options */}
                 </Select>
               </div>
             </div>
@@ -467,6 +468,7 @@ const EditAccount = () => {
               </TableCell>
             </TableRow>
 
+            {/* Table Header */}
             <TableRow style={{ backgroundColor: '#C3CBC0' }}>
               <TableCell style={{ width: '20%' }}>Date</TableCell>
               <TableCell style={{ width: '25%' }}>Description</TableCell>
@@ -476,6 +478,7 @@ const EditAccount = () => {
             </TableRow>
           </TableHead>
           <TableBody>
+            {/* Map through accountEntries and display each entry */}
             {accountEntries.map((entry, index) => (
               <TableRow
                 key={index}

@@ -1,22 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.IO;
 using System.Data.SQLite;
-using System.IO;
-using Microsoft.Extensions.FileProviders;
-using System.Security.Cryptography;
-using System.Text;
-using BCrypt.Net;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using System.Data.Entity;
-using static BudgetBuddyAPI.Controllers.FinancialAPIsController;
 
 namespace BudgetBuddyAPI.Controllers
 {
     [ApiController]
     public class FinancialAPIsController : ControllerBase
     {
+        // Create a class to hold the data for a general journal post
         public class PostGJRequest
         {
             public DateTime Date { get; set; }
@@ -26,6 +16,7 @@ namespace BudgetBuddyAPI.Controllers
             public List<string> Credits { get; set; }
         }
 
+        // Create a class to hold the data of a single general journal entry
         public class GeneralJournalEntry
         {
             public DateTime Date { get; set; }
@@ -35,6 +26,7 @@ namespace BudgetBuddyAPI.Controllers
             public decimal Credit { get; set; }
         }
 
+        // Create a class to hold the data needed to create an account table
         public class CreateTableModel
         {
             public int Type { get; set; }
@@ -45,6 +37,7 @@ namespace BudgetBuddyAPI.Controllers
             public string Cvalue { get; set; }
         }
 
+        // Create a class to hold the data of a single account entry
         public class AccountEntry
         {
             public int Category { get; set; }
@@ -55,6 +48,7 @@ namespace BudgetBuddyAPI.Controllers
             public decimal Total { get; set; }
         }
 
+        // Create a class to hold the data for editing an account
         public class EditAccountModel
         {
             public string SelectedAccountName { get; set; }
@@ -62,6 +56,7 @@ namespace BudgetBuddyAPI.Controllers
             public int Category { get; set; }
         }
 
+        // Create a table to hold a single Totals Report entry
         public class TotalsReportEntry
         {
             public string AccountName { get; set; }
@@ -71,33 +66,39 @@ namespace BudgetBuddyAPI.Controllers
         }
 
 
-
+        // POST: /api/postGJ
+        // Post data to correct tables from a General Journal Post entry
         [HttpPost("/api/postGJ")]
         public IActionResult PostGJ([FromBody] PostGJRequest postData)
         {
             try
             {
+                // Get the database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                Console.WriteLine($"Database Path: {dbFilePath}");
+                //Console.WriteLine($"Database Path: {dbFilePath}");
 
+                // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    Console.WriteLine("Connection Open");
-                    Console.WriteLine($"Count: {postData.Accounts.Count}");
+                    //Console.WriteLine("Connection Open");
+                    //Console.WriteLine($"Count: {postData.Accounts.Count}");
 
+                    // Start a transaction in case of any problems that need to be rolled back
                     using (var transaction = connection.BeginTransaction())
                     {
                         try
                         {
+                            // Loop through the accounts list
                             for (int i = 0; i < postData.Accounts.Count; i++)
                             {
+                                // Construct a valid table name from the account name
                                 string accountTableName = "Account_" + postData.Accounts[i].Replace(" ", "_");
 
-                                Console.WriteLine($"Account Table Name: {accountTableName}");
+                                //Console.WriteLine($"Account Table Name: {accountTableName}");
 
-                                Console.WriteLine($"Date: {postData.Date}");
-                                Console.WriteLine($"Description: {postData.Descriptions[i]}");
+                                //Console.WriteLine($"Date: {postData.Date}");
+                                //Console.WriteLine($"Description: {postData.Descriptions[i]}");
 
                                 // Convert string representations to nullable decimal
                                 decimal? debitNullable = ConvertToDecimal(postData.Debits[i]);
@@ -107,8 +108,12 @@ namespace BudgetBuddyAPI.Controllers
                                 decimal debit = debitNullable ?? 0; // If debitNullable is null, default to 0
                                 decimal credit = creditNullable ?? 0; // If creditNullable is null, default to 0
 
-                                Console.WriteLine($"Debit: {debit}");
-                                Console.WriteLine($"Credit: {credit}");
+                                // Convert string representations to decimal
+                                //decimal debit = ConvertToDecimal(postData.Debits[i]) ?? 0.00m; // If ConvertToDecimal result is null, default to 0.00
+                                //decimal credit = ConvertToDecimal(postData.Credits[i]) ?? 0.00m; // If ConvertToDecimal result is null, default to 0.00
+
+                                //Console.WriteLine($"Debit: {debit}");
+                                //Console.WriteLine($"Credit: {credit}");
 
                                 // Insert row into General Journal
                                 using (var command = new SQLiteCommand("INSERT INTO General_Journal (Date, Account, Description, Debit, Credit) VALUES (@Date, @Account, @Description, @Debit, @Credit);", connection, transaction))
@@ -122,6 +127,7 @@ namespace BudgetBuddyAPI.Controllers
                                     command.ExecuteNonQuery();
                                 }
 
+                                // Create variables for accountType and total value
                                 int accountType;
                                 decimal total = 0;
 
@@ -147,13 +153,13 @@ namespace BudgetBuddyAPI.Controllers
                                         }
                                         else
                                         {
-                                            // Handle unsupported account types or other scenarios
+                                            // Error code
                                             Console.WriteLine("Unsupported account type or unexpected value for Type.");
                                         }
                                     }
                                     else
                                     {
-                                        // Handle null result or conversion failure
+                                        // Error code
                                         Console.WriteLine("Failed to retrieve account type or unexpected value for Type.");
                                     }
                                 }
@@ -213,18 +219,22 @@ namespace BudgetBuddyAPI.Controllers
             return null;
         }
 
+        // GET: /api/getGJ
+        // Retreives and returns all entries in the general journal table
         [HttpGet("/api/getGJ")]
         public JsonResult GetGJ()
         {
             try
             {
+                // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                Console.WriteLine($"Database Path: {dbFilePath}");
+                //Console.WriteLine($"Database Path: {dbFilePath}");
 
+                // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    Console.WriteLine("Connection Open");
+                    //Console.WriteLine("Connection Open");
 
                     // Fetch data from the General_Journal table
                     var query = "SELECT Date, Account, Description, Debit, Credit FROM General_Journal";
@@ -274,18 +284,22 @@ namespace BudgetBuddyAPI.Controllers
             }
         }
 
+        // POST: /api/createTable
+        // Creates an account table from the passed in data
         [HttpPost("/api/createTable")]
         public IActionResult CreateTable([FromBody] CreateTableModel model)
         {
             try
             {
+                // Get the database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                Console.WriteLine($"Database Path: {dbFilePath}");
+                //Console.WriteLine($"Database Path: {dbFilePath}");
 
+                // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    Console.WriteLine("Connection Open");
+                    //Console.WriteLine("Connection Open");
 
                     // Create a unique table name with spaces replaced by underscores
                     string tableName = $"Account_{model.AccountName.Replace(" ", "_")}";
@@ -322,7 +336,7 @@ namespace BudgetBuddyAPI.Controllers
                     }
                     else
                     {
-                        // Handle unsupported types
+                        // Error code
                         Console.WriteLine("Unsupported account type.");
                     }
 
@@ -341,6 +355,7 @@ namespace BudgetBuddyAPI.Controllers
                         command.ExecuteNonQuery();
                     }
 
+                    // Add new account to AccountsList
                     using (var command = new SQLiteCommand("INSERT INTO AccountsList (Account_Name, Table_Name) VALUES (@Account_Name, @Table_Name);", connection))
                     {
                         command.Parameters.AddWithValue("@Account_Name", model.AccountName);
@@ -349,6 +364,7 @@ namespace BudgetBuddyAPI.Controllers
                         command.ExecuteNonQuery();
                     }
 
+                    // Return success
                     return Ok("Table created successfully.");
                 }
             }
@@ -358,22 +374,26 @@ namespace BudgetBuddyAPI.Controllers
             }
         }
 
+        // GET: /api/getAccountEntries
+        // Retreives the entries from the given account and returns them
         [HttpGet("/api/getAccountEntries")]
         public JsonResult GetAccountEntries([FromQuery] string accountName)
         {
             try
             {
+                // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
                 Console.WriteLine($"Database Path: {dbFilePath}");
 
+                // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    Console.WriteLine("Connection Open");
+                    //Console.WriteLine("Connection Open");
 
-                    // Create the account table name
+                    // Create the valid account table name
                     string accountTableName = $"Account_{accountName.Replace(" ", "_")}";
-                    Console.WriteLine($"Account Table Name: {accountTableName}");
+                    //Console.WriteLine($"Account Table Name: {accountTableName}");
 
                     // Fetch data from the specified account table, including the Total column
                     var query = $"SELECT Category, Date, Description, Debit, Credit, Total FROM {accountTableName}";
@@ -408,8 +428,8 @@ namespace BudgetBuddyAPI.Controllers
                             };
 
                             // Print the JSON response to the console
-                            Console.WriteLine("JSON Response:");
-                            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(responseData, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+                            //Console.WriteLine("JSON Response:");
+                            //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(responseData, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
 
                             // Return the response
                             return new JsonResult(Ok(responseData));
@@ -428,24 +448,31 @@ namespace BudgetBuddyAPI.Controllers
             }
         }
 
+        // POST: /api/editAccount
+        // Updates an account table with the passed in data
         [HttpPost("/api/editAccount")]
         public IActionResult EditAccount([FromBody] EditAccountModel model)
         {
             try
             {
+                // Get the database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                Console.WriteLine($"Database Path: {dbFilePath}");
+                //Console.WriteLine($"Database Path: {dbFilePath}");
 
+                // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    Console.WriteLine("Connection Open");
+                    //Console.WriteLine("Connection Open");
 
                     // Create the account table name
                     string accountTableName = $"Account_{model.SelectedAccountName.Replace(" ", "_")}";
 
+                    Console.WriteLine("Check 1");
+                    // Check if the account name has been edited
                     if (model.SelectedAccountName == model.EditedAccountName || string.IsNullOrEmpty(model.EditedAccountName))
                     {
+                        // Account name has not been edited, update the account table with the category
                         string updateQuery = $"UPDATE {accountTableName} SET Category = @Category WHERE Entry = 1";
 
                         using (var command = new SQLiteCommand(updateQuery, connection))
@@ -470,27 +497,31 @@ namespace BudgetBuddyAPI.Controllers
             }
         }
 
+        // Creates a table with the new account name and copies all data from the old account table
         private void EditName(EditAccountModel model, string accountTableName)
         {
             try
             {
+                // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                Console.WriteLine($"Database Path: {dbFilePath}");
+                //Console.WriteLine($"Database Path: {dbFilePath}");
 
+                // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    Console.WriteLine("Connection Open");
+                    //Console.WriteLine("Connection Open");
 
+                    // Use transaction in case any rollback is needed
                     using (var transaction = connection.BeginTransaction())
                     {
                         try
                         {
                             // Create the new table name
                             string editedTableName = $"Account_{model.EditedAccountName.Replace(" ", "_")}";
-
+                            Console.WriteLine("Check 2");
                             // Create the new table in the database
-                            string createTableQuery = $"CREATE TABLE IF NOT EXISTS @EditedTableName (" +
+                            string createTableQuery = $"CREATE TABLE IF NOT EXISTS {editedTableName} (" +
                                                       "Entry INTEGER PRIMARY KEY AUTOINCREMENT," +
                                                       "Type INT," +
                                                       "Category INT," +
@@ -502,7 +533,7 @@ namespace BudgetBuddyAPI.Controllers
 
                             using (var createTableCommand = new SQLiteCommand(createTableQuery, connection))
                             {
-                                createTableCommand.Parameters.AddWithValue("@EditedTableName", editedTableName);
+                                Console.WriteLine("Check 3");
                                 createTableCommand.ExecuteNonQuery();
                             }
 
@@ -538,8 +569,9 @@ namespace BudgetBuddyAPI.Controllers
                                 updateAccountsListCommand.ExecuteNonQuery();
                             }
 
-                            transaction.Commit(); // Commit the transaction if all operations succeed
-                            Console.WriteLine("Account Updated successfully.");
+                            // Commit the transaction if all operations succeed
+                            transaction.Commit(); 
+                            //Console.WriteLine("Account Updated successfully.");
                         }
                         catch (Exception ex)
                         {
@@ -559,17 +591,20 @@ namespace BudgetBuddyAPI.Controllers
             }
         }
 
+        // Calculates the totals for a given account, month, and year for reports
         private TotalsReportEntry TotalsPerMonth(int month, int year, string accountTableName)
         {
             try
             {
+                // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                Console.WriteLine($"Database Path: {dbFilePath}");
+                //Console.WriteLine($"Database Path: {dbFilePath}");
 
+                // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    Console.WriteLine("Connection Open");
+                    //Console.WriteLine("Connection Open");
 
                     // Fetch the Type and Category from the specified accountTableName
                     var accountTypeAndCategoryQuery = $"SELECT Type, Category FROM {accountTableName} LIMIT 1";
@@ -595,6 +630,7 @@ namespace BudgetBuddyAPI.Controllers
                     // Fetch data based on account type
                     if (type == 2 || type == 4) // Asset or Accounts Payable account
                     {
+                        // Retrieves total amount in the final entry of the table
                         var totalQuery = $"SELECT Total FROM {accountTableName} ORDER BY Entry DESC LIMIT 1";
 
                         using (var totalCommand = new SQLiteCommand(totalQuery, connection))
@@ -608,6 +644,7 @@ namespace BudgetBuddyAPI.Controllers
                     }
                     else if (type == 1 || type == 3) // Income or Expense account
                     {
+                        // Retrieves and calculates totals for given month
                         var incomeOrExpenseQuery = $"SELECT Debit, Credit FROM {accountTableName} WHERE strftime('%Y-%m', Date) = '{year}-{month:D2}'";
 
                         using (var incomeOrExpenseCommand = new SQLiteCommand(incomeOrExpenseQuery, connection))
@@ -666,18 +703,22 @@ namespace BudgetBuddyAPI.Controllers
             }
         }
 
+        // GET: /api/getTotals
+        // Retrieves all totals for the given month and year for reports
         [HttpGet("/api/getTotals")]
         public JsonResult GetTotals(int month, int year)
         {
             try
             {
+                // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                Console.WriteLine($"Database Path: {dbFilePath}");
+                //Console.WriteLine($"Database Path: {dbFilePath}");
 
+                // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    Console.WriteLine("Connection Open");
+                    //Console.WriteLine("Connection Open");
 
                     // Fetch all account names from the AccountsList table
                     var accountNamesQuery = "SELECT Table_Name FROM AccountsList";
@@ -728,19 +769,22 @@ namespace BudgetBuddyAPI.Controllers
                 // Log the error
                 Console.Error.WriteLine($"GetTotals error: {ex.Message}");
 
-                // Return an error response
                 return new JsonResult(new { success = false, message = "Internal server error." });
             }
         }
 
+        // GET: /api/getAverages
+        // Calculates the average totals for reports
         [HttpGet("/api/getAverages")]
         public JsonResult GetAverages()
         {
             try
             {
+                // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                Console.WriteLine($"Database Path: {dbFilePath}");
+                //Console.WriteLine($"Database Path: {dbFilePath}");
 
+                // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
@@ -827,7 +871,7 @@ namespace BudgetBuddyAPI.Controllers
                                                 currentYear--; // Adjust the year if start month is in the previous year
                                             }
 
-                                            Console.WriteLine($"Start Month: {startMonth}");
+                                            //Console.WriteLine($"Start Month: {startMonth}");
 
                                             // Calculate average total over previous six months
                                             for (int i = 0; i < 6; i++)
@@ -852,11 +896,11 @@ namespace BudgetBuddyAPI.Controllers
                                                     total += totalsReportEntry.Total;
                                                     monthsWithValues++;
                                                 }
-                                                Console.WriteLine($"Total: {totalsReportEntry.Total}");
+                                                //Console.WriteLine($"Total: {totalsReportEntry.Total}");
                                             }
 
-                                            Console.WriteLine($"To Average: {total}");
-                                            Console.WriteLine($"Months with values: {monthsWithValues}");
+                                            //Console.WriteLine($"To Average: {total}");
+                                            //Console.WriteLine($"Months with values: {monthsWithValues}");
                                             // Calculate average total
                                             decimal averageTotal = monthsWithValues > 0 ? total / monthsWithValues : 0;
 
@@ -875,7 +919,7 @@ namespace BudgetBuddyAPI.Controllers
                                     }
                                     else
                                     {
-                                        // Log or handle null or invalid type
+                                        // Error code
                                         Console.WriteLine($"Failed to retrieve account type for {accountTableName}.");
                                     }
                                 }
@@ -895,28 +939,31 @@ namespace BudgetBuddyAPI.Controllers
             }
             catch (Exception ex)
             {
-                // Log the error
+                // Error Code
                 Console.Error.WriteLine($"GetAverages error: {ex.Message}");
 
-                // Return an error response
                 return new JsonResult(new { success = false, message = "Internal server error." });
             }
         }
 
-        // Calculate the monthly total
+        // Calculate the monthly total for the given account - returns decimal for insertion into total column
         decimal CalculateMonthlyTotal(string accountTableName, DateTime date, int type, decimal newDebit, decimal newCredit)
         {
+            // Get database path
             string dbFilePath = DatabasePathManager.GetDatabasePath();
 
+            // Connect to the SQLite database
             using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
             {
                 try
                 {
                     connection.Open();
 
+                    // Set month and year variables
                     int month = date.Month;
                     int year = date.Year;
 
+                    // Select the sum of debit and credit for given account, month, year
                     string monthlyTotalQuery = $"SELECT SUM(Credit) AS TotalCredit, SUM(Debit) AS TotalDebit FROM {accountTableName} WHERE strftime('%Y-%m', Date) = @YearMonth";
 
                     using (var command = new SQLiteCommand(monthlyTotalQuery, connection))
@@ -927,6 +974,7 @@ namespace BudgetBuddyAPI.Controllers
                         {
                             if (reader.Read())
                             {
+                                // Convert to decimal
                                 decimal totalCredit = Convert.ToDecimal(reader["TotalCredit"]);
                                 decimal totalDebit = Convert.ToDecimal(reader["TotalDebit"]);
 
@@ -962,17 +1010,20 @@ namespace BudgetBuddyAPI.Controllers
             }
         }
 
+        // Calculates running total for new entry into asset or credit account
         decimal CalculateRunningTotal(string accountTableName, int type, decimal debit, decimal credit)
         {
+            // Get database path
             string dbFilePath = DatabasePathManager.GetDatabasePath();
 
+            // Connect to the SQLite database
             using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
             {
                 try
                 {
                     connection.Open();
 
-                    // Construct SQL command to retrieve the value of the Total column from the last entry
+                    // SQL command to retrieve the value of the Total column from the last entry
                     string lastTotalQuery = $"SELECT Total FROM {accountTableName} ORDER BY Entry DESC LIMIT 1";
 
                     using (var command = new SQLiteCommand(lastTotalQuery, connection))
@@ -985,19 +1036,18 @@ namespace BudgetBuddyAPI.Controllers
 
                         // Calculate the new total based on the account type
                         decimal newTotal = 0;
-                        if (type == 2)
+                        if (type == 2) // Asset
                         {
                             // Type 2: Add debit value and subtract credit value
                             newTotal = currentTotal + debit - credit;
                         }
-                        else if (type == 4)
+                        else if (type == 4) // Credit
                         {
                             // Type 4: Add credit value and subtract debit value
                             newTotal = currentTotal + credit - debit;
                         }
                         else
                         {
-                            // Handle unsupported account types
                             Console.WriteLine("Unsupported account type.");
                             return 0;
                         }
@@ -1013,11 +1063,6 @@ namespace BudgetBuddyAPI.Controllers
                 }
             }
         }
-
-
-
-
-
 
     }
 }

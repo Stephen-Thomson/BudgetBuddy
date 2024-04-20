@@ -1,16 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.IO;
 using System.Data.SQLite;
-using System.IO;
-using Microsoft.Extensions.FileProviders;
-using System.Security.Cryptography;
-using System.Text;
-using BCrypt.Net;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using System.Data.Entity;
-using static BudgetBuddyAPI.Controllers.ToDoListController;
 
 namespace BudgetBuddyAPI.Controllers
 {
@@ -38,21 +27,23 @@ namespace BudgetBuddyAPI.Controllers
             public bool Notification { get; set; }
         }
 
-
+        // GET: /api/getTasks
+        // Retreives all tasks in the database
         [HttpGet("/api/getTasks")]
         public JsonResult GetTasks()
         {
             try
             {
-                Console.WriteLine($"Database Path test: {DatabasePathManager.GetDatabasePath()}");
+                //Console.WriteLine($"Database Path test: {DatabasePathManager.GetDatabasePath()}");
+                // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                Console.WriteLine($"Database Path test: {dbFilePath}");
+                //Console.WriteLine($"Database Path test: {dbFilePath}");
 
-
+                // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    Console.WriteLine("Connection Open");
+                    //Console.WriteLine("Connection Open");
 
                     // Query to select tasks from the database
                     var query = "SELECT ID, TitleDescription, Date, Time, Repeat, Notification FROM ToDoList";
@@ -61,7 +52,10 @@ namespace BudgetBuddyAPI.Controllers
                     {
                         using (var reader = command.ExecuteReader())
                         {
+                            // Create a list to hold tasks
                             var tasks = new List<Task>();
+
+                            // Read in tasks
                             while (reader.Read())
                             {
                                 var task = new Task
@@ -73,14 +67,17 @@ namespace BudgetBuddyAPI.Controllers
                                     Repeat = reader.GetInt32(4),
                                     Notification = reader.GetBoolean(5)
                                 };
+                                // Add task to list
                                 tasks.Add(task);
                             }
 
-                            if (tasks.Count > 1) // If no tasks were found, return a default task
+                            // If no tasks were found, return a default task
+                            if (tasks.Count > 1) 
                             {
                                 tasks.RemoveAt(0);
                             }
 
+                            // Create response
                             var responseData = new
                             {
                                 tasks
@@ -93,28 +90,34 @@ namespace BudgetBuddyAPI.Controllers
             }
             catch (Exception ex)
             {
+                // Error code
                 Console.Error.WriteLine($"GetTasks error: {ex.Message}");
 
                 return new JsonResult(new { success = false, message = "Internal server error." });
             }
         }
 
+        // POST: /api/createTask
+        // Inserts a new task into the database
         [HttpPost("/api/createTask")]
         public IActionResult CreateTask([FromBody] CreateTaskRequest taskData)
         {
             try
             {
+                // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                Console.WriteLine($"Database Path: {dbFilePath}");
+                //Console.WriteLine($"Database Path: {dbFilePath}");
 
+                // Connect to the SQLite database 
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    Console.WriteLine("Connection Open");
+                    //Console.WriteLine("Connection Open");
 
-                    // SQL Query command
+                    // SQL Query command for insertion
                     var query = "INSERT INTO ToDoList (TitleDescription, Date, Time, Repeat, Notification) VALUES (@TitleDescription, @Date, @Time, @Repeat, @Notification);";
 
+                    // Parameterize values
                     using (var command = new SQLiteCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@TitleDescription", taskData.TitleDescription);
@@ -131,29 +134,34 @@ namespace BudgetBuddyAPI.Controllers
             }
             catch (Exception ex)
             {
-                // Log the error
+                // Error code
                 Console.WriteLine($"Error creating task: {ex.Message}");
 
-                // Return error response
                 return StatusCode(500, "Internal server error.");
             }
         }
 
+        // POST: /api/updateTask
+        // Updates a task in the database from the given data
         [HttpPost("/api/updateTask")]
         public IActionResult UpdateTask([FromBody] Task taskData)
         {
             try
             {
+                // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                Console.WriteLine($"Database Path: {dbFilePath}");
+                //Console.WriteLine($"Database Path: {dbFilePath}");
 
+                // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    Console.WriteLine("Connection Open");
+                    //Console.WriteLine("Connection Open");
 
-                    // SQL Query command
+                    // SQL Query command to update table
                     var query = "UPDATE ToDoList SET TitleDescription = @TitleDescription, Date = @Date, Time = @Time, Repeat = @Repeat, Notification = @Notification WHERE ID = @ID";
+                    
+                    // Parameterize values
                     using (var command = new SQLiteCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@TitleDescription", taskData.TitleDescription);
@@ -171,28 +179,34 @@ namespace BudgetBuddyAPI.Controllers
             }
             catch (Exception ex)
             {
-                // Log the error
+                // Error code
                 Console.WriteLine($"Error creating task: {ex.Message}");
 
-                // Return error response
                 return StatusCode(500, "Internal server error.");
             }
         }
 
+        // GET: /api/getTask
+        // Retrieve indicated task by it's ID
         [HttpGet("/api/getTask")]
         public JsonResult GetTask([FromQuery] int taskId)
         {
             try
             {
+                // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                Console.WriteLine($"Database Path: {dbFilePath}");
+                //Console.WriteLine($"Database Path: {dbFilePath}");
 
+                // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    Console.WriteLine("Connection Open");
+                    //Console.WriteLine("Connection Open");
 
+                    // SQl query to retrieve task
                     var query = "SELECT ID, TitleDescription, Date, Time, Repeat, Notification FROM ToDoList WHERE ID = @taskId";
+
+                    // Get task data
                     using (var command = new SQLiteCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@taskId", taskId);
@@ -200,6 +214,7 @@ namespace BudgetBuddyAPI.Controllers
                         {
                             if (reader.Read())
                             {
+                                // Read in task
                                 var retrievedTask = new Task
                                 {
                                     ID = reader.GetInt32(0),
@@ -217,8 +232,8 @@ namespace BudgetBuddyAPI.Controllers
                                 };
 
                                 // Print the JSON response to the console
-                                Console.WriteLine("JSON Response:");
-                                Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(retrievedTask, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+                                //Console.WriteLine("JSON Response:");
+                                //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(retrievedTask, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
 
                                 // Return the response
                                 return new JsonResult(Ok(responseData));
@@ -229,7 +244,7 @@ namespace BudgetBuddyAPI.Controllers
             }
             catch (Exception ex)
             {
-                // Log the detailed error information
+                // Error code
                 Console.Error.WriteLine($"GetTask error: {ex.ToString()}");
 
                 // Return an error response
@@ -237,23 +252,28 @@ namespace BudgetBuddyAPI.Controllers
             }
 
             // If no task is found, return a not found response
-            Console.WriteLine("Task Not Found");
+            //Console.WriteLine("Task Not Found");
             return new JsonResult(new { success = false, message = "Task not found." });
         }
 
+        // POST: /api/deleteTasks
+        // Deletes the indicated tasks from the database
         [HttpPost("/api/deleteTasks")]
         public IActionResult DeleteTasks(int[] taskIds)
         {
             try
             {
+                // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                Console.WriteLine($"Database Path: {dbFilePath}");
+                //Console.WriteLine($"Database Path: {dbFilePath}");
 
+                // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    Console.WriteLine("Connection Open");
+                    //Console.WriteLine("Connection Open");
 
+                    // Iterate through all task ids
                     foreach (int taskId in taskIds)
                     {
                         // SQL Query command to delete task with the given ID
@@ -270,17 +290,13 @@ namespace BudgetBuddyAPI.Controllers
             }
             catch (Exception ex)
             {
-                // Log the error
+                // Error code
                 Console.WriteLine($"Error deleting tasks: {ex.Message}");
 
                 // Return error response
                 return StatusCode(500, "Internal server error.");
             }
         }
-
-
-
-
 
     }
 }

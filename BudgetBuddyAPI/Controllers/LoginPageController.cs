@@ -1,12 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Data.SQLite;
-using System.IO;
-using Microsoft.Extensions.FileProviders;
-using System.Security.Cryptography;
-using System.Text;
-using BCrypt.Net;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace BudgetBuddyAPI.Controllers
 {
@@ -14,11 +8,10 @@ namespace BudgetBuddyAPI.Controllers
     public class LoginPageController : ControllerBase
     {
         // GET: /api/handlelogin
+        // Perform the login logic and return appropriate responses
         [HttpGet("/api/handlelogin")]
         public IActionResult HandleLogin([FromQuery] string username, [FromQuery] string password)
         {
-            // Perform the login logic and return appropriate responses
-
             // Step 1: Check if the database exists for the given username
             bool userExists = CheckIfUserExists(username);
 
@@ -38,7 +31,7 @@ namespace BudgetBuddyAPI.Controllers
                 return Ok(new { passwordMatches = false });
             }
 
-            // Step 3: If the username and password match, return a success response
+            // Step 3: If the username and password match, set the database path and return a success response
 
             // Get the correct database file path
             string dbFilePath = GetDatabaseFilePath(username);
@@ -46,11 +39,12 @@ namespace BudgetBuddyAPI.Controllers
             // Set the database path using DatabasePathManager
             DatabasePathManager.SetDatabasePath(dbFilePath);
 
-
+            //Return Success
             return Ok(new { success = true, message = "Logged in successfully!" });
         }
 
         // POST: /api/createaccount
+        // Endpoint to begin the Create Account process
         [HttpPost("/api/createaccount")]
         public IActionResult CreateAccount([FromQuery] string username, [FromQuery] string password)
         {
@@ -81,6 +75,7 @@ namespace BudgetBuddyAPI.Controllers
         // Helper method to check if the user exists in the database
         private bool CheckIfUserExists(string username)
         {
+            // Set the database file path string
             string dbFilePath = GetDatabaseFilePath(username);
 
             // Use File.Exists to check if the database file exists
@@ -90,20 +85,24 @@ namespace BudgetBuddyAPI.Controllers
                 return false;
             }
 
+            // Database exists, return true
             return true;
         }
 
         // Helper method to fetch the stored hashed password from the database
         private string GetStoredPasswordHash(string username)
         {
-            // Step 1: Call helper function to get database path
+            // Set the database file path string
             string dbFilePath = GetDatabaseFilePath(username);
 
-            // Set up SQL
+            // Set up SQL query string to select the password for the given username
             string selectQuery = "SELECT Password FROM User WHERE Username = @username;";
+
+            // Define parameters for the SQL query, specifying the username parameter
             var parameters = new Dictionary<string, object>
             {
-                { "@username", username }
+                // Bind the provided username to the @username parameter
+                { "@username", username } 
             };
 
             // Perform the query to get the stored hash password
@@ -118,7 +117,10 @@ namespace BudgetBuddyAPI.Controllers
                         command.Parameters.AddWithValue(parameter.Key, parameter.Value);
                     }
 
+                    // Execute the SQL command to retrieve the hashed password from the database and cast it to a string
                     var hashedPassword = command.ExecuteScalar() as string;
+
+                    // Return hashed password
                     return hashedPassword!;
                 }
             }
@@ -134,11 +136,13 @@ namespace BudgetBuddyAPI.Controllers
         // Helper method for creating a new account
         private void CreateAccountHelper(string username, string password)
         {
+            // Call to create the database file path string
             string dbFilePath = GetDatabaseFilePath(username);
 
             // Set the database path using DatabasePathManager
             DatabasePathManager.SetDatabasePath(dbFilePath);
 
+            // Call helper function to create the database and default tables
             CreateDatabaseAndTables(username);
 
             // Hash the password using Bcrypt and store it in the database
@@ -163,13 +167,20 @@ namespace BudgetBuddyAPI.Controllers
         // Helper method for defining the database path
         private string GetDatabaseFilePath(string username)
         {
-            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory; // Create base directory string
-            string dbFolder = Path.Combine(baseDirectory, "Databases"); // Create the database folder string
-            Directory.CreateDirectory(dbFolder);  // If the database directory does not exists, create it
-            string dbFilePath = Path.Combine(dbFolder, $"{username}.db"); // Create path to the specified database
+            // Create base directory string
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+            // Create the database folder string
+            string dbFolder = Path.Combine(baseDirectory, "Databases");
+
+            // If the database directory does not exists, create it
+            Directory.CreateDirectory(dbFolder);
+
+            // Create path to the specified database
+            string dbFilePath = Path.Combine(dbFolder, $"{username}.db");
 
             // Debug: Print out the constructed database file path
-            Console.WriteLine($"Database File Path: {dbFilePath}");
+            //Console.WriteLine($"Database File Path: {dbFilePath}");
 
             return dbFilePath;
         }
@@ -198,7 +209,7 @@ namespace BudgetBuddyAPI.Controllers
                 using (var command = new SQLiteCommand(
                     "CREATE TABLE IF NOT EXISTS General_Journal (" +
                     "ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "Date DATE," + // Use DATE data type for Date column
+                    "Date DATE," + 
                     "Account TEXT CHECK(length(Account) <= 255)," + // Use CHECK constraint to limit length
                     "Description TEXT CHECK(length(Description) <= 255)," + // Use CHECK constraint to limit length
                     "Debit REAL CHECK(Debit >= 0)," + // Use REAL data type for Debit and non-negative constraint
@@ -208,16 +219,18 @@ namespace BudgetBuddyAPI.Controllers
                     command.ExecuteNonQuery();
                 }
 
+                // Create AccountsList table holding the name of the account and the name of the table
                 using (var command = new SQLiteCommand(
                      "CREATE TABLE IF NOT EXISTS AccountsList (" +
                      "Entry INTEGER PRIMARY KEY AUTOINCREMENT," +
-                     "Account_Name TEXT CHECK(length(Account_Name) <= 497)," +
-                     "Table_Name TEXT);",
+                     "Account_Name TEXT CHECK(length(Account_Name) <= 497)," + // Name of the account
+                     "Table_Name TEXT);", // Name of the table: Account_<account name>
                      connection))
                 {
                     command.ExecuteNonQuery();
                 }
 
+                // Create starter default account Income
                 using (var command = new SQLiteCommand(
                     "CREATE TABLE IF NOT EXISTS Account_Income (" +
                     "Entry INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -233,6 +246,7 @@ namespace BudgetBuddyAPI.Controllers
                     command.ExecuteNonQuery();
                 }
 
+                // Insert intial entry
                 using (var command = new SQLiteCommand(
                     "INSERT INTO Account_Income (Type, Category, Date, Description, Debit, Credit, Total) " +
                     "VALUES (1, 1, DATE('now'), 'Account Created', 0, 0, 0);",
@@ -241,7 +255,7 @@ namespace BudgetBuddyAPI.Controllers
                     command.ExecuteNonQuery();
                 }
 
-
+                // Add to AccountList
                 using (var command = new SQLiteCommand(
                     "INSERT INTO AccountsList (Account_Name, Table_Name) VALUES ('Income', 'Account_Income');",
                     connection))
@@ -249,6 +263,7 @@ namespace BudgetBuddyAPI.Controllers
                     command.ExecuteNonQuery();
                 }
 
+                // Create starter default account Cash
                 using (var command = new SQLiteCommand(
                     "CREATE TABLE IF NOT EXISTS Account_Cash (" +
                     "Entry INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -264,6 +279,7 @@ namespace BudgetBuddyAPI.Controllers
                     command.ExecuteNonQuery();
                 }
 
+                // Insert intial entry
                 using (var command = new SQLiteCommand(
                     "INSERT INTO Account_Cash (Type, Category, Date, Description, Debit, Credit, Total) " +
                     "VALUES (2, 1, DATE('now'), 'Account Created', 0, 0, 0);",
@@ -272,6 +288,7 @@ namespace BudgetBuddyAPI.Controllers
                     command.ExecuteNonQuery();
                 }
 
+                // Add to AccountList
                 using (var command = new SQLiteCommand(
                     "INSERT INTO AccountsList (Account_Name, Table_Name) VALUES ('Cash', 'Account_Cash');",
                     connection))
@@ -279,6 +296,7 @@ namespace BudgetBuddyAPI.Controllers
                     command.ExecuteNonQuery();
                 }
 
+                // Create starter default account Checking
                 using (var command = new SQLiteCommand(
                     "CREATE TABLE IF NOT EXISTS Account_Checking (" +
                     "Entry INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -294,6 +312,7 @@ namespace BudgetBuddyAPI.Controllers
                     command.ExecuteNonQuery();
                 }
 
+                // Insert intial entry
                 using (var command = new SQLiteCommand(
                     "INSERT INTO Account_Checking (Type, Category, Date, Description, Debit, Credit, Total) " +
                     "VALUES (2, 1, DATE('now'), 'Account Created', 0, 0, 0);",
@@ -302,6 +321,7 @@ namespace BudgetBuddyAPI.Controllers
                     command.ExecuteNonQuery();
                 }
 
+                // Add to AccountList
                 using (var command = new SQLiteCommand(
                     "INSERT INTO AccountsList (Account_Name, Table_Name) VALUES ('Checking', 'Account_Checking');",
                     connection))
@@ -331,8 +351,6 @@ namespace BudgetBuddyAPI.Controllers
                 {
                     command.ExecuteNonQuery();
                 }
-
-                // TODO: Add more default tables
             }
         }
     }

@@ -2,24 +2,29 @@ import React, { useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
 import Apis from './Apis';
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper } from '@mui/material';
+import { TableContainer, 
+  Table, 
+  TableHead, 
+  TableRow, 
+  TableCell, 
+  TableBody, 
+  Paper } from '@mui/material';
 
 const GeneralJournalView = () => {
     const navigate = useNavigate(); // Initialize the navigate function
-    const [navigateValue, setNavigateValue] = useState('');
-    const [viewEditValue, setViewEditValue] = useState('');
-    const [reportsValue, setReportsValue] = useState('');
-    const [createValue, setCreateValue] = useState('');
-    const [helpValue, setHelpValue] = useState('');
-    const [logoutValue, setLogoutValue] = useState('');   
+    const [navigateValue] = useState(''); // State to hold the selected value for "Navigate"
+    const [viewEditValue] = useState(''); // State to hold the selected value for "View/Edit"
+    const [reportsValue] = useState(''); // State to hold the selected value for "Reports"
+    const [createValue] = useState(''); // State to hold the selected value for "Create"
+    const [helpValue] = useState(''); // State to hold the selected value for "Help"
+    const [logoutValue] = useState(''); // State to hold the selected value for "Logout"
     const [accountList, setAccountList] = useState([]); // State to hold the list of accounts
     const [journalEntries, setJournalEntries] = useState([]); // State to hold General Journal entries
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true); // State to hold loading status
 
     useEffect(() => {
         // Fetch the list of accounts from the backend using the getAccounts API
@@ -28,7 +33,7 @@ const GeneralJournalView = () => {
             const accounts = await Apis.getAccounts();
             setAccountList(accounts);
           } catch (error) {
-            // Handle errors
+            // Error code
             console.error('Fetch accounts error:', error);
           }
         };
@@ -47,10 +52,8 @@ const GeneralJournalView = () => {
           }
         };
       
-
         fetchJournalEntries(); // Call the fetchJournalEntries function to get General Journal entries
-
-      }, []);
+    }, []);
 
     // Function to handle menu item selection for "Navigate"
     const handleNavigate = (event) => {
@@ -92,7 +95,6 @@ const GeneralJournalView = () => {
             case 'totals':
                 navigate('/totals'); // Navigate to Totals.js
                 break;
-        // Add more cases for other "Reports" options if needed
             default:
                 break;
         }
@@ -133,6 +135,7 @@ const GeneralJournalView = () => {
     const renderCurrency = (value) => {
       // Check if the value is greater than 0
       if (value > 0) {
+        // Format the value as currency
         return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
       } else {
         // If the value is 0, display '0.00'
@@ -188,7 +191,6 @@ const GeneralJournalView = () => {
                   <MenuItem value="adjustableBudget">Adjustable Budget</MenuItem>
                   <MenuItem value="currentBudget">Current Budget</MenuItem>
                   <MenuItem value="totals">Totals</MenuItem>
-                  {/* Add more report options */}
                 </Select>
               </div>
             </div>
@@ -243,6 +245,7 @@ const GeneralJournalView = () => {
       <TableContainer component={Paper} style={{ marginTop: '20px' }}>
         <Table className="journal-table">
           <TableHead>
+            {/* Table Header */}
             <TableRow style={{ backgroundColor: '#C3CBC0' }}>
               <TableCell style={{ width: '20%' }}>Date</TableCell>
               <TableCell style={{ width: '20%' }}>Account</TableCell>
@@ -252,11 +255,13 @@ const GeneralJournalView = () => {
             </TableRow>
           </TableHead>
           <TableBody>
+            {/* Display loading message if data is still loading */}
             {loading ? (
               <TableRow>
                 <TableCell colSpan={5}>Loading...</TableCell>
               </TableRow>
             ) : (
+              // Map over the journal entries and display each entry in a table row
               journalEntries && journalEntries.map((entry, index) => (
                 <TableRow
                   key={index}
@@ -271,9 +276,9 @@ const GeneralJournalView = () => {
                 ))
             )}
           </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
+        </Table>
+      </TableContainer>
+    </div>
   );
 };
 

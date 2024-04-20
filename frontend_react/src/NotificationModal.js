@@ -42,6 +42,8 @@ const NotificationModal = ({ notificationList }) => {
       }}>
         <h2>Notifications</h2>
         <ul>
+          {/* Loop through the notificationList and render each notification as a list item */}
+          {/* Use the index as the key for each list item */}
           {notificationList.map((notification, index) => (
             <li key={index}>{notification}</li>
           ))}

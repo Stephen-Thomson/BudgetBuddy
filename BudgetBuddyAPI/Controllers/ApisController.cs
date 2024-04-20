@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.SQLite;
-using System.Linq;
+
 
 namespace BudgetBuddyAPI.Controllers
 {
@@ -24,6 +19,7 @@ namespace BudgetBuddyAPI.Controllers
         }
 
         // GET: /api/getaccounts
+        // Retreives and returns a list of all exisiting account names
         [HttpGet("/api/getAccounts")]
         public IActionResult GetAccounts()
         {
@@ -66,19 +62,21 @@ namespace BudgetBuddyAPI.Controllers
             }
             catch (Exception ex)
             {
-                // Handle any exceptions here
                 return BadRequest($"An error occurred: {ex.Message}");
             }
         }
 
         // GET: /api/checkTasks
+        // Checks all exisiting tasks for deadline and returns notifications of any that have reached their deadline
         [HttpGet("/api/checkTasks")]
         public IActionResult CheckTasks()
         {
+            // Create a tracking int to make sure the first line of the list is added only once
             int firstTrue = 0;
-            Console.WriteLine("CheckTasks called");
+            //Console.WriteLine("CheckTasks called");
             try
             {
+                // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
 
                 if (string.IsNullOrEmpty(dbFilePath))
@@ -86,6 +84,7 @@ namespace BudgetBuddyAPI.Controllers
                     return BadRequest("Database path is not initialized.");
                 }
 
+                // Create list to hold any notifications
                 List<string> notificationList = new List<string>();
 
                 // Connect to the SQLite database
@@ -100,6 +99,7 @@ namespace BudgetBuddyAPI.Controllers
                         {
                             while (reader.Read())
                             {
+                                // Read in a task
                                 var taskModel = new TaskModel
                                 {
                                     ID = reader.GetInt32(0),
@@ -110,17 +110,20 @@ namespace BudgetBuddyAPI.Controllers
                                     Notification = reader.GetBoolean(5)
                                 };
 
+                                // Check if the task's notification is true
                                 if (taskModel.Notification)
                                 {
+                                    // Call helper function to determine if the deadline has been reached
                                     if (IsTaskDue(taskModel))
                                     {
+                                        // Check to see if new list needs the first entry
                                         if (firstTrue == 0)
                                         {
                                             string dueLine = "These tasks are currently due!";
                                             notificationList.Add(dueLine);
                                             firstTrue = 1;
                                         }
-                                        Console.WriteLine("Due True");
+                                        //Console.WriteLine("Due True");
 
                                         // Add the notification string to the list
                                         notificationList.Add(taskModel.TitleDescription);
@@ -131,13 +134,14 @@ namespace BudgetBuddyAPI.Controllers
                     }
                 }
 
+                // If the list has any notifications, return the list
                 if (notificationList.Any())
                 {
-                    Console.WriteLine("Notification List:");
-                    foreach (var notification in notificationList)
-                    {
-                        Console.WriteLine(notification); // Assuming notification is a string
-                    }
+                    //Console.WriteLine("Notification List:");
+                    //foreach (var notification in notificationList)
+                    //{
+                    //    Console.WriteLine(notification); // Assuming notification is a string
+                    //}
                     return Ok(notificationList);
                 }
                 else
@@ -148,16 +152,16 @@ namespace BudgetBuddyAPI.Controllers
             }
             catch (Exception ex)
             {
-                // Handle any exceptions here
                 return BadRequest($"An error occurred: {ex.Message}");
             }
         }
 
+        // Helper function to check if the task's deadline has been reached
         private bool IsTaskDue(TaskModel taskModel)
         {
-            // Get current DateTime in UTC to avoid time zone issues
+            // Get current DateTime
             var currentDateTime = DateTime.Now;
-            Console.WriteLine($"Current DateTime (Local): {currentDateTime}");
+            //Console.WriteLine($"Current DateTime (Local): {currentDateTime}");
 
             // Split the time string into hours and minutes
             string[] timeParts = taskModel.Time.Split(':');
@@ -167,35 +171,35 @@ namespace BudgetBuddyAPI.Controllers
             int minutes = int.Parse(timeParts[1]);
 
             // Create a TimeSpan object
-            TimeSpan taskTime = new TimeSpan(hours, minutes, 0); // Assuming seconds are always 0
-            Console.WriteLine($"Task Time: {taskTime}");
+            TimeSpan taskTime = new TimeSpan(hours, minutes, 0);
+            //Console.WriteLine($"Task Time: {taskTime}");
 
             // Combine the task date and extracted time to create a new DateTime
             var taskDateTime = new DateTime(taskModel.Date.Year, taskModel.Date.Month, taskModel.Date.Day,
                                             taskTime.Hours, taskTime.Minutes, taskTime.Seconds, DateTimeKind.Unspecified);
-            Console.WriteLine($"Task DateTime (Local): {taskDateTime}");
+            //Console.WriteLine($"Task DateTime (Local): {taskDateTime}");
 
             // Calculate time difference
             var timeDifference = currentDateTime - taskDateTime;
-            Console.WriteLine($"Time Difference: {timeDifference}");
+            //Console.WriteLine($"Time Difference: {timeDifference}");
 
             // Check if the task's date is today and the time is within the last 2 minutes
             if (currentDateTime.Date == taskDateTime.Date)
             {
                 var isWithinLast2Minutes = timeDifference >= TimeSpan.Zero && timeDifference <= TimeSpan.FromMinutes(2);
-                Console.WriteLine($"Is Task Within Last 2 Minutes: {isWithinLast2Minutes}");
+                //Console.WriteLine($"Is Task Within Last 2 Minutes: {isWithinLast2Minutes}");
                 return isWithinLast2Minutes;
             }
-            // Check if the task's date is in the past and its time is within 2 minutes
+            // Check if the task's date is in the past and its time is within 2 minutes for edge case
             else if (taskDateTime.Date < currentDateTime.Date)
             {
                 // Calculate the time difference from the end of the current day to the task's time
                 var endOfDayDifference = TimeSpan.FromHours(24) - taskTime;
-                Console.WriteLine($"End of Day Difference: {endOfDayDifference}");
+                //Console.WriteLine($"End of Day Difference: {endOfDayDifference}");
 
                 // Check if the time difference is within 2 minutes of the end of the day
                 var isWithinLast2Minutes = endOfDayDifference <= TimeSpan.FromMinutes(2);
-                Console.WriteLine($"Is Task Within Last 2 Minutes of End of Day: {isWithinLast2Minutes}");
+                //Console.WriteLine($"Is Task Within Last 2 Minutes of End of Day: {isWithinLast2Minutes}");
                 return isWithinLast2Minutes;
             }
 
@@ -203,11 +207,13 @@ namespace BudgetBuddyAPI.Controllers
         }
 
         // POST: /api/updateRepeat
+        // Updates DateTime of any task reaching it's deadline according to it's repeat setting
         [HttpPost("/api/updateRepeat")]
         public IActionResult UpdateRepeat()
         {
             try
             {
+                // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
 
                 if (string.IsNullOrEmpty(dbFilePath))
@@ -227,6 +233,7 @@ namespace BudgetBuddyAPI.Controllers
                         {
                             while (reader.Read())
                             {
+                                // Read in a task
                                 var taskModel = new TaskModel
                                 {
                                     ID = reader.GetInt32(0),
@@ -237,8 +244,10 @@ namespace BudgetBuddyAPI.Controllers
                                     Notification = reader.GetBoolean(5)
                                 };
 
+                                // Check if task has reached deadline
                                 if (IsTaskDue(taskModel))
                                 {
+                                    // Create variable for the new DateTime
                                     DateTime newDate;
 
                                     // Determine the new date based on the Repeat value
@@ -272,6 +281,7 @@ namespace BudgetBuddyAPI.Controllers
                     }
                 }
 
+                // Return success
                 return Ok("Repeat updated successfully");
             }
             catch (Exception ex)
@@ -279,10 +289,6 @@ namespace BudgetBuddyAPI.Controllers
                 return BadRequest($"An error occurred while updating repeat: {ex.Message}");
             }
         }
-
-
-
-
 
     }
 }

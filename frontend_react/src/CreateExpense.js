@@ -2,13 +2,11 @@ import React, { useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
 import Apis from './Apis';
 import {
-  Tab,
   TextField,
   TableContainer,
   Table,
@@ -27,27 +25,25 @@ import {
 
 const CreateExpense = () => {
   const navigate = useNavigate(); // Initialize the navigate function
-  const [navigateValue, setNavigateValue] = useState('');
-  const [viewEditValue, setViewEditValue] = useState('');
-  const [reportsValue, setReportsValue] = useState('');
-  const [createValue, setCreateValue] = useState('');
-  const [helpValue, setHelpValue] = useState('');
-  const [logoutValue, setLogoutValue] = useState('');   
+  const [navigateValue] = useState(''); // State to hold the selected value for "Navigate"
+  const [viewEditValue] = useState(''); // State to hold the selected value for "View/Edit"
+  const [reportsValue] = useState(''); // State to hold the selected value for "Reports"
+  const [createValue] = useState(''); // State to hold the selected value for "Create"
+  const [helpValue] = useState(''); // State to hold the selected value for "Help"
+  const [logoutValue] = useState(''); // State to hold the selected value for "Logout"
   const [accountList, setAccountList] = useState([]); // State to hold the list of accounts
-  const [type, setType] = useState(3); // Replace 0 with your initial value
+  const [type] = useState(3); // Replace 0 with your initial value
   const [category, setCategory] = useState(0); // Replace 0 with your initial value
-  const [accountName, setAccountName] = useState('');
+  const [accountName, setAccountName] = useState(''); // State to hold the account name
   const [dvalue, setDvalue] = useState('0.00'); // This will hold the value
   const [cvalue, setCvalue] = useState('0.00'); // This will hold the value
-  const [description, setDescription] = useState('Created');
-  const [debitError, setDebitError] = useState('');
-  const [creditError, setCreditError] = useState('');
-  const [rows, setRows] = useState(Array(10).fill(null).map((_, index) => ({ id: index, color: index % 2 === 0 ? '#E1DDE8' : '#C3CBC0' })));
-  const [accountNameError, setAccountNameError] = useState('');
-  const [categoryError, setCategoryError] = useState('');
-  const [fixedMonthlyChecked, setFixedMonthlyChecked] = useState(false);
-  const [variableChecked, setVariableChecked] = useState(false);
-  const [temporaryChecked, setTemporaryChecked] = useState(false);
+  const [description] = useState('Created'); // State to hold the description
+  const [rows] = useState(Array(10).fill(null).map((_, index) => ({ id: index, color: index % 2 === 0 ? '#E1DDE8' : '#C3CBC0' }))); // Rows for the table
+  const [accountNameError, setAccountNameError] = useState(''); // State to hold the account name error
+  const [categoryError, setCategoryError] = useState(''); // State to hold the category error
+  const [fixedMonthlyChecked, setFixedMonthlyChecked] = useState(false); // State to hold the checked status for Fixed Monthly
+  const [variableChecked, setVariableChecked] = useState(false); // State to hold the checked status for Variable
+  const [temporaryChecked, setTemporaryChecked] = useState(false); // State to hold the checked status for Temporary
 
     useEffect(() => {
         // Fetch the list of accounts from the backend using the getAccounts API
@@ -104,7 +100,6 @@ const CreateExpense = () => {
             case 'totals':
                 navigate('/totals'); // Navigate to Totals.js
                 break;
-        // Add more cases for other "Reports" options if needed
             default:
                 break;
         }
@@ -141,11 +136,13 @@ const CreateExpense = () => {
         navigate('/'); // Navigate to LoginPage.js
     };
   
+    // Function to validate the input for Debit and Credit fields
     const isValidInput = (input) => {
-      const isValid = /^[0-9]*\.?[0-9]{0,2}$/.test(input);
+      const isValid = /^[0-9]*\.?[0-9]{0,2}$/.test(input); // Check if the input is a valid dollar amount
       return isValid ? '' : 'Invalid input. Please enter a valid dollar amount.';
     };
   
+    // Function to validate the account name
     const validateAccountName = () => {
       // Trim accountName to remove leading and trailing whitespaces
       const trimmedAccountName = accountName.trim();
@@ -167,42 +164,7 @@ const CreateExpense = () => {
       return true;
     };
     
-    const handleDebitChange = (event) => {
-      const { value } = event.target;
-      const errorMessage = isValidInput(value);
-    
-      setDebitError(errorMessage);
-    
-      if (errorMessage === '') {
-        setDvalue(value);
-        setCvalue('0.00');
-      }
-    };
-  
-    const handleCreditChange = (event) => {
-      const { value } = event.target;
-      const errorMessage = isValidInput(value);
-    
-      setCreditError(errorMessage);
-    
-      if (errorMessage === '') {
-        setCvalue(value);
-        setDvalue('0.00');
-      }
-    };
-  
-    const handleDebitBlur = () => {
-      const numericValue = parseFloat(dvalue);
-      const formattedValue = isNaN(numericValue) ? '' : `$${numericValue.toFixed(2)}`;
-      setDvalue(formattedValue);
-    };
-  
-    const handleCreditBlur = () => {
-      const numericValue = parseFloat(cvalue);
-      const formattedValue = isNaN(numericValue) ? '' : `$${numericValue.toFixed(2)}`;
-      setCvalue(formattedValue);
-    };
-  
+    // Function to handle the checkbox for Fixed Monthly
     const handleFixedMonthlyChange = () => {
       setFixedMonthlyChecked(true);
       setVariableChecked(false);
@@ -210,6 +172,7 @@ const CreateExpense = () => {
       setCategory(2);
     };
   
+    // Function to handle the checkbox for Variable
     const handleVariableChange = () => {
       setFixedMonthlyChecked(false);
       setVariableChecked(true);
@@ -217,6 +180,7 @@ const CreateExpense = () => {
       setCategory(3);
     };
   
+    // Function to handle the checkbox for Temporary
     const handleTemporaryChange = () => {
       setFixedMonthlyChecked(false);
       setVariableChecked(false);
@@ -224,6 +188,7 @@ const CreateExpense = () => {
       setCategory(4);
     };
   
+    // Function to handle the Create button click
     const handleCreateAccountClick = async () => {
       // Validate the account name
       const isAccountNameValid = validateAccountName();
@@ -253,7 +218,7 @@ const CreateExpense = () => {
           setTemporaryChecked(false);
           setCategoryError('');
         } catch (error) {
-          // Handle API call errors
+          // Error code
           console.error('Create Account API error:', error);
         }
       } else {
@@ -262,14 +227,12 @@ const CreateExpense = () => {
       }
     };
     
-
     return (
       <div>
         {/* Top App Bar */}
         <AppBar position="static" style={{ backgroundColor: '#C7C7C7'}}>
           <Toolbar>
             {/* Drop-Down Menus */}
-  
             <div style={{ marginRight: '16px', marginLeft: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
@@ -311,7 +274,6 @@ const CreateExpense = () => {
                   <MenuItem value="adjustableBudget">Adjustable Budget</MenuItem>
                   <MenuItem value="currentBudget">Current Budget</MenuItem>
                   <MenuItem value="totals">Totals</MenuItem>
-                  {/* Add more report options */}
                 </Select>
               </div>
             </div>
@@ -395,6 +357,7 @@ const CreateExpense = () => {
               </TableCell>
             </TableRow>
 
+            {/* Header row */}
             <TableRow style={{ backgroundColor: '#C3CBC0' }}>
               <TableCell style={{ width: '20%' }}>Date</TableCell>
               <TableCell style={{ width: '20%' }}>Account Name</TableCell>
@@ -429,7 +392,7 @@ const CreateExpense = () => {
                     </TableCell>
 
                     <TableCell>
-                      {/* Description column with "Beginning Balance" */}
+                      {/* Description column indicating it's creation */}
                       Created
                     </TableCell>
 
@@ -448,7 +411,6 @@ const CreateExpense = () => {
                   ) : (
                   // Render content for other rows (blank)
                   <React.Fragment>
-                    {/* ... other cells */}
                     <TableCell></TableCell>
                     <TableCell></TableCell>
                     <TableCell></TableCell>

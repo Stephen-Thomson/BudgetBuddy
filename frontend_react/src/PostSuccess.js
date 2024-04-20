@@ -16,7 +16,6 @@ const PostSuccess = () => {
   return (
     <div>
       <p>Posting entries successful!</p>
-      {/* You can add more content or styling if needed */}
     </div>
   );
 };

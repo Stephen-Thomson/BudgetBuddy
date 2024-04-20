@@ -2,32 +2,37 @@ import React, { useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
 import Apis from './Apis';
-import { Tab, TextField, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, Button, Paper } from '@mui/material';
+import { TextField, 
+  TableContainer, 
+  Table, 
+  TableHead, 
+  TableBody, 
+  TableRow, 
+  TableCell, 
+  Button, 
+  Paper } from '@mui/material';
 
 const CreateIncome = () => {
   const navigate = useNavigate(); // Initialize the navigate function
-  const [navigateValue, setNavigateValue] = useState('');
-  const [viewEditValue, setViewEditValue] = useState('');
-  const [reportsValue, setReportsValue] = useState('');
-  const [createValue, setCreateValue] = useState('');
-  const [helpValue, setHelpValue] = useState('');
-  const [logoutValue, setLogoutValue] = useState('');   
+  const [navigateValue] = useState(''); // State to hold the selected value for "Navigate"
+  const [viewEditValue] = useState(''); // State to hold the selected value for "View/Edit"
+  const [reportsValue] = useState(''); // State to hold the selected value for "Reports"
+  const [createValue] = useState(''); // State to hold the selected value for "Create"
+  const [helpValue] = useState(''); // State to hold the selected value for "Help"
+  const [logoutValue] = useState(''); // State to hold the selected value for "Logout"
   const [accountList, setAccountList] = useState([]); // State to hold the list of accounts
-  const [type, setType] = useState(1); // Replace 0 with your initial value
-  const [category, setCategory] = useState(1); // Replace 0 with your initial value
+  const [type] = useState(1); // Replace 0 with your initial value
+  const [category] = useState(1); // Replace 0 with your initial value
   const [accountName, setAccountName] = useState('');
   const [dvalue, setDvalue] = useState('0.00'); // This will hold the value
   const [cvalue, setCvalue] = useState('0.00'); // This will hold the value
-  const [description, setDescription] = useState('Created');
-  const [debitError, setDebitError] = useState('');
-  const [creditError, setCreditError] = useState('');
-  const [rows, setRows] = useState(Array(10).fill(null).map((_, index) => ({ id: index, color: index % 2 === 0 ? '#E1DDE8' : '#C3CBC0' })));
-  const [accountNameError, setAccountNameError] = useState('');
+  const [description] = useState('Created'); // State to hold the description
+  const [rows] = useState(Array(10).fill(null).map((_, index) => ({ id: index, color: index % 2 === 0 ? '#E1DDE8' : '#C3CBC0' }))); // State to hold the rows
+  const [accountNameError, setAccountNameError] = useState(''); // State to hold the account name error
 
     useEffect(() => {
         // Fetch the list of accounts from the backend using the getAccounts API
@@ -84,7 +89,6 @@ const CreateIncome = () => {
             case 'totals':
                 navigate('/totals'); // Navigate to Totals.js
                 break;
-        // Add more cases for other "Reports" options if needed
             default:
                 break;
         }
@@ -121,11 +125,13 @@ const CreateIncome = () => {
         navigate('/'); // Navigate to LoginPage.js
     };
 
+    // Function to validate the input for debit and credit fields
     const isValidInput = (input) => {
-      const isValid = /^[0-9]*\.?[0-9]{0,2}$/.test(input);
+      const isValid = /^[0-9]*\.?[0-9]{0,2}$/.test(input); // Check if the input is a valid dollar amount
       return isValid ? '' : 'Invalid input. Please enter a valid dollar amount.';
     };
   
+    // Function to validate the account name
     const validateAccountName = () => {
       // Trim accountName to remove leading and trailing whitespaces
       const trimmedAccountName = accountName.trim();
@@ -146,43 +152,8 @@ const CreateIncome = () => {
       setAccountNameError('');
       return true;
     };
-    
-    const handleDebitChange = (event) => {
-      const { value } = event.target;
-      const errorMessage = isValidInput(value);
-    
-      setDebitError(errorMessage);
-    
-      if (errorMessage === '') {
-        setDvalue(value);
-        setCvalue('0.00');
-      }
-    };
   
-    const handleCreditChange = (event) => {
-      const { value } = event.target;
-      const errorMessage = isValidInput(value);
-    
-      setCreditError(errorMessage);
-    
-      if (errorMessage === '') {
-        setCvalue(value);
-        setDvalue('0.00');
-      }
-    };
-  
-    const handleDebitBlur = () => {
-      const numericValue = parseFloat(dvalue);
-      const formattedValue = isNaN(numericValue) ? '' : `$${numericValue.toFixed(2)}`;
-      setDvalue(formattedValue);
-    };
-  
-    const handleCreditBlur = () => {
-      const numericValue = parseFloat(cvalue);
-      const formattedValue = isNaN(numericValue) ? '' : `$${numericValue.toFixed(2)}`;
-      setCvalue(formattedValue);
-    };
-  
+    // Function to handle the create account button click
     const handleCreateAccountClick = async () => {
     // Validate the account name
     const isAccountNameValid = validateAccountName();
@@ -215,7 +186,7 @@ const CreateIncome = () => {
         <AppBar position="static" style={{ backgroundColor: '#C7C7C7'}}>
           <Toolbar>
             {/* Drop-Down Menus */}
-  
+
             <div style={{ marginRight: '16px', marginLeft: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Typography variant="body1" style={{ color: 'black', marginRight: '8px' }}>
@@ -257,7 +228,6 @@ const CreateIncome = () => {
                   <MenuItem value="adjustableBudget">Adjustable Budget</MenuItem>
                   <MenuItem value="currentBudget">Current Budget</MenuItem>
                   <MenuItem value="totals">Totals</MenuItem>
-                  {/* Add more report options */}
                 </Select>
               </div>
             </div>
@@ -312,6 +282,7 @@ const CreateIncome = () => {
       <TableContainer component={Paper} style={{ marginTop: '20px' }}>
         <Table className="journal-table">
           <TableHead>
+            {/* Table Header */}
             <TableRow style={{ backgroundColor: '#C3CBC0' }}>
               <TableCell style={{ width: '20%' }}>Date</TableCell>
               <TableCell style={{ width: '20%' }}>Account Name</TableCell>
@@ -364,7 +335,6 @@ const CreateIncome = () => {
                   ) : (
                   // Render content for other rows (blank)
                   <React.Fragment>
-                    {/* ... other cells */}
                     <TableCell></TableCell>
                     <TableCell></TableCell>
                     <TableCell></TableCell>
