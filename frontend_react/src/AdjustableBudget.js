@@ -160,7 +160,7 @@ const AdjustableBudget = () => {
   // Call the startBudget function when the incomeTotal state changes
   useEffect(() => {
     startBudget(); // Calculate the budget
-  }, [incomeTotal]);
+  }, [incomeTotal, expenseTotal]);
 
   // Function to handle menu item selection for "Navigate"
   const handleNavigate = (event) => {
@@ -426,7 +426,7 @@ const AdjustableBudget = () => {
     // Recalculate and update the budget section
     startBudget();
 
-    setBudgetExpense();
+    //setBudgetExpense();
   };
 
   // Function to calculate the total expense based on the updated expense values
@@ -457,7 +457,7 @@ const AdjustableBudget = () => {
     startBudget();
     
     // Recalculate and update the budget section
-    setBudgetExpense();
+    //setBudgetExpense();
   };
 
   return (
@@ -564,7 +564,7 @@ const AdjustableBudget = () => {
       {/* Page Header */}
       <div className="page-header" style={{ backgroundColor: '#E1DDE8', textAlign: 'center' }}>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'black' }}>
-          {`Report: Totals for current month and year`}
+          {`Report: Adjustable Budget`}
         </h1>
       </div>
 

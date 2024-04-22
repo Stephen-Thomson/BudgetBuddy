@@ -50,8 +50,7 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AQIAAC4AAAAAAAAAAAAgwEcAAAAiAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-12T21:18:32.94Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-12T21:18:32.94Z"
             },
             {
               "$type": "Document",
@@ -63,8 +62,7 @@
               "RelativeToolTip": "DatabasePathManager.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAACIAAAAtAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-12T21:16:08.217Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-12T21:16:08.217Z"
             },
             {
               "$type": "Document",
@@ -76,8 +74,7 @@
               "RelativeToolTip": "Controllers\\LoginPageController.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAGABAAARAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-11T20:26:47.097Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-11T20:26:47.097Z"
             },
             {
               "$type": "Document",
@@ -89,8 +86,7 @@
               "RelativeToolTip": "Controllers\\ApisController.cs",
               "ViewState": "AQIAAAcBAAAAAAAAAAAswCYAAAAQAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-09T18:21:04.183Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-09T18:21:04.183Z"
             },
             {
               "$type": "Document",
@@ -100,7 +96,7 @@
               "RelativeDocumentMoniker": "Controllers\\FinancialAPIsController.cs",
               "ToolTip": "C:\\Users\\shimm\\BudgetBuddy\\BudgetBuddyAPI\\Controllers\\FinancialAPIsController.cs",
               "RelativeToolTip": "Controllers\\FinancialAPIsController.cs",
-              "ViewState": "AQIAAJoAAAAAAAAAAAAowLQBAAAVAAAA",
+              "ViewState": "AQIAAJEDAAAAAAAAAAAswJsDAABFAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-01-19T22:13:04.834Z",
               "EditorCaption": ""
@@ -115,8 +111,7 @@
               "RelativeToolTip": "appsettings.json",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAA6AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-04-12T21:26:24.738Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-12T21:26:24.738Z"
             },
             {
               "$type": "Document",
@@ -128,8 +123,7 @@
               "RelativeToolTip": "Controllers\\ToDoListController.cs",
               "ViewState": "AQIAABQBAAAAAAAAAAAgwCoBAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-02-12T20:08:25.125Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-02-12T20:08:25.125Z"
             }
           ]
         }

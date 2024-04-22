@@ -815,6 +815,20 @@ namespace BudgetBuddyAPI.Controllers
                             // Process each account name
                             foreach (var accountTableName in accountNameList)
                             {
+                                // Fetch the Account_Name matching the Table_Name
+                                var accountNameQuery = $"SELECT Account_Name FROM AccountsList WHERE Table_Name = @AccountTableName";
+                                string accountName = "";
+
+                                using (var accountNameCommand = new SQLiteCommand(accountNameQuery, connection))
+                                {
+                                    accountNameCommand.Parameters.AddWithValue("@AccountTableName", accountTableName);
+                                    var accountNameResult = accountNameCommand.ExecuteScalar() as string;
+                                    if (!string.IsNullOrEmpty(accountNameResult))
+                                    {
+                                        accountName = accountNameResult;
+                                    }
+                                }
+
                                 // Fetch the Type from the specified accountTableName
                                 var accountTypeQuery = $"SELECT Type FROM {accountTableName} LIMIT 1";
 
@@ -839,7 +853,7 @@ namespace BudgetBuddyAPI.Controllers
                                                     // Create a TotalsReportEntry with the total
                                                     var totalReportEntry = new TotalsReportEntry
                                                     {
-                                                        AccountName = accountTableName,
+                                                        AccountName = accountName,
                                                         Type = type,
                                                         Category = 1,
                                                         Total = total
@@ -907,7 +921,7 @@ namespace BudgetBuddyAPI.Controllers
                                             // Create a TotalsReportEntry with the averaged total
                                             var averagesReportEntry = new TotalsReportEntry
                                             {
-                                                AccountName = accountTableName,
+                                                AccountName = accountName,
                                                 Type = type,
                                                 Category = category,
                                                 Total = averageTotal

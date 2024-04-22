@@ -463,7 +463,7 @@ const CurrentBudget = () => {
         {/* Page Header */}
         <div className="page-header" style={{ backgroundColor: '#E1DDE8', textAlign: 'center' }}>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'black' }}>
-            {`Report: Totals for current month and year`}
+            {`Report: Current Budget`}
           </h1>
         </div>
 
