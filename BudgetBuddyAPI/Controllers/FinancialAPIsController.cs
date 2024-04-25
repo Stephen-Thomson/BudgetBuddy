@@ -869,7 +869,7 @@ namespace BudgetBuddyAPI.Controllers
                                             // Calculate average total for other account types (1 and 3)
                                             // Initialize variables for calculating average total
                                             decimal total = 0;
-                                            int monthsWithValues = 0;
+                                            //int monthsWithValues = 0;
                                             int category = 0;
 
                                             // Get the current month and year
@@ -905,18 +905,19 @@ namespace BudgetBuddyAPI.Controllers
                                                 category = totalsReportEntry.Category;
 
                                                 // Check if the total is greater than 0
-                                                if (totalsReportEntry.Total > 0)
-                                                {
+                                                //if (totalsReportEntry.Total > 0)
+                                                //{
                                                     total += totalsReportEntry.Total;
-                                                    monthsWithValues++;
-                                                }
+                                                //    monthsWithValues++;
+                                                //}
                                                 //Console.WriteLine($"Total: {totalsReportEntry.Total}");
                                             }
 
                                             //Console.WriteLine($"To Average: {total}");
                                             //Console.WriteLine($"Months with values: {monthsWithValues}");
                                             // Calculate average total
-                                            decimal averageTotal = monthsWithValues > 0 ? total / monthsWithValues : 0;
+                                            //decimal averageTotal = monthsWithValues > 0 ? total / monthsWithValues : 0;
+                                            decimal averageTotal = total / 6;
 
                                             // Create a TotalsReportEntry with the averaged total
                                             var averagesReportEntry = new TotalsReportEntry

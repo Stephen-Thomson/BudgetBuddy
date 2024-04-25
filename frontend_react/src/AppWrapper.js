@@ -65,7 +65,7 @@ const AppWrapper = () => {
       // Set up an interval to periodically check for notifications (every minute)
       const interval = setInterval(() => {
         checkNotifications();
-      }, 60000); // 60000 milliseconds = 1 minute
+      }, 30000); // 30000 milliseconds = 30 seconds
 
       // Clean up the interval on component unmount
       return () => clearInterval(interval);
