@@ -1,70 +1,66 @@
-# Getting Started with Create React App
+# Budget Buddy
+### What is it?
+Budget Buddy is a simple accounting program that allows users to keep and track
+their household expenses, income, and assets. It is a slimmed down version of 
+other accounting programs to increase ease of use for common users.
+It also includes a simple To Do List function in which users can create and edit
+tasks with a description, date and time for a deadline, repeat daily, weekly, or
+monthly, and let the app know whether or not they wish to recieve notifications.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Devloper
+- [Stephen Thomson] (https://github.com/Stephen-Thomson)
 
-## Available Scripts
+### Features
+- General Journal - Double Post accounting
+- Totals Report
+- Current Budget Report
+- Adjustable Budget Report
+- To Do List
 
-In the project directory, you can run:
+# Setup and Deploy
 
-### `npm start`
+## Setup
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Prerequisites
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+#### Backend (ASP.NET C#)
+- .NET 6
+- BudgetBuddyAPI folder containing backend code
 
-### `npm test`
+#### Frontend (React)
+- Node.js
+- npm
+- frontend_react folder containing frontend code
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Run for Testing
 
-### `npm run build`
+#### Backend
+1. Navigate to the BudgetBuddyAPI folder.
+2. Run the backend program using .NET 6
+   ```bash
+   dotnet run
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+#### Frontend
+1. Navigate to the frontend_react folder.
+2. Run the Development server
+   ```bash
+   npm run dev
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Build
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+#### Backend (ASP.NET C#)
+To build the backend for deployment:
+1. Navigate to the BudgetBuddyAPI folder.
+2. Build the project using the following command
+   ```bash
+   dotnet build --configuration Release
 
-### `npm run eject`
+#### Frontend (React)
+To build the frontend for deployment:
+1. Navigate to the frontend_react folder.
+2. Build the project using the following command:
+   ```bash
+   npm run build
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Deploy
+After building both the backend and frontend, you can deploy the Budget Buddy application to your desired platform or server.
