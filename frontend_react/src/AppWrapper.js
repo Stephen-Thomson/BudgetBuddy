@@ -30,22 +30,13 @@ const AppWrapper = () => {
 
   // Function to check for notifications
   const checkNotifications = async () => {
-    //console.log('Checking for notifications:');
     try {
       const response = await Apis.checkTasks(); // Call the API to check for notifications
-      //console.log('API Response:', response);
-      // Send reponse to console
-      //console.log('Notification response:', response);
       // Update notification list state
       setNotificationList(response);
-      //console.log('Notification List:', notificationList);
 
-          // Call UpdateRepeat API
-    const nresponse = await Apis.updateRepeat();
-
-    //console.log('Update Response:', nresponse);
-    
-    //console.log('UpdateRepeat API called successfully');
+      // Call UpdateRepeat API
+      const nresponse = await Apis.updateRepeat();
     } catch (error) {
       // Handle errors
       console.error('Error checking notifications:', error);
@@ -55,10 +46,8 @@ const AppWrapper = () => {
 
   // UseEffect hook to check for notifications when the component mounts
   useEffect(() => {
-    //console.log('Useeffect called');
     // Check notifications if user logged in
     if (isLoggedIn) {
-      //console.log('User is logged in');
       // Call checkNotifications immediately after login
       checkNotifications();
 
@@ -76,10 +65,7 @@ const AppWrapper = () => {
   const handleLoginSuccess = () => {
     setIsLoggedIn(true); // Update login state
     // Call checkNotifications immediately after successful login
-    //console.log('Logged in successfully!', isLoggedIn);
-    //console.log('Before checkNotifications()');
     checkNotifications();
-    //console.log('After checkNotifications()');
   };
 
   

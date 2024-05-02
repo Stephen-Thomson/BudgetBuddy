@@ -179,9 +179,6 @@ namespace BudgetBuddyAPI.Controllers
             // Create path to the specified database
             string dbFilePath = Path.Combine(dbFolder, $"{username}.db");
 
-            // Debug: Print out the constructed database file path
-            //Console.WriteLine($"Database File Path: {dbFilePath}");
-
             return dbFilePath;
         }
 

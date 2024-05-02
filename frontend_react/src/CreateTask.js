@@ -67,9 +67,6 @@ const CreateTask = () => {
       fetchTasks();
     }, []);
 
-    // Add a console.log statement to print the value of taskList
-    //console.log('Task List:', taskList);
-
     // Function to handle menu item selection for "Navigate"
     const handleNavigate = (event) => {
         const value = event.target.value; // Get the selected value
@@ -158,13 +155,9 @@ const CreateTask = () => {
         repeat: repeatValue,
         notification: notificationChecked
         };
-        console.log('New Task Data:', newTaskData);
       try {
         // Call the createTask function from the Apis module
-        const response = await Apis.createTask(newTaskData);
-  
-        // Handle the response
-        console.log('Create task response:', response);
+        await Apis.createTask(newTaskData);
 
         navigate('/toDo');
       } catch (error) {

@@ -77,7 +77,6 @@ const EditAccount = () => {
       const fetchAccountEntries = async (accountName) => { // Accept accountName as a parameter
         try {
           const entries = await Apis.getAccountEntries(accountName); // Use accountName here
-          console.log('Account Entries:', entries);
           setAccountEntries(entries.value.rows);
     
           // Set category based on the first entry's category value
@@ -104,12 +103,9 @@ const EditAccount = () => {
     
     }, [accountName]);
     
-    
     useEffect(() => {
       setHeaderName(editedAccountName);
     }, [editedAccountName]);
-  
-    
   
     // Function to handle menu item selection for "Navigate"
     const handleNavigate = (event) => {

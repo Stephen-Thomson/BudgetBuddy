@@ -60,9 +60,6 @@ const AdjustableBudget = () => {
       {
         // Call the getAverages API
         const averagesData = await Apis.getAverages();
-
-        // Log the received data
-        console.log('Averages Data:', averagesData.value.averagesList);
   
         // Initialize separate arrays for each column
         const expenseColumnData = [];
@@ -122,9 +119,6 @@ const AdjustableBudget = () => {
         stTotal = aTotal + iTotal;
         rTotal = stTotal - eTotal;
 
-        //console.log('Expense Column Data Length:', expenseColumnData.length);
-        //console.log('Expense Total Column Data Length:', expenseTotalColumnData.length);
-
         // Update the state with the populated arrays
         setIncomeDebtColumn(incomeDebtColumnData);
         setIncomeDebtTotalColumn(incomeDebtTotalColumnData);
@@ -138,9 +132,6 @@ const AdjustableBudget = () => {
         setIncomeTotal(iTotal);
         setStartingTotal(stTotal);
         setRemainingTotal(rTotal);
-        
-        //console.log('Expense Column Data Length:', expenseColumn.length);
-        //console.log('Expense Total Column Data Length:', expenseTotalColumn.length);
 
         setLoading(false); // Set loading to false once data is fetched
         
@@ -283,13 +274,6 @@ const AdjustableBudget = () => {
     let inVal = incomeTotal; // Income total
     let remVal = 0; // Remaining total
 
-    // console.log('startingTotal:', startingTotal);
-    // console.log('expenseTotal:', expenseTotal);
-    // console.log('remainingTotal:', remainingTotal);
-    // console.log('assetTotal:', assetTotal);
-    // console.log('incomeTotal:', incomeTotal);
-    // console.log('expenseTotal:', expenseTotal);
-
     // Calculate the budget for first month
     stVal = asVal + inVal;
     remVal = stVal - expVal;
@@ -362,8 +346,6 @@ const AdjustableBudget = () => {
     // Calculate the new total expense
     let newTotalExpense = expenseTotal;
     
-    //console.log ('Expense Total: ', newTotalExpense);
-    
     //make a copy of const [bColumn2, setBColumn2] = useState([]); and update the second value with the new total expense
     const updatedBColum2Copy = [...bColumn2]; // Make a copy of the bColumn2 state
     updatedBColum2Copy[1] = newTotalExpense; // Update the second value with the new total expense
@@ -425,8 +407,6 @@ const AdjustableBudget = () => {
     
     // Recalculate and update the budget section
     startBudget();
-
-    //setBudgetExpense();
   };
 
   // Function to calculate the total expense based on the updated expense values
@@ -455,9 +435,6 @@ const AdjustableBudget = () => {
 
     // Recalculate and update the total expense
     startBudget();
-    
-    // Recalculate and update the budget section
-    //setBudgetExpense();
   };
 
   return (

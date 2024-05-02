@@ -136,12 +136,6 @@ const CreateExpense = () => {
         navigate('/'); // Navigate to LoginPage.js
     };
   
-    // Function to validate the input for Debit and Credit fields
-    const isValidInput = (input) => {
-      const isValid = /^[0-9]*\.?[0-9]{0,2}$/.test(input); // Check if the input is a valid dollar amount
-      return isValid ? '' : 'Invalid input. Please enter a valid dollar amount.';
-    };
-  
     // Function to validate the account name
     const validateAccountName = () => {
       // Trim accountName to remove leading and trailing whitespaces
@@ -204,9 +198,6 @@ const CreateExpense = () => {
         try {
           // Call the API to create the account table
           const response = await Apis.createAccountTable(type, category, accountName, description, dvalue, cvalue);
-    
-          // Handle the response as needed
-          console.log('Create Account response:', response);
     
           // Reset form fields after successful submission
           setAccountName('');

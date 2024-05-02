@@ -206,9 +206,6 @@ const CreateAccountPayable = () => {
         // Call the API to create the account table
         const response = await Apis.createAccountTable(type, category, accountName, description, dvalue, cvalue);
 
-        // Handle the response
-        //console.log('Create Account response:', response);
-
         // Reset form fields after successful submission
         setAccountName('');
         setDvalue('0.00');

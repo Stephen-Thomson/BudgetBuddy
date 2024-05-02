@@ -55,9 +55,6 @@ const DeleteTasks = () => {
       fetchTasks();
     }, []);
 
-    // Add a console.log statement to print the value of taskList
-    //console.log('Task List:', taskList);
-
     // Function to handle menu item selection for "Navigate"
     const handleNavigate = (event) => {
         const value = event.target.value; // Get the selected value
@@ -106,8 +103,8 @@ const DeleteTasks = () => {
         navigate('/'); // Navigate to LoginPage.js
     };
 
-     // Function to handle checkbox change
-     const handleCheckboxChange = (taskId) => {
+    // Function to handle checkbox change
+    const handleCheckboxChange = (taskId) => {
       // Check if the task ID is already selected
       if (selectedTasks.includes(taskId)) {
         // If selected, remove it from the selectedTasks array
@@ -121,11 +118,8 @@ const DeleteTasks = () => {
     // Function to handle delete button click
     const handleDelete = async () => {
       try {
-        //console.log('Selected tasks:', selectedTasks);
         // Call the deleteTasks API with the selected task IDs
         const response = await Apis.deleteTasks(selectedTasks);
-
-        //console.log('Delete tasks response:', response);
 
         // Clear the selected tasks array
         setSelectedTasks([]);

@@ -50,7 +50,6 @@ const EditTask = () => {
     const { taskId } = useParams(); // Get the task ID from the URL
     const [selectedTask, setSelectedTask] = useState(null); // State to hold the selected task
 
-    //console.log('Task ID 1:', taskId)
     useEffect(() => {
       // Function to fetch tasks from the backend API
       const fetchTasks = async () => {
@@ -65,9 +64,8 @@ const EditTask = () => {
       // Function to fetch a single task from the backend API
       const fetchTask = async () => {
           try {
-              //console.log('Attempting to fetch task:', taskId);
               const response = await Apis.getTask(taskId);
-              //console.log('Response: ', response);
+
               const retrievedTask = response.value.retrievedTask;
               setSelectedTask(retrievedTask);
               setTitleDescription(retrievedTask.titleDescription);
@@ -84,16 +82,6 @@ const EditTask = () => {
       fetchTasks();
       fetchTask();
   }, []);
-  
-  // useEffect(() => {
-  //     console.log('Selected Task:', selectedTask);
-  // }, [selectedTask]);
-  
-
-  
-
-    // Add a console.log statement to print the value of taskList
-    //console.log('Task List:', taskList);
 
   // Function to handle menu item selection for "Navigate"
   const handleNavigate = (event) => {
@@ -184,13 +172,9 @@ const EditTask = () => {
       repeat: repeatValue,
       notification: notificationChecked
       };
-      //console.log('Updated Task Data:', updatedTaskData);
     try {
       // Call the createTask function from the Apis module
-      const response = await Apis.updateTask(updatedTaskData);
-
-      // Handle the response
-      //console.log('Update task response:', response);
+      await Apis.updateTask(updatedTaskData);
 
       navigate('/toDo'); // Navigate to the ToDo.js page
     } catch (error) {

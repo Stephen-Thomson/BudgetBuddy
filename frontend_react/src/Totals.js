@@ -50,10 +50,6 @@ const Totals = () => {
             const currentYear = currentDate.getFullYear();
             const totalsData = await Apis.getTotals(currentMonth, currentYear);
         
-            // Log the received data
-            //console.log('Totals Data:', totalsData.value.totalsList);
-            //setTotals(totalsData.value.totalsList); // Update the state with the fetched totals
-        
             // Initialize separate arrays for each column
             const expenseColumnData = [];
             const expenseTotalColumnData = [];
@@ -116,15 +112,6 @@ const Totals = () => {
             setExpenseColumn(expenseColumnData);
             setExpenseTotalColumn(expenseTotalColumnData);
             setExpenseColor(colorData);
-            //setExpenseTotal(eTotal);
-            //setAssetTotal(aTotal);
-            
-            // console.log('Expense Column:', expenseColumn);
-            // console.log('Expense Total Column:', expenseTotalColumn);
-            // console.log('Income/Debt Column:', incomeDebtColumn);
-            // console.log('Income/Debt Total Column:', incomeDebtTotalColumn);
-            // console.log('Asset Column:', assetColumn);
-            // console.log('Asset Total Column:', assetTotalColumn);
 
             setLoading(false); // Set loading to false once data is fetched
           } catch (error) {

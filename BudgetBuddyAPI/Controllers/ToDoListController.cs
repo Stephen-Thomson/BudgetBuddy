@@ -34,16 +34,13 @@ namespace BudgetBuddyAPI.Controllers
         {
             try
             {
-                //Console.WriteLine($"Database Path test: {DatabasePathManager.GetDatabasePath()}");
                 // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                //Console.WriteLine($"Database Path test: {dbFilePath}");
 
                 // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    //Console.WriteLine("Connection Open");
 
                     // Query to select tasks from the database
                     var query = "SELECT ID, TitleDescription, Date, Time, Repeat, Notification FROM ToDoList";
@@ -106,13 +103,11 @@ namespace BudgetBuddyAPI.Controllers
             {
                 // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                //Console.WriteLine($"Database Path: {dbFilePath}");
 
                 // Connect to the SQLite database 
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    //Console.WriteLine("Connection Open");
 
                     // SQL Query command for insertion
                     var query = "INSERT INTO ToDoList (TitleDescription, Date, Time, Repeat, Notification) VALUES (@TitleDescription, @Date, @Time, @Repeat, @Notification);";
@@ -150,13 +145,11 @@ namespace BudgetBuddyAPI.Controllers
             {
                 // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                //Console.WriteLine($"Database Path: {dbFilePath}");
 
                 // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    //Console.WriteLine("Connection Open");
 
                     // SQL Query command to update table
                     var query = "UPDATE ToDoList SET TitleDescription = @TitleDescription, Date = @Date, Time = @Time, Repeat = @Repeat, Notification = @Notification WHERE ID = @ID";
@@ -195,13 +188,11 @@ namespace BudgetBuddyAPI.Controllers
             {
                 // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                //Console.WriteLine($"Database Path: {dbFilePath}");
 
                 // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    //Console.WriteLine("Connection Open");
 
                     // SQl query to retrieve task
                     var query = "SELECT ID, TitleDescription, Date, Time, Repeat, Notification FROM ToDoList WHERE ID = @taskId";
@@ -231,10 +222,6 @@ namespace BudgetBuddyAPI.Controllers
                                     retrievedTask
                                 };
 
-                                // Print the JSON response to the console
-                                //Console.WriteLine("JSON Response:");
-                                //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(retrievedTask, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
-
                                 // Return the response
                                 return new JsonResult(Ok(responseData));
                             }
@@ -252,7 +239,6 @@ namespace BudgetBuddyAPI.Controllers
             }
 
             // If no task is found, return a not found response
-            //Console.WriteLine("Task Not Found");
             return new JsonResult(new { success = false, message = "Task not found." });
         }
 
@@ -265,13 +251,11 @@ namespace BudgetBuddyAPI.Controllers
             {
                 // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                //Console.WriteLine($"Database Path: {dbFilePath}");
 
                 // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    //Console.WriteLine("Connection Open");
 
                     // Iterate through all task ids
                     foreach (int taskId in taskIds)

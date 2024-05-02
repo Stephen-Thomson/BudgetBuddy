@@ -73,7 +73,6 @@ namespace BudgetBuddyAPI.Controllers
         {
             // Create a tracking int to make sure the first line of the list is added only once
             int firstTrue = 0;
-            //Console.WriteLine("CheckTasks called");
             try
             {
                 // Get database path
@@ -123,7 +122,6 @@ namespace BudgetBuddyAPI.Controllers
                                             notificationList.Add(dueLine);
                                             firstTrue = 1;
                                         }
-                                        //Console.WriteLine("Due True");
 
                                         // Add the notification string to the list
                                         notificationList.Add(taskModel.TitleDescription);
@@ -137,11 +135,6 @@ namespace BudgetBuddyAPI.Controllers
                 // If the list has any notifications, return the list
                 if (notificationList.Any())
                 {
-                    //Console.WriteLine("Notification List:");
-                    //foreach (var notification in notificationList)
-                    //{
-                    //    Console.WriteLine(notification); // Assuming notification is a string
-                    //}
                     return Ok(notificationList);
                 }
                 else
@@ -161,7 +154,6 @@ namespace BudgetBuddyAPI.Controllers
         {
             // Get current DateTime
             var currentDateTime = DateTime.Now;
-            //Console.WriteLine($"Current DateTime (Local): {currentDateTime}");
 
             // Split the time string into hours and minutes
             string[] timeParts = taskModel.Time.Split(':');
@@ -172,22 +164,18 @@ namespace BudgetBuddyAPI.Controllers
 
             // Create a TimeSpan object
             TimeSpan taskTime = new TimeSpan(hours, minutes, 0);
-            //Console.WriteLine($"Task Time: {taskTime}");
 
             // Combine the task date and extracted time to create a new DateTime
             var taskDateTime = new DateTime(taskModel.Date.Year, taskModel.Date.Month, taskModel.Date.Day,
                                             taskTime.Hours, taskTime.Minutes, taskTime.Seconds, DateTimeKind.Unspecified);
-            //Console.WriteLine($"Task DateTime (Local): {taskDateTime}");
 
             // Calculate time difference
             var timeDifference = currentDateTime - taskDateTime;
-            //Console.WriteLine($"Time Difference: {timeDifference}");
 
             // Check if the task's date is today and the time is within the last 2 minutes
             if (currentDateTime.Date == taskDateTime.Date)
             {
                 var isWithinLast2Minutes = timeDifference >= TimeSpan.Zero && timeDifference <= TimeSpan.FromMinutes(2);
-                //Console.WriteLine($"Is Task Within Last 2 Minutes: {isWithinLast2Minutes}");
                 return isWithinLast2Minutes;
             }
             // Check if the task's date is in the past and its time is within 2 minutes for edge case
@@ -195,11 +183,9 @@ namespace BudgetBuddyAPI.Controllers
             {
                 // Calculate the time difference from the end of the current day to the task's time
                 var endOfDayDifference = TimeSpan.FromHours(24) - taskTime;
-                //Console.WriteLine($"End of Day Difference: {endOfDayDifference}");
 
                 // Check if the time difference is within 2 minutes of the end of the day
                 var isWithinLast2Minutes = endOfDayDifference <= TimeSpan.FromMinutes(2);
-                //Console.WriteLine($"Is Task Within Last 2 Minutes of End of Day: {isWithinLast2Minutes}");
                 return isWithinLast2Minutes;
             }
 

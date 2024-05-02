@@ -75,14 +75,11 @@ namespace BudgetBuddyAPI.Controllers
             {
                 // Get the database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                //Console.WriteLine($"Database Path: {dbFilePath}");
 
                 // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    //Console.WriteLine("Connection Open");
-                    //Console.WriteLine($"Count: {postData.Accounts.Count}");
 
                     // Start a transaction in case of any problems that need to be rolled back
                     using (var transaction = connection.BeginTransaction())
@@ -95,11 +92,6 @@ namespace BudgetBuddyAPI.Controllers
                                 // Construct a valid table name from the account name
                                 string accountTableName = "Account_" + postData.Accounts[i].Replace(" ", "_");
 
-                                //Console.WriteLine($"Account Table Name: {accountTableName}");
-
-                                //Console.WriteLine($"Date: {postData.Date}");
-                                //Console.WriteLine($"Description: {postData.Descriptions[i]}");
-
                                 // Convert string representations to nullable decimal
                                 decimal? debitNullable = ConvertToDecimal(postData.Debits[i]);
                                 decimal? creditNullable = ConvertToDecimal(postData.Credits[i]);
@@ -107,13 +99,6 @@ namespace BudgetBuddyAPI.Controllers
                                 // Convert nullable decimals to non-nullable decimals
                                 decimal debit = debitNullable ?? 0; // If debitNullable is null, default to 0
                                 decimal credit = creditNullable ?? 0; // If creditNullable is null, default to 0
-
-                                // Convert string representations to decimal
-                                //decimal debit = ConvertToDecimal(postData.Debits[i]) ?? 0.00m; // If ConvertToDecimal result is null, default to 0.00
-                                //decimal credit = ConvertToDecimal(postData.Credits[i]) ?? 0.00m; // If ConvertToDecimal result is null, default to 0.00
-
-                                //Console.WriteLine($"Debit: {debit}");
-                                //Console.WriteLine($"Credit: {credit}");
 
                                 // Insert row into General Journal
                                 using (var command = new SQLiteCommand("INSERT INTO General_Journal (Date, Account, Description, Debit, Credit) VALUES (@Date, @Account, @Description, @Debit, @Credit);", connection, transaction))
@@ -228,13 +213,11 @@ namespace BudgetBuddyAPI.Controllers
             {
                 // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                //Console.WriteLine($"Database Path: {dbFilePath}");
 
                 // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    //Console.WriteLine("Connection Open");
 
                     // Fetch data from the General_Journal table
                     var query = "SELECT Date, Account, Description, Debit, Credit FROM General_Journal";
@@ -293,13 +276,11 @@ namespace BudgetBuddyAPI.Controllers
             {
                 // Get the database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                //Console.WriteLine($"Database Path: {dbFilePath}");
 
                 // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    //Console.WriteLine("Connection Open");
 
                     // Create a unique table name with spaces replaced by underscores
                     string tableName = $"Account_{model.AccountName.Replace(" ", "_")}";
@@ -383,17 +364,14 @@ namespace BudgetBuddyAPI.Controllers
             {
                 // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                Console.WriteLine($"Database Path: {dbFilePath}");
 
                 // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    //Console.WriteLine("Connection Open");
 
                     // Create the valid account table name
                     string accountTableName = $"Account_{accountName.Replace(" ", "_")}";
-                    //Console.WriteLine($"Account Table Name: {accountTableName}");
 
                     // Fetch data from the specified account table, including the Total column
                     var query = $"SELECT Category, Date, Description, Debit, Credit, Total FROM {accountTableName}";
@@ -427,10 +405,6 @@ namespace BudgetBuddyAPI.Controllers
                                 rows
                             };
 
-                            // Print the JSON response to the console
-                            //Console.WriteLine("JSON Response:");
-                            //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(responseData, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
-
                             // Return the response
                             return new JsonResult(Ok(responseData));
                         }
@@ -457,18 +431,15 @@ namespace BudgetBuddyAPI.Controllers
             {
                 // Get the database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                //Console.WriteLine($"Database Path: {dbFilePath}");
 
                 // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    //Console.WriteLine("Connection Open");
 
                     // Create the account table name
                     string accountTableName = $"Account_{model.SelectedAccountName.Replace(" ", "_")}";
 
-                    Console.WriteLine("Check 1");
                     // Check if the account name has been edited
                     if (model.SelectedAccountName == model.EditedAccountName || string.IsNullOrEmpty(model.EditedAccountName))
                     {
@@ -504,13 +475,11 @@ namespace BudgetBuddyAPI.Controllers
             {
                 // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                //Console.WriteLine($"Database Path: {dbFilePath}");
 
                 // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    //Console.WriteLine("Connection Open");
 
                     // Use transaction in case any rollback is needed
                     using (var transaction = connection.BeginTransaction())
@@ -519,7 +488,6 @@ namespace BudgetBuddyAPI.Controllers
                         {
                             // Create the new table name
                             string editedTableName = $"Account_{model.EditedAccountName.Replace(" ", "_")}";
-                            Console.WriteLine("Check 2");
                             // Create the new table in the database
                             string createTableQuery = $"CREATE TABLE IF NOT EXISTS {editedTableName} (" +
                                                       "Entry INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -533,7 +501,6 @@ namespace BudgetBuddyAPI.Controllers
 
                             using (var createTableCommand = new SQLiteCommand(createTableQuery, connection))
                             {
-                                Console.WriteLine("Check 3");
                                 createTableCommand.ExecuteNonQuery();
                             }
 
@@ -571,7 +538,6 @@ namespace BudgetBuddyAPI.Controllers
 
                             // Commit the transaction if all operations succeed
                             transaction.Commit(); 
-                            //Console.WriteLine("Account Updated successfully.");
                         }
                         catch (Exception ex)
                         {
@@ -598,13 +564,11 @@ namespace BudgetBuddyAPI.Controllers
             {
                 // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                //Console.WriteLine($"Database Path: {dbFilePath}");
 
                 // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    //Console.WriteLine("Connection Open");
 
                     // Fetch the Type and Category from the specified accountTableName
                     var accountTypeAndCategoryQuery = $"SELECT Type, Category FROM {accountTableName} LIMIT 1";
@@ -712,13 +676,11 @@ namespace BudgetBuddyAPI.Controllers
             {
                 // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                //Console.WriteLine($"Database Path: {dbFilePath}");
 
                 // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    //Console.WriteLine("Connection Open");
 
                     // Fetch all account names from the AccountsList table
                     var accountNamesQuery = "SELECT Table_Name FROM AccountsList";
@@ -782,13 +744,11 @@ namespace BudgetBuddyAPI.Controllers
             {
                 // Get database path
                 string dbFilePath = DatabasePathManager.GetDatabasePath();
-                //Console.WriteLine($"Database Path: {dbFilePath}");
 
                 // Connect to the SQLite database
                 using (var connection = new SQLiteConnection($"Data Source={dbFilePath};Version=3;"))
                 {
                     connection.Open();
-                    Console.WriteLine("Connection Open");
 
                     // Fetch all account names from the AccountsList table
                     var accountNamesQuery = "SELECT Table_Name FROM AccountsList";
@@ -885,8 +845,6 @@ namespace BudgetBuddyAPI.Controllers
                                                 currentYear--; // Adjust the year if start month is in the previous year
                                             }
 
-                                            //Console.WriteLine($"Start Month: {startMonth}");
-
                                             // Calculate average total over previous six months
                                             for (int i = 0; i < 6; i++)
                                             {
@@ -904,19 +862,10 @@ namespace BudgetBuddyAPI.Controllers
                                                 // Set category
                                                 category = totalsReportEntry.Category;
 
-                                                // Check if the total is greater than 0
-                                                //if (totalsReportEntry.Total > 0)
-                                                //{
-                                                    total += totalsReportEntry.Total;
-                                                //    monthsWithValues++;
-                                                //}
-                                                //Console.WriteLine($"Total: {totalsReportEntry.Total}");
+                                                total += totalsReportEntry.Total;
                                             }
 
-                                            //Console.WriteLine($"To Average: {total}");
-                                            //Console.WriteLine($"Months with values: {monthsWithValues}");
                                             // Calculate average total
-                                            //decimal averageTotal = monthsWithValues > 0 ? total / monthsWithValues : 0;
                                             decimal averageTotal = total / 6;
 
                                             // Create a TotalsReportEntry with the averaged total

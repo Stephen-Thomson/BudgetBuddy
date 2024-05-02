@@ -55,45 +55,39 @@ const LoginPage = (props) => {
         alert('Username and Password must be 1 to 24 characters long.');
         return; // Prevent API call if fields have more than 24 characters
       }
+  
+      // Make the API call to the backend's HandleLogin endpoint
+      const response = await Apis.login(username, password);
 
-        // Debug print
-        // console.log('Username:', username);
-        // console.log('Password:', password);
-  
-        // Make the API call to the backend's HandleLogin endpoint
-        const response = await Apis.login(username, password);
-  
-        // Handle the response from the backend
-        if (response.userExists === false) {
-          // If the account does not exist, set accountNotExist to true
-          setAccountNotExist(true);
-        } else if (response.passwordMatches === false) {
-          // If the password does not match, display the error message and clear the input fields
-          alert('Incorrect password. Please re-enter username and password.');
+      // Handle the response from the backend
+      if (response.userExists === false) {
+        // If the account does not exist, set accountNotExist to true
+        setAccountNotExist(true);
+      } else if (response.passwordMatches === false) {
+        // If the password does not match, display the error message and clear the input fields
+        alert('Incorrect password. Please re-enter username and password.');
+      } else {
+        if (rememberMe) {
+          localStorage.setItem('rememberedUsername', username);
+          localStorage.setItem('rememberedPassword', password);
+          localStorage.setItem('rememberMe', true);
         } else {
-          if (rememberMe) {
-            localStorage.setItem('rememberedUsername', username);
-            localStorage.setItem('rememberedPassword', password);
-            localStorage.setItem('rememberMe', true);
-          } else {
-            localStorage.removeItem('rememberedUsername');
-            localStorage.removeItem('rememberedPassword');
-            localStorage.removeItem('rememberMe');
-          }        
-          // If the login is successful (username and password match), navigate to SelectFunction.js
-          navigate('/selectFunction');
+          localStorage.removeItem('rememberedUsername');
+          localStorage.removeItem('rememberedPassword');
+          localStorage.removeItem('rememberMe');
+        }        
+        // If the login is successful (username and password match), navigate to SelectFunction.js
+        navigate('/selectFunction');
 
-          //console.log('Logged in successfully!');
+        // Call the onLoginSuccess function to inform the parent component
+        props.onLoginSuccess();
 
-          // Call the onLoginSuccess function to inform the parent component
-          props.onLoginSuccess();
-
-        }
-      } catch (error) {
-        // Handle errors
-        console.error('Login error:', error);
       }
-    };
+    } catch (error) {
+      // Handle errors
+      console.error('Login error:', error);
+    }
+  };
   
     // Handle Create Account API call
     const handleCreateAccount = async () => {
@@ -102,7 +96,6 @@ const LoginPage = (props) => {
         const response = await Apis.createAccount(username, password);
   
         // After successfully creating the account, proceed to navigate to the next page (SelectFunction.js)
-        //console.log('Account created successfully!');
         navigate('/selectFunction'); // Navigate to the SelectFunction.js page
 
         // Call the onLoginSuccess function to inform the parent component

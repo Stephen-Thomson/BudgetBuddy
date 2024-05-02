@@ -45,7 +45,7 @@ const GeneralJournal = () => {
         const fetchAccounts = async () => {
           try {
             const accounts = await Apis.getAccounts();
-            //console.log('API Response:', accounts);
+
             setAccountList(accounts);
           } catch (error) {
             // Error code
@@ -144,13 +144,6 @@ const GeneralJournal = () => {
         const currentId = event.target.id; // Get the id of the current element
 
       if (event.key === 'Tab') {
-        // Add more rows when the "Tab" key is pressed
-        // if (currentId !== '') {
-        //   console.log(accounts);
-        //   console.log(descriptions);
-        //   console.log(debits);
-        //   console.log(credits);
-        // }
         if (currentId === `credit-${rows.length - 1}`) {
           addRows();
         }
@@ -311,7 +304,7 @@ const GeneralJournal = () => {
             credits
           );
 
-          // Optional: Clear validation errors after successful submission
+          // Clear validation errors after successful submission
           setValidationErrors([]);
 
           // Navigate to the GeneralJournal page after successful submission

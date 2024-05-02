@@ -62,9 +62,6 @@ const CurrentBudget = () => {
           {
             // Call the getAverages API
             const averagesData = await Apis.getAverages();
-    
-            // Log the received data
-            //console.log('Averages Data:', averagesData.value.averagesList);
       
             // Initialize separate arrays for each column
             const expenseColumnData = [];
@@ -142,10 +139,7 @@ const CurrentBudget = () => {
             setStartingTotal(stTotal);
             setRemainingTotal(rTotal);
             
-            
-
             setLoading(false); // Set loading to false once data is fetched
-            
           }
           catch (error)
           {
@@ -154,9 +148,7 @@ const CurrentBudget = () => {
           }
         };
 
-        
         fetchAverages(); // Call the fetchTotals function to get the totals
-
       }, []);
 
       useEffect(() => {
@@ -283,13 +275,6 @@ const CurrentBudget = () => {
       let asVal = assetTotal;
       let inVal = incomeTotal;
       let remVal = 0;
-
-      // console.log('startingTotal:', startingTotal);
-      // console.log('expenseTotal:', expenseTotal);
-      // console.log('remainingTotal:', remainingTotal);
-      // console.log('assetTotal:', assetTotal);
-      // console.log('incomeTotal:', incomeTotal);
-      // console.log('expenseTotal:', expenseTotal);
   
       // Calculate the budget values for the first month
       stVal = asVal + inVal;

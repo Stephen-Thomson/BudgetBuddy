@@ -49,7 +49,6 @@ const Apis = {
   // API call to post GJ to database
   postGJ: async (date, accounts, descriptions, debits, credits) => {
     try {
-      console.log('Data before sending:', { date, accounts, descriptions, debits, credits });
       const response = await axios.post(`${BASE_URL}/api/postGJ`, {
         date: date.toISOString(), // Convert date to ISO string format
         accounts,
@@ -82,7 +81,6 @@ const Apis = {
   // API call to create account table
   createAccountTable: async (type, category, accountName, description, dvalue, cvalue) => {
     try {
-      console.log('Data before sending:', { type, category, accountName, description, dvalue, cvalue });
       const response = await axios.post(`${BASE_URL}/api/createTable`, {
         type,
         category,

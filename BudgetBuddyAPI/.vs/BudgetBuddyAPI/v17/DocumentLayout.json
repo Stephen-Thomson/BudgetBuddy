@@ -3,12 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\shimm\\BudgetBuddy\\BudgetBuddyAPI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{AB380495-0A36-45D8-8491-A729CEA77BB9}|BudgetBuddyAPI.csproj|c:\\users\\shimm\\budgetbuddy\\budgetbuddyapi\\controllers\\financialapiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AB380495-0A36-45D8-8491-A729CEA77BB9}|BudgetBuddyAPI.csproj|solutionrelative:controllers\\financialapiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{AB380495-0A36-45D8-8491-A729CEA77BB9}|BudgetBuddyAPI.csproj|c:\\users\\shimm\\budgetbuddy\\budgetbuddyapi\\controllers\\todolistcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AB380495-0A36-45D8-8491-A729CEA77BB9}|BudgetBuddyAPI.csproj|solutionrelative:controllers\\todolistcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{AB380495-0A36-45D8-8491-A729CEA77BB9}|BudgetBuddyAPI.csproj|c:\\users\\shimm\\budgetbuddy\\budgetbuddyapi\\controllers\\apiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{AB380495-0A36-45D8-8491-A729CEA77BB9}|BudgetBuddyAPI.csproj|solutionrelative:controllers\\apiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AB380495-0A36-45D8-8491-A729CEA77BB9}|BudgetBuddyAPI.csproj|c:\\users\\shimm\\budgetbuddy\\budgetbuddyapi\\controllers\\financialapiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AB380495-0A36-45D8-8491-A729CEA77BB9}|BudgetBuddyAPI.csproj|solutionrelative:controllers\\financialapiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{AB380495-0A36-45D8-8491-A729CEA77BB9}|BudgetBuddyAPI.csproj|c:\\users\\shimm\\budgetbuddy\\budgetbuddyapi\\controllers\\loginpagecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -21,10 +25,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{AB380495-0A36-45D8-8491-A729CEA77BB9}|BudgetBuddyAPI.csproj|c:\\users\\shimm\\budgetbuddy\\budgetbuddyapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{AB380495-0A36-45D8-8491-A729CEA77BB9}|BudgetBuddyAPI.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AB380495-0A36-45D8-8491-A729CEA77BB9}|BudgetBuddyAPI.csproj|c:\\users\\shimm\\budgetbuddy\\budgetbuddyapi\\controllers\\todolistcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AB380495-0A36-45D8-8491-A729CEA77BB9}|BudgetBuddyAPI.csproj|solutionrelative:controllers\\todolistcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,11 +34,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\shimm\\BudgetBuddy\\BudgetBuddyAPI\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
@@ -51,26 +51,26 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "DatabasePathManager.cs",
               "DocumentMoniker": "C:\\Users\\shimm\\BudgetBuddy\\BudgetBuddyAPI\\DatabasePathManager.cs",
               "RelativeDocumentMoniker": "DatabasePathManager.cs",
               "ToolTip": "C:\\Users\\shimm\\BudgetBuddy\\BudgetBuddyAPI\\DatabasePathManager.cs",
               "RelativeToolTip": "DatabasePathManager.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAACIAAAAtAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACIAAAASAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-04-12T21:16:08.217Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "LoginPageController.cs",
               "DocumentMoniker": "C:\\Users\\shimm\\BudgetBuddy\\BudgetBuddyAPI\\Controllers\\LoginPageController.cs",
               "RelativeDocumentMoniker": "Controllers\\LoginPageController.cs",
               "ToolTip": "C:\\Users\\shimm\\BudgetBuddy\\BudgetBuddyAPI\\Controllers\\LoginPageController.cs",
               "RelativeToolTip": "Controllers\\LoginPageController.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAGABAAARAAAA",
+              "ViewState": "AQIAAC8AAAAAAAAAAAApwDoAAABZAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-04-11T20:26:47.097Z",
               "EditorCaption": ""
@@ -83,35 +83,36 @@
               "RelativeDocumentMoniker": "Controllers\\ApisController.cs",
               "ToolTip": "C:\\Users\\shimm\\BudgetBuddy\\BudgetBuddyAPI\\Controllers\\ApisController.cs",
               "RelativeToolTip": "Controllers\\ApisController.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAACYAAAAQAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAATAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-04-09T18:21:04.183Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "FinancialAPIsController.cs",
               "DocumentMoniker": "C:\\Users\\shimm\\BudgetBuddy\\BudgetBuddyAPI\\Controllers\\FinancialAPIsController.cs",
               "RelativeDocumentMoniker": "Controllers\\FinancialAPIsController.cs",
               "ToolTip": "C:\\Users\\shimm\\BudgetBuddy\\BudgetBuddyAPI\\Controllers\\FinancialAPIsController.cs",
               "RelativeToolTip": "Controllers\\FinancialAPIsController.cs",
-              "ViewState": "AQIAAHkDAAAAAAAAAAAswI0DAAAwAAAA",
+              "ViewState": "AQIAABEBAAAAAAAAAIAwwEABAAApAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-01-19T22:13:04.834Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 0,
               "Title": "ToDoListController.cs",
               "DocumentMoniker": "C:\\Users\\shimm\\BudgetBuddy\\BudgetBuddyAPI\\Controllers\\ToDoListController.cs",
               "RelativeDocumentMoniker": "Controllers\\ToDoListController.cs",
               "ToolTip": "C:\\Users\\shimm\\BudgetBuddy\\BudgetBuddyAPI\\Controllers\\ToDoListController.cs",
               "RelativeToolTip": "Controllers\\ToDoListController.cs",
-              "ViewState": "AQIAABQBAAAAAAAAAAAgwCoBAAAJAAAA",
+              "ViewState": "AQIAAP4AAAAAAAAAAIAwwAwBAAAZAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-02-12T20:08:25.125Z"
+              "WhenOpened": "2024-02-12T20:08:25.125Z",
+              "EditorCaption": ""
             }
           ]
         }

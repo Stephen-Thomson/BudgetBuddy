@@ -51,9 +51,6 @@ const ToDo = () => {
       fetchTasks();
     }, []);
 
-    // Add a console.log statement to print the value of taskList
-    //console.log('Task List:', taskList);
-
     // Function to handle menu item selection for "Navigate"
     const handleNavigate = (event) => {
         const value = event.target.value; // Get the selected value
@@ -88,7 +85,6 @@ const ToDo = () => {
     // Function to handle menu item selection for "Edit Task"
     const handleEditTask = (event) => {
         const taskId = event.target.value;
-        console.log('Edit Task:', taskId);
         navigate(`/editTask/${taskId}`); // Navigate to the EditTask.js page with the task ID
     };
 
